@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="74ff843a-d994-4532-b22f-b267ef7d4010">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="Title" forecolor="#FFFFFF" fontName="Times New Roman" fontSize="50" isBold="false" pdfFontName="Times-Bold"/>
+	<style name="SubTitle" forecolor="#CCCCCC" fontName="Times New Roman" fontSize="18" isBold="false" pdfFontName="Times-Roman"/>
+	<style name="Column header" forecolor="#666666" fontName="Times New Roman" fontSize="14" isBold="true" pdfFontName="Times-Roman"/>
+	<style name="Detail" mode="Transparent" fontName="Times New Roman" pdfFontName="Times-Roman"/>
+	<style name="Row" mode="Transparent" fontName="Times New Roman" pdfFontName="Times-Roman">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$V{REPORT_COUNT}%2 == 0]]></conditionExpression>
+			<style mode="Opaque" backcolor="#F0EFEF"/>
+		</conditionalStyle>
+	</style>
+	<queryString language="SQL">
+		<![CDATA[SELECT
+     iThongKe."tonghoadon" AS iThongKe_tonghoadon,
+     iThongKe."tongtien" AS iThongKe_tongtien,
+     iThongKe."tungay" AS iThongKe_tungay,
+     iThongKe."denngay" AS iThongKe_denngay,
+     ThongKe."Name" AS ThongKe_Name,
+     ThongKe."Date" AS ThongKe_Date,
+     ThongKe."Time" AS ThongKe_Time,
+     ThongKe."TotalMoney" AS ThongKe_TotalMoney,
+     ThongKe."Money" AS ThongKe_Money,
+     ThongKe."Surplus" AS ThongKe_Surplus
+FROM
+     "dbo"."iThongKe" iThongKe,
+     "dbo"."ThongKe" ThongKe]]>
+	</queryString>
+	<field name="iThongKe_tonghoadon" class="java.lang.String"/>
+	<field name="iThongKe_tongtien" class="java.lang.String"/>
+	<field name="iThongKe_tungay" class="java.lang.String"/>
+	<field name="iThongKe_denngay" class="java.lang.String"/>
+	<field name="ThongKe_Name" class="java.lang.String"/>
+	<field name="ThongKe_Date" class="java.lang.String"/>
+	<field name="ThongKe_Time" class="java.lang.String"/>
+	<field name="ThongKe_TotalMoney" class="java.lang.String"/>
+	<field name="ThongKe_Money" class="java.lang.String"/>
+	<field name="ThongKe_Surplus" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="154" splitType="Stretch">
+			<frame>
+				<reportElement mode="Opaque" x="0" y="0" width="555" height="95" backcolor="#000000" uuid="411d4766-0198-4360-a82d-6845cf314663"/>
+				<staticText>
+					<reportElement style="Title" x="0" y="0" width="555" height="66" uuid="93a38905-8d89-4e06-8339-f8162b24c48f"/>
+					<textElement textAlignment="Center">
+						<font isBold="false"/>
+					</textElement>
+					<text><![CDATA[Cửa hàng Điện Tử Số 1]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="SubTitle" x="2" y="66" width="553" height="29" uuid="e2b3c400-1146-49c6-8ff8-98effa118418"/>
+					<textElement textAlignment="Center">
+						<font size="22" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Thống Kê Doanh Thu]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement mode="Opaque" x="0" y="100" width="555" height="32" forecolor="#000000" backcolor="#CC0000" uuid="1fc6791a-817c-4e6e-81b4-17fcc20220d8"/>
+				<textField pattern="EEEEE dd/MM/yyyy">
+					<reportElement x="400" y="12" width="153" height="20" forecolor="#FFFFFF" uuid="78d6bac2-29b3-4210-aaed-492976985ac8"/>
+					<textElement>
+						<font size="13"/>
+					</textElement>
+					<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="0" y="12" width="60" height="20" forecolor="#FFFFFF" uuid="57ef6835-c877-48ff-8c7f-59e203f1e5d3"/>
+					<textElement textAlignment="Center">
+						<font size="13" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Từ Ngày:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="60" y="12" width="81" height="20" forecolor="#FFFFFF" uuid="ff89903a-4faf-490b-864e-260a5b0e3b63"/>
+					<textElement>
+						<font size="13"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{iThongKe_tungay}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="141" y="12" width="75" height="20" forecolor="#FFFFFF" uuid="fa94bdf5-9645-471e-9ca8-4dc94fd2f4f4"/>
+					<textElement>
+						<font size="13" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Đến Ngày:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="216" y="12" width="76" height="20" forecolor="#FFFFFF" uuid="83d8a503-c10a-44df-9ad5-269413f01bc5"/>
+					<textElement>
+						<font size="13"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{iThongKe_denngay}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="292" y="12" width="108" height="20" forecolor="#FFFFFF" uuid="cf3532fc-235d-4dc0-a248-ed06be1e0fcb"/>
+					<textElement>
+						<font size="13" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Ngày Thống Kê:]]></text>
+				</staticText>
+			</frame>
+			<line>
+				<reportElement x="0" y="132" width="553" height="1" uuid="cd832ec9-a725-42b0-8b87-dcd4a9d44edb"/>
+			</line>
+			<staticText>
+				<reportElement x="0" y="133" width="130" height="20" uuid="09488d62-97fc-4665-85b0-040e11b9052b"/>
+				<textElement>
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Tổng Số Hóa Đơn:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="130" y="133" width="100" height="20" uuid="6af10dad-3ecb-41f9-a9ac-0dcd78e07ae4"/>
+				<textElement>
+					<font size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{iThongKe_tonghoadon}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="230" y="133" width="127" height="20" uuid="2fb6c80e-3f33-4f76-8099-dbcc8a7b8391"/>
+				<textElement>
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Tổng Doanh Thu:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="357" y="133" width="138" height="20" uuid="8de0f7fa-0d8c-49da-a20c-a7e800c61ea6"/>
+				<textElement>
+					<font size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{iThongKe_tongtien}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="153" width="555" height="1" uuid="ddf7a1e2-b6ec-415b-82cd-abeb54056844"/>
+			</line>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="26" splitType="Stretch">
+			<staticText>
+				<reportElement style="Column header" x="0" y="7" width="112" height="18" forecolor="#000000" uuid="5760106e-f9ec-4d2a-afed-958b559ddffc"/>
+				<textElement>
+					<font size="12" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Nhân Viên Bán Hàng]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Column header" x="112" y="8" width="65" height="18" forecolor="#000000" uuid="e35661cd-760c-4be6-9b2e-57a5b9447dbd"/>
+				<textElement>
+					<font size="12" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Ngày Bán]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Column header" x="177" y="8" width="59" height="18" forecolor="#000000" uuid="400ade63-cb80-4603-b7eb-de9c5987e2da"/>
+				<textElement>
+					<font size="12" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Giờ Bán]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Column header" x="236" y="8" width="99" height="18" forecolor="#000000" uuid="4c0a589b-f5a3-4bcc-b2fd-c17364b977aa"/>
+				<textElement>
+					<font size="12" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Tổng Tiền Hóa Đơn]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Column header" x="335" y="7" width="124" height="18" forecolor="#000000" uuid="e77a0e21-864b-4864-96bd-da9b7a65ef8f"/>
+				<textElement>
+					<font size="12" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Tiền Khách Hàng]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Column header" x="459" y="7" width="96" height="18" forecolor="#000000" uuid="063b2810-bd3a-4fb9-93b4-09f10c6bb729"/>
+				<textElement>
+					<font size="12" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Tiền dư của khách]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="18" splitType="Stretch">
+			<frame>
+				<reportElement style="Row" mode="Opaque" x="0" y="0" width="555" height="18" uuid="8711ceb1-1eab-4da5-a160-ee1d5eba41e7"/>
+				<textField isStretchWithOverflow="true">
+					<reportElement style="Detail" positionType="Float" x="0" y="0" width="112" height="18" uuid="27ec57e4-a928-46f3-916c-a853c0e66b01"/>
+					<textElement>
+						<font size="12"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{ThongKe_Name}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement style="Detail" positionType="Float" x="177" y="0" width="59" height="18" uuid="821ed345-4d7b-4c2e-ac90-2a31c79b25e4"/>
+					<textElement>
+						<font size="12"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{ThongKe_Time}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement style="Detail" positionType="Float" x="335" y="0" width="124" height="18" uuid="0cb43892-af35-4f37-aa67-770b996595fd"/>
+					<textElement>
+						<font size="12"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{ThongKe_Money}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement style="Detail" positionType="Float" x="459" y="0" width="96" height="18" uuid="6ca57ab9-3b14-4b71-a002-e3f7f9518735"/>
+					<textElement>
+						<font size="12"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{ThongKe_Surplus}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement style="Detail" positionType="Float" x="112" y="0" width="65" height="18" uuid="5b483842-7cfe-401a-a286-a2f807881808"/>
+					<textElement>
+						<font size="12"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{ThongKe_Date}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement style="Detail" positionType="Float" x="236" y="0" width="99" height="18" uuid="adb4db7f-4507-45fa-ab76-e82b801009e6"/>
+					<textElement>
+						<font size="12"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{ThongKe_TotalMoney}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="4" splitType="Stretch">
+			<line>
+				<reportElement positionType="FixRelativeToBottom" x="0" y="3" width="555" height="1" uuid="64e9fec1-8a55-4d2d-9acd-224656aeed07"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineColor="#999999"/>
+				</graphicElement>
+			</line>
+		</band>
+	</columnFooter>
+	<pageFooter>
+		<band height="25" splitType="Stretch">
+			<frame>
+				<reportElement mode="Opaque" x="0" y="1" width="555" height="24" forecolor="#D0B48E" backcolor="#000000" uuid="963796df-2f0a-4280-abcc-bce1ed361538"/>
+				<staticText>
+					<reportElement x="0" y="4" width="385" height="20" forecolor="#FFFFFF" uuid="3a77cd73-fd75-444a-82b8-6bf619f22f45"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[đường 3/2, P. Xuân Khánh, Q. Ninh Kiều, TP. Cần Thơ. Điện thoại: 01684342451; Email: dts1@gmail.com.vn]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="439" y="4" width="76" height="20" forecolor="#FFFFFF" uuid="ddefceaa-6ef8-4ab1-8714-705cd9a45a16"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA["Trang "+$V{PAGE_NUMBER}+" /"]]></textFieldExpression>
+				</textField>
+				<textField evaluationTime="Report">
+					<reportElement x="515" y="4" width="40" height="20" forecolor="#FFFFFF" uuid="01b37039-3876-4eae-88d1-37ae59476814"/>
+					<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

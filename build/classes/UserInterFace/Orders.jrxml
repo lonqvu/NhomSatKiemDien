@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="ca99bacf-fc80-46a6-9079-eee1db603dc0">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="Title" forecolor="#FFFFFF" fontName="Times New Roman" fontSize="50" isBold="false" pdfFontName="Times-Bold"/>
+	<style name="SubTitle" forecolor="#CCCCCC" fontName="Times New Roman" fontSize="18" isBold="false" pdfFontName="Times-Roman"/>
+	<style name="Column header" forecolor="#666666" fontName="Times New Roman" fontSize="14" isBold="true" pdfFontName="Times-Roman"/>
+	<style name="Detail" mode="Transparent" fontName="Times New Roman" pdfFontName="Times-Roman"/>
+	<style name="Row" mode="Transparent" fontName="Times New Roman" pdfFontName="Times-Roman">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$V{REPORT_COUNT}%2 == 0]]></conditionExpression>
+			<style mode="Opaque" backcolor="#F0EFEF"/>
+		</conditionalStyle>
+	</style>
+	<queryString language="SQL">
+		<![CDATA[SELECT
+     Orders."ID" AS Orders_ID,
+     Orders."Customer" AS Orders_Customer,
+     Orders."Address" AS Orders_Address,
+     Orders."Phone" AS Orders_Phone,
+     Orders."Product" AS Orders_Product,
+     Orders."Amount" AS Orders_Amount,
+     Orders."Price" AS Orders_Price,
+     Orders."WarrantyPeriod" AS Orders_WarrantyPeriod,
+     Orders."intoMoney" AS Orders_intoMoney,
+     Orders."Date" AS Orders_Date,
+     Orders."PaymentMethods" AS Orders_PaymentMethods
+FROM
+     "dbo"."Orders" Orders]]>
+	</queryString>
+	<field name="Orders_ID" class="java.lang.String"/>
+	<field name="Orders_Customer" class="java.lang.String"/>
+	<field name="Orders_Address" class="java.lang.String"/>
+	<field name="Orders_Phone" class="java.lang.String"/>
+	<field name="Orders_Product" class="java.lang.String"/>
+	<field name="Orders_Amount" class="java.lang.Integer"/>
+	<field name="Orders_Price" class="java.lang.String"/>
+	<field name="Orders_WarrantyPeriod" class="java.lang.String"/>
+	<field name="Orders_intoMoney" class="java.lang.String"/>
+	<field name="Orders_Date" class="java.lang.String"/>
+	<field name="Orders_PaymentMethods" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="102" splitType="Stretch">
+			<frame>
+				<reportElement mode="Opaque" x="0" y="0" width="802" height="66" backcolor="#000000" uuid="e5e5f080-b3da-4783-96d5-4ed75b3bcbfd"/>
+				<staticText>
+					<reportElement style="Title" x="0" y="0" width="465" height="66" uuid="4926998f-1278-4d42-bd51-632fd8f9e34f"/>
+					<box topPadding="4" leftPadding="4" bottomPadding="4" rightPadding="4"/>
+					<textElement verticalAlignment="Bottom">
+						<font size="48" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Cửa hàng Điện Tử Số 1]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="SubTitle" x="465" y="22" width="337" height="44" uuid="6365ce19-382d-4a9d-af61-b0962291f2f6"/>
+					<textElement textAlignment="Center">
+						<font size="35" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Đơn Đặt Hàng]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement mode="Opaque" x="0" y="70" width="802" height="32" forecolor="#000000" backcolor="#CC0000" uuid="283440c9-65bd-42e8-8bbe-1b5a829a835e"/>
+				<textField pattern="EEEEE dd/MM/yyyy">
+					<reportElement x="553" y="12" width="249" height="20" forecolor="#FFFFFF" uuid="dadd60e4-deca-41e2-9bd3-726765e27c5d"/>
+					<textElement textAlignment="Right">
+						<font size="14"/>
+					</textElement>
+					<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="18" splitType="Stretch">
+			<staticText>
+				<reportElement style="Column header" x="0" y="0" width="49" height="18" forecolor="#000000" uuid="e2bede66-e355-4559-bc3e-a0d6a47a05b7"/>
+				<textElement>
+					<font isBold="false"/>
+				</textElement>
+				<text><![CDATA[Mã ĐH]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Column header" x="49" y="0" width="119" height="18" forecolor="#000000" uuid="4ac18426-61d5-48e9-ae7a-03e09c5c10c4"/>
+				<textElement>
+					<font isBold="false"/>
+				</textElement>
+				<text><![CDATA[Khách Hàng]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Column header" x="168" y="0" width="72" height="18" forecolor="#000000" uuid="f1dc4be4-ef1b-4d78-b27a-db911a7b34a7"/>
+				<textElement>
+					<font isBold="false"/>
+				</textElement>
+				<text><![CDATA[Địa Chỉ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Column header" x="240" y="0" width="83" height="18" forecolor="#000000" uuid="b33497c5-0f52-4bbd-bd9b-88b671b74679"/>
+				<textElement>
+					<font isBold="false"/>
+				</textElement>
+				<text><![CDATA[SĐT]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Column header" x="323" y="0" width="84" height="18" forecolor="#000000" uuid="40678e9f-f60d-44ac-bbf4-aa5000696e94"/>
+				<textElement>
+					<font isBold="false"/>
+				</textElement>
+				<text><![CDATA[Sản Phẩm]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Column header" x="407" y="0" width="58" height="18" forecolor="#000000" uuid="5b5b95ec-8f73-45ce-8ea9-da427eb7333c"/>
+				<textElement>
+					<font isBold="false"/>
+				</textElement>
+				<text><![CDATA[Số Lượng]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Column header" x="465" y="0" width="76" height="18" forecolor="#000000" uuid="40db00c4-c0c9-4151-b570-cdd6f5a2b6e4"/>
+				<textElement>
+					<font isBold="false"/>
+				</textElement>
+				<text><![CDATA[Bảo Hành]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Column header" x="541" y="0" width="95" height="18" forecolor="#000000" uuid="b80917e6-940e-4227-aaea-6cd915f4a559"/>
+				<textElement>
+					<font isBold="false"/>
+				</textElement>
+				<text><![CDATA[Thành Tiền]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Column header" x="636" y="0" width="72" height="18" forecolor="#000000" uuid="c324f1cc-7b28-42f9-98a2-25eb7b3fe6c5"/>
+				<textElement>
+					<font isBold="false"/>
+				</textElement>
+				<text><![CDATA[Ngày Đặt]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Column header" x="708" y="0" width="89" height="18" forecolor="#000000" uuid="7a70ba51-a183-4b98-9331-01d759765296"/>
+				<textElement>
+					<font isBold="false"/>
+				</textElement>
+				<text><![CDATA[Thanh Toán]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="18" splitType="Stretch">
+			<frame>
+				<reportElement style="Row" mode="Opaque" x="0" y="0" width="797" height="18" uuid="f57a3410-b758-4c68-9f8c-7d375776dc0c"/>
+				<textField isStretchWithOverflow="true">
+					<reportElement style="Detail" positionType="Float" x="0" y="0" width="49" height="18" uuid="904b20b4-6b39-4a95-8cee-3bf6750db2f3"/>
+					<textElement>
+						<font size="12"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{Orders_ID}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement style="Detail" positionType="Float" x="49" y="0" width="119" height="18" uuid="bdc3ef85-bf24-43fe-bcfd-34a20dfc5d98"/>
+					<textElement>
+						<font size="12"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{Orders_Customer}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement style="Detail" positionType="Float" x="168" y="0" width="72" height="18" uuid="64d5f6e8-0adf-400f-ade3-3f9e75c6a024"/>
+					<textElement>
+						<font size="12"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{Orders_Address}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement style="Detail" positionType="Float" x="240" y="0" width="83" height="18" uuid="c16e5ada-158a-4ab7-bda0-1b28f045c8f1"/>
+					<textElement>
+						<font size="12"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{Orders_Phone}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement style="Detail" positionType="Float" x="323" y="0" width="84" height="18" uuid="f5cbd3f7-27f9-4b71-b279-77fc8248c0b5"/>
+					<textElement>
+						<font size="12"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{Orders_Product}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement style="Detail" positionType="Float" x="407" y="0" width="58" height="18" uuid="149f87af-e1a2-4e1a-b9f2-f590b4fcc3a5"/>
+					<textElement>
+						<font size="12"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{Orders_Amount}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement style="Detail" positionType="Float" x="465" y="0" width="76" height="18" uuid="9876b269-114d-4946-b98c-26ee8a91b04a"/>
+					<textElement>
+						<font size="12"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{Orders_WarrantyPeriod}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement style="Detail" positionType="Float" x="541" y="0" width="95" height="18" uuid="1fb71f97-992e-43ff-bf70-9fe75a122831"/>
+					<textElement>
+						<font size="12"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{Orders_intoMoney}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement style="Detail" positionType="Float" x="636" y="0" width="72" height="18" uuid="59041079-08aa-4bdd-aaa6-f0cd3a2b1dfa"/>
+					<textElement>
+						<font size="12"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{Orders_Date}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement style="Detail" positionType="Float" x="708" y="0" width="89" height="18" uuid="0f20a002-fd13-442c-b6f7-e36a1eaca2ad"/>
+					<textElement>
+						<font size="12"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{Orders_PaymentMethods}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="7" splitType="Stretch">
+			<line>
+				<reportElement positionType="FixRelativeToBottom" x="0" y="3" width="555" height="1" uuid="fc16020e-e6d5-4488-80e1-e86d198aa9c6"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineColor="#999999"/>
+				</graphicElement>
+			</line>
+		</band>
+	</columnFooter>
+	<pageFooter>
+		<band height="25" splitType="Stretch">
+			<frame>
+				<reportElement mode="Opaque" x="0" y="0" width="802" height="25" forecolor="#D0B48E" backcolor="#000000" uuid="d124aa0e-5e45-424c-a216-49a3992f44bb"/>
+				<staticText>
+					<reportElement x="0" y="5" width="648" height="20" forecolor="#FFFFFF" uuid="35f9733f-fde1-4303-bc14-67f6e51629bd"/>
+					<text><![CDATA[đường 3/2, P. Xuân Khánh, Q. Ninh Kiều, TP. Cần Thơ. Điện thoại: 01684342451; Email: dts1@gmail.com.vn]]></text>
+				</staticText>
+			</frame>
+			<textField>
+				<reportElement x="686" y="3" width="76" height="20" forecolor="#FFFFFF" uuid="e569918c-0dc6-4f4e-9e6d-2868320d2f2b"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA["Trang "+$V{PAGE_NUMBER}+" /"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="762" y="3" width="40" height="20" forecolor="#FFFFFF" uuid="35f0e021-0868-4fd3-8877-6d32eb048e67"/>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="e03b10f8-95e4-4e43-a5a3-9cabd3d5e8b2">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="Title" forecolor="#FFFFFF" fontName="Times New Roman" fontSize="50" isBold="false" pdfFontName="Times-Bold"/>
+	<style name="SubTitle" forecolor="#CCCCCC" fontName="Times New Roman" fontSize="18" isBold="false" pdfFontName="Times-Roman"/>
+	<style name="Column header" forecolor="#666666" fontName="Times New Roman" fontSize="14" isBold="true" pdfFontName="Times-Roman"/>
+	<style name="Detail" mode="Transparent" fontName="Times New Roman" pdfFontName="Times-Roman"/>
+	<style name="Row" mode="Transparent" fontName="Times New Roman" pdfFontName="Times-Roman">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$V{REPORT_COUNT}%2 == 0]]></conditionExpression>
+			<style mode="Opaque" backcolor="#F0EFEF"/>
+		</conditionalStyle>
+	</style>
+	<queryString language="SQL">
+		<![CDATA[SELECT
+     NhanVien."Position" AS NhanVien_Position,
+     NhanVien."Level" AS NhanVien_Level,
+     NhanVien."EmployeeCode" AS NhanVien_EmployeeCode,
+     NhanVien."FullName" AS NhanVien_FullName,
+     NhanVien."YearofBirth" AS NhanVien_YearofBirth,
+     NhanVien."Sex" AS NhanVien_Sex,
+     NhanVien."Address" AS NhanVien_Address,
+     NhanVien."Phone" AS NhanVien_Phone,
+     NhanVien."Email" AS NhanVien_Email,
+     NhanVien."Payroll" AS NhanVien_Payroll
+FROM
+     "dbo"."NhanVien" NhanVien]]>
+	</queryString>
+	<field name="NhanVien_Position" class="java.lang.String"/>
+	<field name="NhanVien_Level" class="java.lang.Integer"/>
+	<field name="NhanVien_EmployeeCode" class="java.lang.String"/>
+	<field name="NhanVien_FullName" class="java.lang.String"/>
+	<field name="NhanVien_YearofBirth" class="java.lang.String"/>
+	<field name="NhanVien_Sex" class="java.lang.String"/>
+	<field name="NhanVien_Address" class="java.lang.String"/>
+	<field name="NhanVien_Phone" class="java.lang.String"/>
+	<field name="NhanVien_Email" class="java.lang.String"/>
+	<field name="NhanVien_Payroll" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="102" splitType="Stretch">
+			<frame>
+				<reportElement mode="Opaque" x="0" y="0" width="802" height="66" backcolor="#000000" uuid="b7cc5b25-977f-4f14-ba09-2165d9382038"/>
+				<staticText>
+					<reportElement style="Title" x="0" y="0" width="486" height="66" uuid="e411e1d0-445d-4634-a3a5-3a184efe3713"/>
+					<box topPadding="4" leftPadding="4" bottomPadding="4" rightPadding="4"/>
+					<textElement verticalAlignment="Bottom">
+						<font isBold="false"/>
+					</textElement>
+					<text><![CDATA[Cửa hàng Điện Tử Số 1]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="SubTitle" x="486" y="20" width="316" height="46" uuid="0afeccff-43ca-4210-94a0-e57561949010"/>
+					<textElement textAlignment="Center">
+						<font size="30" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Danh Sách Nhân Viên]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement mode="Opaque" x="0" y="70" width="802" height="32" forecolor="#000000" backcolor="#CC0000" uuid="fa320eee-ffe3-4f4c-bacc-eeff12aa663b"/>
+				<textField pattern="EEEEE dd/MM/yyyy">
+					<reportElement x="658" y="12" width="144" height="20" forecolor="#FFFFFF" uuid="f1bebc9e-1c62-442c-b25d-58769bfcf561"/>
+					<textElement textAlignment="Right">
+						<font size="12"/>
+					</textElement>
+					<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="18" splitType="Stretch">
+			<staticText>
+				<reportElement style="Column header" x="0" y="0" width="55" height="18" forecolor="#000000" uuid="da0f3899-4e83-4f41-9269-df9e63b2c093"/>
+				<textElement>
+					<font size="12" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Mã NV]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Column header" x="55" y="0" width="106" height="18" forecolor="#000000" uuid="a4a13f2a-c5fd-47ce-b086-0251cbfd0efe"/>
+				<textElement>
+					<font isBold="false"/>
+				</textElement>
+				<text><![CDATA[Chức Vụ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Column header" x="161" y="0" width="102" height="18" forecolor="#000000" uuid="15000c5f-8c5f-4e8c-a3b8-00f0e1987338"/>
+				<textElement>
+					<font isBold="false"/>
+				</textElement>
+				<text><![CDATA[Họ Tên]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Column header" x="263" y="0" width="57" height="18" forecolor="#000000" uuid="bd0e3eed-d8e4-4b59-9406-1fed548920f5"/>
+				<textElement>
+					<font size="12" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Bậc Lương]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Column header" x="320" y="0" width="64" height="18" forecolor="#000000" uuid="39c22b16-8dea-4ad6-85a9-584f5b1470a0"/>
+				<textElement>
+					<font size="12" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Năm Sinh]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Column header" x="384" y="0" width="65" height="18" forecolor="#000000" uuid="c9eef22f-52bd-450f-b694-21df83dad5b1"/>
+				<textElement>
+					<font size="12" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Giới Tính]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Column header" x="449" y="0" width="58" height="18" forecolor="#000000" uuid="6259a3aa-02ec-4627-9ff4-dbd8fa7794a0"/>
+				<textElement>
+					<font size="12" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Địa Chỉ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Column header" x="507" y="0" width="79" height="18" forecolor="#000000" uuid="78648677-ec6c-44cd-924b-b0f9df56e17a"/>
+				<textElement>
+					<font size="12" isBold="false"/>
+				</textElement>
+				<text><![CDATA[SĐT]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Column header" x="586" y="0" width="113" height="18" forecolor="#000000" uuid="46a43bbe-e410-47ab-8018-c9a4835b58e2"/>
+				<textElement>
+					<font size="12" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Email]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Column header" x="699" y="0" width="98" height="18" forecolor="#000000" uuid="5b724cd4-2c8b-4fa1-a1a7-b2d6b71f0ae6"/>
+				<textElement>
+					<font size="12" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Lương]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="18" splitType="Stretch">
+			<frame>
+				<reportElement style="Row" mode="Opaque" x="0" y="0" width="797" height="18" uuid="0db75233-3f8a-4814-b386-91543eff8ca5"/>
+				<textField isStretchWithOverflow="true">
+					<reportElement style="Detail" positionType="Float" x="0" y="0" width="55" height="18" uuid="7eb74019-6b8b-44a8-b9d6-ca71ee0c0ae3"/>
+					<textElement>
+						<font size="12"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{NhanVien_EmployeeCode}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement style="Detail" positionType="Float" x="55" y="0" width="106" height="18" uuid="84c9c36b-d325-41c3-b072-67f75505dbcc"/>
+					<textElement>
+						<font size="12"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{NhanVien_Position}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement style="Detail" positionType="Float" x="161" y="0" width="102" height="18" uuid="5f21f064-977c-4d01-959d-7e75874d4118"/>
+					<textElement>
+						<font size="12"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{NhanVien_FullName}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement style="Detail" positionType="Float" x="263" y="0" width="57" height="18" uuid="c666c1b1-375c-499e-b716-efe2b6d33d92"/>
+					<textElement>
+						<font size="12"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{NhanVien_Level}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement style="Detail" positionType="Float" x="320" y="0" width="64" height="18" uuid="f6185e3a-f1cc-4bf1-a803-f370c3ca4332"/>
+					<textElement>
+						<font size="12"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{NhanVien_YearofBirth}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement style="Detail" positionType="Float" x="384" y="0" width="65" height="18" uuid="fe79c5db-5fd6-4240-b16e-8b9f989b193e"/>
+					<textElement>
+						<font size="12"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{NhanVien_Sex}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement style="Detail" positionType="Float" x="449" y="0" width="58" height="18" uuid="8f1426d2-47c9-442f-9a41-f52046046892"/>
+					<textElement>
+						<font size="12"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{NhanVien_Address}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement style="Detail" positionType="Float" x="507" y="0" width="79" height="18" uuid="1a7c28a7-93ee-41aa-8feb-32f36652197f"/>
+					<textElement>
+						<font size="12"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{NhanVien_Phone}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement style="Detail" positionType="Float" x="586" y="0" width="113" height="18" uuid="487cbed7-2956-4a26-807c-24c06697e4c3"/>
+					<textElement>
+						<font size="12"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{NhanVien_Email}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement style="Detail" positionType="Float" x="699" y="0" width="98" height="18" uuid="addddf23-8a07-45de-8264-6e9d619327d8"/>
+					<textElement>
+						<font size="12"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{NhanVien_Payroll}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="7" splitType="Stretch">
+			<line>
+				<reportElement positionType="FixRelativeToBottom" x="0" y="3" width="555" height="1" uuid="ad6d2aa5-6ea4-49ce-bfb0-6342df22d7f1"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineColor="#999999"/>
+				</graphicElement>
+			</line>
+		</band>
+	</columnFooter>
+	<pageFooter>
+		<band height="25" splitType="Stretch">
+			<frame>
+				<reportElement mode="Opaque" x="0" y="0" width="802" height="25" forecolor="#D0B48E" backcolor="#000000" uuid="290cac74-5b2f-441c-908d-40f0f2ace368"/>
+				<textField>
+					<reportElement x="674" y="3" width="76" height="20" forecolor="#FFFFFF" uuid="9cb2a70d-45c8-4291-8f5e-3cc0d1e153b9"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA["Trang "+$V{PAGE_NUMBER}+" /"]]></textFieldExpression>
+				</textField>
+				<textField evaluationTime="Report">
+					<reportElement x="750" y="3" width="40" height="20" forecolor="#FFFFFF" uuid="3ea69ab5-6584-47c4-bfd7-4228ab3c1658"/>
+					<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="0" y="3" width="648" height="20" forecolor="#FFFFFF" uuid="b03d29fe-8de9-4754-8c9f-440caae4c7e3"/>
+					<text><![CDATA[đường 3/2, P. Xuân Khánh, Q. Ninh Kiều, TP. Cần Thơ. Điện thoại: 01684342451; Email: dts1@gmail.com.vn]]></text>
+				</staticText>
+			</frame>
+		</band>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>
