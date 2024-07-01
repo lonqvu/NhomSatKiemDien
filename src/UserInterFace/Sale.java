@@ -166,9 +166,9 @@ class Sale extends javax.swing.JFrame implements Runnable {
         lbltotalDebt.setText("0");
         lblSurplus.setText("0");
         txbProductName.setText("");
-        txbCustomerName.setText("");
-        txbAddress.setText("");
-        txbDebt.setText("");
+//        txbCustomerName.setText("");
+//        txbAddress.setText("");
+//        txbDebt.setText("");
         Disabled();
         tableBill.removeAll();
     }
@@ -412,7 +412,7 @@ class Sale extends javax.swing.JFrame implements Runnable {
                 pst.setString(1, MaHD);
                 try ( ResultSet rs = pst.executeQuery()) {
                     while (rs.next()) {
-                        String intoMoney = moneyDis(rs.getString("IntoMoney"));
+                        String intoMoney = rs.getString("IntoMoney");
                         String product = rs.getString("Product");
                         int amount = rs.getInt("Amount");
                         String productID = rs.getString("ProductID");
@@ -1195,8 +1195,8 @@ class Sale extends javax.swing.JFrame implements Runnable {
                                 .addComponent(jLabel10)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(lbltotalDebt, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(26, 26, 26)
-                                .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(lblSurplus, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(0, 0, Short.MAX_VALUE))))
@@ -1303,7 +1303,7 @@ class Sale extends javax.swing.JFrame implements Runnable {
     private void btnPrintActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPrintActionPerformed
 
         try {
-            JasperReport report = JasperCompileManager.compileReport("D:\\NhomSatKiemDien\\NhomSatKiemDien\\src\\UserInterFace\\Bill.jrxml");
+            JasperReport report = JasperCompileManager.compileReport("D:\\NhomSatKiemDien\\src\\UserInterFace\\Bill.jrxml");
             Map<String, Object> parameters = new HashMap<>();
             parameters.put("ORDER_ID", MaHD);
             parameters.put("TOTAL_MONEY", convertToMoney(lbltotalMoney.getText()));
@@ -1388,7 +1388,6 @@ class Sale extends javax.swing.JFrame implements Runnable {
             LocalDateTime now = LocalDateTime.now();
             Timestamp sqlDate = Timestamp.valueOf(now);
             Customer cus = (Customer) cbxCustomer.getSelectedItem();
-//            if (checkCustomerInfo.isSelected()) {
 //                // Thêm đơn hàng
             String insertOrderSQL = "INSERT INTO Orders (ID, CustomerID, Date) VALUES (?, ?, ?)";
             PreparedStatement pstOrder = conn.prepareStatement(insertOrderSQL);
@@ -1396,18 +1395,6 @@ class Sale extends javax.swing.JFrame implements Runnable {
             pstOrder.setString(2, cus.getId());
             pstOrder.setTimestamp(3, sqlDate);
             pstOrder.executeUpdate();
-//            } else {
-            // Thêm đơn hàng
-//            String insertOrderSQL = "INSERT INTO Orders (ID, Customer, Address, Phone, Date) VALUES (?, ?, ?, ?, ?)";
-//            PreparedStatement pstOrder = conn.prepareStatement(insertOrderSQL);
-//            pstOrder.setString(1, invoiceNumber);
-//            pstOrder.setString(2, txbCustomerName.getText());
-//            pstOrder.setString(3, txbAddress.getText());
-//            pstOrder.setString(4, txbPhoneNumber.getText());
-//            pstOrder.setTimestamp(5, sqlDate);
-
-            pstOrder.executeUpdate();
-//            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -1741,11 +1728,10 @@ class Sale extends javax.swing.JFrame implements Runnable {
             if (convertToMoney(txbInputMoney.getText()).compareTo(BigDecimal.ZERO) < 0) {
                 lblStatus.setText("Số tiền khách thanh toán phải lớn hơn hoặc bằng 0");
             } else {
-// Update nợ
+                // Update nợ
                 if (convertToMoney(txbDebt.getText()).compareTo(BigDecimal.ZERO) > 0) {
                     if (convertToMoney(txbInputMoney.getText()).compareTo(BigDecimal.ZERO) == 0) {
                         totalDebt = convertToMoney(txbDebt.getText()).add(money);
-//                        lblSurplus.setText("0");
                     } else {
                         if (convertToMoney(txbInputMoney.getText()).compareTo(convertToMoney(txbDebt.getText()).add(money)) > 0) {
                             totalDebt = BigDecimal.ZERO;
@@ -1764,9 +1750,6 @@ class Sale extends javax.swing.JFrame implements Runnable {
                         } else if (convertToMoney(txbInputMoney.getText()).compareTo(money) < 0) {
                             totalDebt = money.subtract(convertToMoney(txbInputMoney.getText()));
                         }
-//                        else{
-//                            lblSurplus.setText("0");
-//                        }
                     }
                 }
             }
@@ -1776,6 +1759,10 @@ class Sale extends javax.swing.JFrame implements Runnable {
             btnPay.setEnabled(false);
             txbInputMoney.setEnabled(false);
             btnPrint.setEnabled(true);
+            btnNew.setEnabled(false);
+            btnAdd.setEnabled(false);
+            btnChange.setEnabled(false);
+            btnDelete.setEnabled(false);
             updateDebt(totalDebt);
         }
     }//GEN-LAST:event_btnPayActionPerformed
