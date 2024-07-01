@@ -1,6 +1,6 @@
-
 package UserInterFace;
 
+import Utils.DatabaseUtil;
 import java.awt.Color;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -16,23 +16,23 @@ import javax.swing.table.TableModel;
 
 public class Data extends javax.swing.JFrame {
 
-    private Connection conn = null;  
-    private PreparedStatement pst = null;  
+    private Connection conn = null;
+    private PreparedStatement pst = null;
     private ResultSet rs = null;
-    
+
     private Detail detail;
-    private boolean Add=false,Change=false;
-    
+    private boolean Add = false, Change = false;
+
     String sql1 = "SELECT * FROM Position";
     String sql2 = "SELECT * FROM Producer";
     String sql3 = "SELECT * FROM Classify";
-    
+
     public Data(Detail d) {
         initComponents();
         setResizable(false);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        detail=new Detail(d);
+        detail = new Detail(d);
         lblStatus.setForeground(Color.red);
         connection();
         loadClassify(sql3);
@@ -40,61 +40,60 @@ public class Data extends javax.swing.JFrame {
 //        if(this.detail.getUser().toString().toString().equals("User")){
 //            jTabbedPane1.setEnabledAt(1, false);
 //        }
-        
+
     }
 
-    private void connection(){
+    private void connection() {
         try {
-            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-            conn=DriverManager.getConnection("jdbc:sqlserver://DESKTOP-L247M4M:1433;databaseName=NhomSatKiemDien;user=sa;password=123;encrypt=false;");
+            conn = DatabaseUtil.getConnection();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
-    
 
-    
-    private void loadClassify(String sql){
+    private void loadClassify(String sql) {
         tableClassify.removeAll();
-        try{
-            String [] arr={"Mã Loại","Loại Linh Kiện"};
-            DefaultTableModel modle=new DefaultTableModel(arr,0);
-            pst=conn.prepareStatement(sql);
-            rs=pst.executeQuery();
-            while(rs.next()){
-                Vector vector=new Vector();
+        try {
+            String[] arr = {"Mã Loại", "Loại Sản Phẩm"};
+            DefaultTableModel modle = new DefaultTableModel(arr, 0){
+                     @Override
+                    public boolean isCellEditable(int row, int column) {
+                        // Làm cho toàn bộ bảng không thể chỉnh sửa
+                        return false;
+                    }
+                };
+            pst = conn.prepareStatement(sql);
+            rs = pst.executeQuery();
+            while (rs.next()) {
+                Vector vector = new Vector();
                 vector.add(rs.getString("ID").trim());
                 vector.add(rs.getString("Classify").trim());
                 modle.addRow(vector);
             }
             tableClassify.setModel(modle);
-        }
-        catch(Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
-    
-    private void backHome(){
-        Home home=new Home(detail);
+
+    private void backHome() {
+        Home home = new Home(detail);
         this.setVisible(false);
         home.setVisible(true);
     }
-  
-    
-    private void EnabledClassify(){
-        txbIDClassify.setEnabled(true);
+
+    private void EnabledClassify() {
         txbClassify.setEnabled(true);
         lblStatus.setText("Trạng Thái!");
     }
-    private void DisabledClassify(){
-        txbIDClassify.setEnabled(false);
+
+    private void DisabledClassify() {
         txbClassify.setEnabled(false);
     }
-    
-    private void Refresh(){
-        Change=false;
-        Add=false;
-        txbIDClassify.setText("");
+
+    private void Refresh() {
+        Change = false;
+        Add = false;
         txbClassify.setText("");
         btnAddClassify.setEnabled(true);
         btnChangeClassify.setEnabled(false);
@@ -102,91 +101,65 @@ public class Data extends javax.swing.JFrame {
         btnSaveClassify.setEnabled(false);
         DisabledClassify();
     }
-    
-    private boolean CheckClassify(){
-        boolean kq=true;
-        String sqlCheck="SELECT * FROM Classify";
-        try{
-            pst=conn.prepareStatement(sqlCheck);
-            rs=pst.executeQuery();
-            while(rs.next()){
-                if(this.txbIDClassify.getText().equals(rs.getString("ID").toString().trim())){
-                    return false;
-                }
-            }
-        }
-        catch(Exception ex){
-            ex.printStackTrace();
+
+    private boolean checkNullClassify() {
+        boolean kq = true;
+        if (String.valueOf(this.txbClassify.getText()).length() == 0) {
+            lblStatus.setText("Bạn chưa nhập loại sản phẩm!");
+            return false;
         }
         return kq;
     }
 
-    private boolean checkNullClassify(){
-        boolean kq=true;
-        if(String.valueOf(this.txbIDClassify.getText()).length()==0){
-            lblStatus.setText("Bạn chưa ID cho loại linh kiện!");
-            return false;
-        }
-        if(String.valueOf(this.txbClassify.getText()).length()==0){
-            lblStatus.setText("Bạn chưa nhập loại linh kiện!");
-            return false;
-        }   
-        return kq;
-    }
-    
-    private void addClassify(){
-        if(checkNullClassify()){
-            String sqlInsert="INSERT INTO Classify (ID,Classify) VALUES(?,?)";
-            try{
-                pst=conn.prepareStatement(sqlInsert);
-                pst.setString(1, txbIDClassify.getText());
-                pst.setString(2, txbClassify.getText());
+    private void addClassify() {
+        if (checkNullClassify()) {
+            String sqlInsert = "INSERT INTO Classify (Classify) VALUES(?)";
+            try {
+                pst = conn.prepareStatement(sqlInsert);
+                pst.setString(1, txbClassify.getText());
                 pst.executeUpdate();
-                lblStatus.setText("Thêm loại linh kiện thành công!");
+                lblStatus.setText("Thêm loại sản phẩm thành công!");
                 DisabledClassify();
                 Refresh();
                 loadClassify(sql3);
-            }
-            catch(Exception ex){
+            } catch (Exception ex) {
                 ex.printStackTrace();
             }
         }
     }
 
-    private void changedClassify(){
-        int Click=tableClassify.getSelectedRow();
-        TableModel model=tableClassify.getModel();
-        if(checkNullClassify()){
-            String sqlChange="UPDATE Classify SET ID=?, Classify=? WHERE ID='"+model.getValueAt(Click,0).toString().trim()+"'";;
-            try{
-                pst=conn.prepareStatement(sqlChange);
-                pst.setString(1, txbIDClassify.getText());
-                pst.setString(2,txbClassify.getText() );
+    private void changedClassify() {
+        int Click = tableClassify.getSelectedRow();
+        TableModel model = tableClassify.getModel();
+        if (checkNullClassify()) {
+            String sqlChange = "UPDATE Classify SET Classify=? WHERE ID='" + model.getValueAt(Click, 0).toString().trim() + "'";;
+            try {
+                pst = conn.prepareStatement(sqlChange);
+                pst.setString(1, txbClassify.getText());
                 pst.executeUpdate();
                 lblStatus.setText("Lưu thay đổi thành công!");
                 DisabledClassify();
                 Refresh();
                 loadClassify(sql3);
-            }
-            catch(Exception ex){
+            } catch (Exception ex) {
                 ex.printStackTrace();
             }
         }
     }
 
-    private double convertedToNumbers(String s){
-        String number="";
-        String []array=s.replace(","," ").split("\\s");
-        for(String i:array){
-            number=number.concat(i);
+    private double convertedToNumbers(String s) {
+        String number = "";
+        String[] array = s.replace(",", " ").split("\\s");
+        for (String i : array) {
+            number = number.concat(i);
         }
         return Double.parseDouble(number);
     }
-    
-    private String cutChar(String arry){
-        return arry.replaceAll("\\D+","");
+
+    private String cutChar(String arry) {
+        return arry.replaceAll("\\D+", "");
     }
-    
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -195,12 +168,9 @@ public class Data extends javax.swing.JFrame {
         jPanel3 = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
         tableClassify = new javax.swing.JTable();
-        txbIDClassify = new javax.swing.JTextField();
-        jLabel12 = new javax.swing.JLabel();
         jPanel15 = new javax.swing.JPanel();
         txbClassify = new javax.swing.JTextField();
         jLabel13 = new javax.swing.JLabel();
-        jPanel14 = new javax.swing.JPanel();
         jPanel26 = new javax.swing.JPanel();
         btnRefreshClassify = new javax.swing.JButton();
         btnAddClassify = new javax.swing.JButton();
@@ -237,9 +207,6 @@ public class Data extends javax.swing.JFrame {
         });
         jScrollPane3.setViewportView(tableClassify);
 
-        jLabel12.setFont(new java.awt.Font("Tahoma", 0, 16)); // NOI18N
-        jLabel12.setText("Mã Loại:");
-
         javax.swing.GroupLayout jPanel15Layout = new javax.swing.GroupLayout(jPanel15);
         jPanel15.setLayout(jPanel15Layout);
         jPanel15Layout.setHorizontalGroup(
@@ -253,17 +220,6 @@ public class Data extends javax.swing.JFrame {
 
         jLabel13.setFont(new java.awt.Font("Tahoma", 0, 16)); // NOI18N
         jLabel13.setText("Loại linh kiện:");
-
-        javax.swing.GroupLayout jPanel14Layout = new javax.swing.GroupLayout(jPanel14);
-        jPanel14.setLayout(jPanel14Layout);
-        jPanel14Layout.setHorizontalGroup(
-            jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 153, Short.MAX_VALUE)
-        );
-        jPanel14Layout.setVerticalGroup(
-            jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 22, Short.MAX_VALUE)
-        );
 
         btnRefreshClassify.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/Refresh-icon.png"))); // NOI18N
         btnRefreshClassify.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -407,17 +363,12 @@ public class Data extends javax.swing.JFrame {
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane3)
                     .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(jPanel14, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel12)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txbIDClassify, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel15, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGap(27, 27, 27)
                         .addComponent(jLabel13)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(txbClassify, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(220, 220, 220)
+                        .addComponent(jPanel15, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(jPanel26, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
@@ -427,10 +378,6 @@ public class Data extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                 .addGap(23, 23, 23)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel12)
-                        .addComponent(txbIDClassify, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jPanel14, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jPanel15, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(txbClassify, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -496,22 +443,20 @@ public class Data extends javax.swing.JFrame {
     }//GEN-LAST:event_btnBackHomeMouseClicked
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
-        int lick=JOptionPane.showConfirmDialog(null,"Bạn Có Muốn Thoát Khỏi Chương Trình Hay Không?","Thông Báo",2);
-        if(lick==JOptionPane.OK_OPTION){
+        int lick = JOptionPane.showConfirmDialog(null, "Bạn Có Muốn Thoát Khỏi Chương Trình Hay Không?", "Thông Báo", 2);
+        if (lick == JOptionPane.OK_OPTION) {
             System.exit(0);
-        }
-        else{
-            if(lick==JOptionPane.CANCEL_OPTION){    
+        } else {
+            if (lick == JOptionPane.CANCEL_OPTION) {
                 this.setVisible(true);
             }
         }
     }//GEN-LAST:event_formWindowClosing
 
     private void btnSaveClassifyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveClassifyActionPerformed
-        if(Add==true)
-        if(CheckClassify())
-        addClassify();
-        else    lblStatus.setText("Mã loại linh kiện bạn nhập đã tồn tại!");
+        if (Add == true) {
+            addClassify();
+        }
         else{
             if(Change==true)
             changedClassify();
@@ -519,28 +464,28 @@ public class Data extends javax.swing.JFrame {
     }//GEN-LAST:event_btnSaveClassifyActionPerformed
 
     private void btnDeleteClassifyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteClassifyActionPerformed
-        int Click = JOptionPane.showConfirmDialog(null, "Bạn có muốn xóa loại linh kiện hay không?", "Thông Báo",2);
-        if(Click ==JOptionPane.YES_OPTION){
-            String sqlDelete="DELETE FROM Classify WHERE ID=? AND Classify=?";
-            try{
-                pst=conn.prepareStatement(sqlDelete);
-                pst.setString(1, txbIDClassify.getText());
-                pst.setString(2,txbClassify.getText() );
+        int Click = JOptionPane.showConfirmDialog(null, "Bạn có muốn xóa loại sản phẩm hay không?", "Thông Báo", 2);
+        if (Click == JOptionPane.YES_OPTION) {
+            String sqlDelete = "DELETE FROM Classify WHERE ID=?";
+            try {
+                int click = tableClassify.getSelectedRow();
+                TableModel model = tableClassify.getModel();
+                pst = conn.prepareStatement(sqlDelete);
+                pst.setString(1, model.getValueAt(click, 0).toString());
                 pst.executeUpdate();
-                lblStatus.setText("Xóa loại nhà sản xuất thành công!");
+                lblStatus.setText("Xóa loại sản phẩm thành công!");
                 DisabledClassify();
                 Refresh();
                 loadClassify(sql3);
-            }
-            catch(Exception ex){
+            } catch (Exception ex) {
                 ex.printStackTrace();
             }
         }
     }//GEN-LAST:event_btnDeleteClassifyActionPerformed
 
     private void btnChangeClassifyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChangeClassifyActionPerformed
-        Add=false;
-        Change=true;
+        Add = false;
+        Change = true;
         btnAddClassify.setEnabled(false);
         btnChangeClassify.setEnabled(false);
         btnDeleteClassify.setEnabled(false);
@@ -550,7 +495,7 @@ public class Data extends javax.swing.JFrame {
 
     private void btnAddClassifyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddClassifyActionPerformed
         Refresh();
-        Add=true;
+        Add = true;
         btnAddClassify.setEnabled(false);
         btnSaveClassify.setEnabled(true);
         EnabledClassify();
@@ -561,11 +506,10 @@ public class Data extends javax.swing.JFrame {
     }//GEN-LAST:event_btnRefreshClassifyMouseClicked
 
     private void tableClassifyMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableClassifyMouseClicked
-        int Click=tableClassify.getSelectedRow();
-        TableModel model=tableClassify.getModel();
+        int Click = tableClassify.getSelectedRow();
+        TableModel model = tableClassify.getModel();
 
-        txbIDClassify.setText(model.getValueAt(Click,0).toString());
-        txbClassify.setText(model.getValueAt(Click,1).toString());
+        txbClassify.setText(model.getValueAt(Click, 1).toString());
 
         btnChangeClassify.setEnabled(true);
         btnDeleteClassify.setEnabled(true);
@@ -592,10 +536,10 @@ public class Data extends javax.swing.JFrame {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(Data.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        
+
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                Detail detail=new Detail();
+                Detail detail = new Detail();
                 new Data(detail).setVisible(true);
             }
         });
@@ -608,10 +552,8 @@ public class Data extends javax.swing.JFrame {
     private javax.swing.JButton btnDeleteClassify;
     private javax.swing.JButton btnRefreshClassify;
     private javax.swing.JButton btnSaveClassify;
-    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
-    private javax.swing.JPanel jPanel14;
     private javax.swing.JPanel jPanel15;
     private javax.swing.JPanel jPanel26;
     private javax.swing.JPanel jPanel27;
@@ -624,6 +566,5 @@ public class Data extends javax.swing.JFrame {
     private javax.swing.JLabel lblStatus;
     private javax.swing.JTable tableClassify;
     private javax.swing.JTextField txbClassify;
-    private javax.swing.JTextField txbIDClassify;
     // End of variables declaration//GEN-END:variables
 }

@@ -1,203 +1,244 @@
-
 package UserInterFace;
 
+import Entity.Role;
+import Utils.DatabaseUtil;
 import java.awt.Color;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.Vector;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 
 public class Account extends javax.swing.JFrame {
 
-    private Connection conn = null;  
-    private PreparedStatement pst = null;  
+    private Connection conn = null;
+    private PreparedStatement pst = null;
     private ResultSet rs = null;
-    
-    private Boolean Add=false, Change=false;
+
+    private Boolean Add = false, Change = false;
     private String sql = "SELECT * FROM Accounts";
-    
+
     private Detail detail;
 
-    public Account(Detail d){
+    public Account(Detail d) {
         initComponents();
         setResizable(false);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        detail=new Detail(d);
+        detail = new Detail(d);
         connection();
         Load(sql);
         Disabled();
-//        loadEmployees();
+        loadRole();
         lblStatus.setForeground(Color.red);
     }
-    
 
-//    private void loadEmployees(){
-//        String sql = "SELECT * FROM NhanVien";
-//        cbxEmployees.removeAllItems();
-//        try{
-//            pst=conn.prepareStatement(sql);
-//            rs=pst.executeQuery();
-//            while(rs.next()){
-//                cbxEmployees.addItem(rs.getString("FullName").trim());
-//            }
-//        }
-//        catch(Exception ex){
-//            ex.printStackTrace();
-//        }
-//    }
-    
-    private void connection(){
+    private void loadRole() {
+        String sql = "SELECT * FROM Role";
+        cbxRole.removeAllItems();
         try {
-            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-            conn = DriverManager.getConnection("jdbc:sqlserver://DESKTOP-L247M4M:1433;databaseName=NhomSatKiemDien;user=sa;password=123;encrypt=false;");
+            pst = conn.prepareStatement(sql);
+            rs = pst.executeQuery();
+            while (rs.next()) {
+                cbxRole.addItem(new Role(rs.getInt("ID"), rs.getString("RoleName")));
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
-    
-    private void Load(String sql){
-        TableAccount.removeAll();
-        try{
-            String [] arr={"Tên Đăng Nhập","Mật Khẩu","Tên Nhân Viên","Ngày Tạo"};
-            DefaultTableModel modle=new DefaultTableModel(arr,0);
-            pst=conn.prepareStatement(sql);
-            rs=pst.executeQuery();
-            while(rs.next()){
-                Vector vector=new Vector();
-                vector.add(rs.getString("Username").trim());
-                vector.add(rs.getString("PassWord").trim());
-                vector.add(rs.getString("FullName").trim());
-                vector.add(new SimpleDateFormat("dd/MM/yyyy").format(rs.getDate("DateCreated")));
-                modle.addRow(vector);
-            }
-            TableAccount.setModel(modle);
-        }
-        catch(Exception ex){
+
+    private void connection() {
+        try {
+            conn = DatabaseUtil.getConnection();
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
-    
-    private void Enabled(){
+
+    private void Load(String sql) {
+        TableAccount.removeAll();
+
+        try ( PreparedStatement pst = conn.prepareStatement(sql)) {
+            String[] arr = {"Tên Đăng Nhập", "Mật Khẩu", "Tên Nhân Viên", "Quyền", "Ngày Tạo", "HiddenValue"};
+                DefaultTableModel modle = new DefaultTableModel(arr, 0){
+                     @Override
+                    public boolean isCellEditable(int row, int column) {
+                        // Làm cho toàn bộ bảng không thể chỉnh sửa
+                        return false;
+                    }
+                };
+            try (ResultSet rs = pst.executeQuery()){
+                while (rs.next()) {
+                    Date date = rs.getDate("RegistDate");
+
+                    Vector vector = new Vector();
+                    vector.add(rs.getString("Username").trim());
+                    vector.add(rs.getString("PassWord").trim());
+                    vector.add(rs.getString("FullName").trim());
+                    Role role = getRoleById(rs.getString("RoleID"));
+                    if (Objects.isNull(role) == false) {
+                        vector.add(role);
+                    } else {
+                        vector.add(null);
+                    }
+                    vector.add(new SimpleDateFormat("dd/MM/yyyy").format(date));
+                    vector.add(role != null ? role.getId() : null);
+                    modle.addRow(vector);
+                }
+                TableAccount.setModel(modle);
+                TableColumn tableColumn = TableAccount.getColumnModel().getColumn(5);
+                TableAccount.getColumnModel().removeColumn(tableColumn);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    Role getRoleById(String roleId) {
+        try {
+            String sql = "Select * From Role where ID = ?";
+            pst = conn.prepareStatement(sql);
+            pst.setString(1, roleId);
+            rs = pst.executeQuery();
+            while (rs.next()) {
+                return new Role(rs.getInt("ID"), rs.getString("RoleName"));
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
+    private void Enabled() {
         user.setEnabled(true);
         pass.setEnabled(true);
-//        cbxEmployees.setEnabled(true);
-        date.setEnabled(true);
-//        btn.setEnabled(true);
         lblStatus.setText("Trạng Thái!");
+        cbxRole.setEnabled(true);
+        txbName.setEnabled(true);
     }
-    
-    private void Disabled(){
+
+    private void Disabled() {
         user.setEnabled(false);
         pass.setEnabled(false);
-//        btn.setEnabled(false);
-//        cbxEmployees.setEnabled(false);
-        date.setEnabled(false);
+        cbxRole.setEnabled(false);
+        txbName.setEnabled(false);
     }
-    
-    private void Refresh(){
-//        cbxEmployees.removeAllItems();
-        Add=false;
-        Change=false;
+
+    private void Refresh() {
+        cbxRole.removeAllItems();
+        loadRole();
+        Add = false;
+        Change = false;
         this.user.setText("");
         this.pass.setText("");
-//        loadEmployees();
-        ((JTextField)this.date.getDateEditor().getUiComponent()).setText("");
+        this.txbName.setText("");
         this.btnChange.setEnabled(false);
         this.btnAdd.setEnabled(true);
         this.btnSave.setEnabled(false);
         this.btnDelete.setEnabled(false);
     }
-    
-    private void addAccount(){
-        String sqlInsert="INSERT INTO Accounts (UserName,PassWord,FullName,DateCreated) VALUES(?,?,?,?)";
-        if(checkNull()){
-            try{
-                pst=conn.prepareStatement(sqlInsert);
+
+    private void addAccount() {
+        Role role = (Role) cbxRole.getSelectedItem();
+        String sqlInsert = "INSERT INTO Accounts (UserName,PassWord,FullName,RoleID ,RegistDate, UpdateDate) VALUES(?,?,?,?,?,?)";
+        if (checkNull()) {
+            try {
+                pst = conn.prepareStatement(sqlInsert);
                 pst.setString(1, this.user.getText());
                 pst.setString(2, this.pass.getText());
-//                pst.setString(3, this.cbxEmployees.getSelectedItem().toString());
-                pst.setDate(4, new java.sql.Date(date.getDate().getTime()));
+                pst.setString(3, txbName.getText());
+                pst.setInt(4, role.getId());
+
+                LocalDateTime now = LocalDateTime.now();
+                Timestamp sqlDate = Timestamp.valueOf(now);
+
+                pst.setTimestamp(5, sqlDate);
+                pst.setTimestamp(6, sqlDate);
                 pst.executeUpdate();
                 Load(sql);
                 Disabled();
                 Refresh();
                 lblStatus.setText("Thêm tài khoản thành công!");
-            }
-            catch(Exception ex){
+            } catch (Exception ex) {
                 ex.printStackTrace();
             }
         }
     }
-    
-    private void changeAccount(){
-        int Click=TableAccount.getSelectedRow();
-        TableModel model=TableAccount.getModel();
-        
-        String sqlUpdate="UPDATE Accounts SET UserName=?,PassWord=?,FullName=?,DateCreated=? WHERE UserName='"+model.getValueAt(Click,0).toString().trim()+"'";
-        
-        if(checkNull()){
-            try{
-                pst=conn.prepareStatement(sqlUpdate);
+
+    private void changeAccount() {
+        int Click = TableAccount.getSelectedRow();
+        TableModel model = TableAccount.getModel();
+        Role role = (Role) cbxRole.getSelectedItem();
+        String sqlUpdate = "UPDATE Accounts SET UserName=?,PassWord=?,FullName=?,UpdateDate=?, RoleID=? WHERE UserName='" + model.getValueAt(Click, 0).toString().trim() + "'";
+
+        if (checkNull()) {
+            try {
+                pst = conn.prepareStatement(sqlUpdate);
                 pst.setString(1, this.user.getText());
                 pst.setString(2, this.pass.getText());
-//                pst.setString(3, this.cbxEmployees.getSelectedItem().toString());
-                pst.setDate(4, new java.sql.Date(date.getDate().getTime()));
+                pst.setString(3, this.txbName.getText());
+
+                LocalDateTime date = LocalDateTime.now();
+                Timestamp timestamp = Timestamp.valueOf(date);
+                pst.setTimestamp(4, timestamp);
+                pst.setInt(5, role.getId());
+
                 pst.executeUpdate();
                 Disabled();
                 Refresh();
                 lblStatus.setText("Lưu thay đổi thành công!");
                 Load(sql);
-            }
-            catch(Exception ex){
-                ex.printStackTrace();  
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
         }
     }
-    
-    private boolean Check(){
-        boolean kq=true;
-        String sqlCheck="SELECT * FROM Accounts";
-        try{
-            pst=conn.prepareStatement(sqlCheck);
-            rs=pst.executeQuery();
-            while(rs.next()){
-                if(this.user.getText().equals(rs.getString("Username").toString().trim())){
+
+    private boolean Check() {
+        boolean kq = true;
+        String sqlCheck = "SELECT * FROM Accounts";
+        try {
+            pst = conn.prepareStatement(sqlCheck);
+            rs = pst.executeQuery();
+            while (rs.next()) {
+                if (this.user.getText().equals(rs.getString("Username").toString().trim())) {
                     return false;
                 }
             }
-        }
-        catch(Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
         return kq;
     }
-    
-    private boolean checkNull(){
-        boolean kq=true;
-        if(this.user.getText().equals("")){
+
+    private boolean checkNull() {
+        boolean kq = true;
+        if (this.user.getText().equals("")) {
             lblStatus.setText("Bạn chưa nhập tên đăng nhập");
             return false;
         }
-        if(this.pass.getText().equals("")){
+        if (this.pass.getText().equals("")) {
             lblStatus.setText("Bạn chưa nhập mật khẩu");
             return false;
         }
-        if(((JTextField)date.getDateEditor().getUiComponent()).getText().equals("")){
-            lblStatus.setText("Bạn chưa nhập ngày tạo tài khoản");
-            return false;
-        }
+//        if(((JTextField)date.getDateEditor().getUiComponent()).getText().equals("")){
+//            lblStatus.setText("Bạn chưa nhập ngày tạo tài khoản");
+//            return false;
+//        }
         return kq;
     }
-    
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -214,8 +255,8 @@ public class Account extends javax.swing.JFrame {
         user = new javax.swing.JTextField();
         pass = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
-        date = new com.toedter.calendar.JDateChooser();
         txbName = new javax.swing.JTextField();
+        cbxRole = new javax.swing.JComboBox<>();
         jPanel2 = new javax.swing.JPanel();
         btnChange = new javax.swing.JButton();
         btnAdd = new javax.swing.JButton();
@@ -235,7 +276,7 @@ public class Account extends javax.swing.JFrame {
 
             },
             new String [] {
-
+                "Tên đăng nhập", "Mật khẩu", "Tên nhân viên", "Quyền", "Ngày tạo"
             }
         ));
         TableAccount.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -274,9 +315,7 @@ public class Account extends javax.swing.JFrame {
         jLabel3.setText("Tên Nhân Viên:");
 
         jLabel5.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        jLabel5.setText("Ngày Tạo:");
-
-        date.setDateFormatString("dd/MM/yyyy");
+        jLabel5.setText("Quyền:");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -297,9 +336,9 @@ public class Account extends javax.swing.JFrame {
                     .addComponent(jLabel5))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(pass)
-                    .addComponent(date, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(pass, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cbxRole, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(20, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -311,12 +350,11 @@ public class Account extends javax.swing.JFrame {
                     .addComponent(jLabel2)
                     .addComponent(pass, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(11, 11, 11)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel3)
-                        .addComponent(jLabel5)
-                        .addComponent(txbName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(date, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(jLabel5)
+                    .addComponent(txbName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cbxRole, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(8, 8, 8))
         );
 
@@ -398,7 +436,7 @@ public class Account extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                         .addComponent(lblStatus, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -408,8 +446,7 @@ public class Account extends javax.swing.JFrame {
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                             .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addComponent(jScrollPane1))
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -433,16 +470,14 @@ public class Account extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void TableAccountMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TableAccountMouseClicked
-        int Click=TableAccount.getSelectedRow();
-        TableModel model=TableAccount.getModel();
-        
-//        cbxEmployees.removeAllItems();
-        
-        user.setText(model.getValueAt(Click,0).toString());
-        pass.setText(model.getValueAt(Click,1).toString());
-//        cbxEmployees.addItem(model.getValueAt(Click,2).toString());
-        ((JTextField)date.getDateEditor().getUiComponent()).setText(model.getValueAt(Click,3).toString());
-        
+        int Click = TableAccount.getSelectedRow();
+        TableModel model = TableAccount.getModel();
+
+        user.setText(model.getValueAt(Click, 0).toString());
+        pass.setText(model.getValueAt(Click, 1).toString());
+        txbName.setText(model.getValueAt(Click, 2).toString());
+        cbxRole.setSelectedItem(getRoleById(model.getValueAt(Click, 5).toString()));
+
         btnDelete.setEnabled(true);
         btnChange.setEnabled(true);
     }//GEN-LAST:event_TableAccountMouseClicked
@@ -455,22 +490,22 @@ public class Account extends javax.swing.JFrame {
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
         Refresh();
-        Add=true;
+        Add = true;
         Enabled();
         btnAdd.setEnabled(false);
         btnSave.setEnabled(true);
     }//GEN-LAST:event_btnAddActionPerformed
 
     private void btnChangeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChangeActionPerformed
-        int Click=TableAccount.getSelectedRow();
-        TableModel model=TableAccount.getModel();
-        
-        Add=false;
-        Change=true;
+        int Click = TableAccount.getSelectedRow();
+        TableModel model = TableAccount.getModel();
+
+        Add = false;
+        Change = true;
         Enabled();
 //        loadEmployees();
-        
-        if(model.getValueAt(Click,0).toString().trim().equals("Admin")){
+
+        if (model.getValueAt(Click, 0).toString().trim().equals("Admin")) {
             user.setEnabled(false);
         }
         btnChange.setEnabled(false);
@@ -486,36 +521,33 @@ public class Account extends javax.swing.JFrame {
     }//GEN-LAST:event_btnRefreshActionPerformed
 
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
-        if(Add==true){
-            if(Check()){
+        if (Add == true) {
+            if (Check()) {
                 addAccount();
+            } else {
+                lblStatus.setText("Thêm tài khoản thất bại, Tên đăng nhập đã tồn tại!");
             }
-            else    lblStatus.setText("Thêm tài khoản thất bại, Tên đăng nhập đã tồn tại!");
-        }else if(Change==true){
+        } else if (Change == true) {
             changeAccount();
         }
     }//GEN-LAST:event_btnSaveActionPerformed
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
-        int Click = JOptionPane.showConfirmDialog(null, "Bạn có muốn xóa tài khoản hay không?", "Thông Báo",2);
-        if(Click ==JOptionPane.YES_OPTION){
-            if(this.user.getText().equals("Admin")){
+        int Click = JOptionPane.showConfirmDialog(null, "Bạn có muốn xóa tài khoản hay không?", "Thông Báo", 2);
+        if (Click == JOptionPane.YES_OPTION) {
+            if (this.user.getText().equals("Admin")) {
                 this.lblStatus.setText("Không thể xóa tài khoản của Admin");
-            }
-            else {
-                String sqlDelete="DELETE FROM Accounts WHERE UserName = ? AND PassWord=? AND FullName=? AND DateCreated=?";
-                try{
-                    pst=conn.prepareStatement(sqlDelete);
+            } else {
+                String sqlDelete = "DELETE FROM Accounts WHERE UserName = ? AND PassWord=?";
+                try {
+                    pst = conn.prepareStatement(sqlDelete);
                     pst.setString(1, this.user.getText());
                     pst.setString(2, this.pass.getText());
-//                    pst.setString(3, this.cbxEmployees.getSelectedItem().toString());
-                    pst.setDate(4, new java.sql.Date(date.getDate().getTime()));
                     pst.executeUpdate();
                     this.lblStatus.setText("Xóa tài khoản thành công!");
                     Load(sql);
                     Refresh();
-                }
-                catch(Exception ex){
+                } catch (Exception ex) {
                     ex.printStackTrace();
                 }
             }
@@ -523,19 +555,18 @@ public class Account extends javax.swing.JFrame {
     }//GEN-LAST:event_btnDeleteActionPerformed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
-        int lick=JOptionPane.showConfirmDialog(null,"Bạn Có Muốn Thoát Khỏi Chương Trình Hay Không?","Thông Báo",2);
-        if(lick==JOptionPane.OK_OPTION){
+        int lick = JOptionPane.showConfirmDialog(null, "Bạn Có Muốn Thoát Khỏi Chương Trình Hay Không?", "Thông Báo", 2);
+        if (lick == JOptionPane.OK_OPTION) {
             System.exit(0);
-        }
-        else{
-            if(lick==JOptionPane.CANCEL_OPTION){    
+        } else {
+            if (lick == JOptionPane.CANCEL_OPTION) {
                 this.setVisible(true);
             }
         }
     }//GEN-LAST:event_formWindowClosing
 
     public static void main(String args[]) {
-        
+
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -552,10 +583,10 @@ public class Account extends javax.swing.JFrame {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(OrderForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        
+
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                Detail detail=new Detail();
+                Detail detail = new Detail();
                 new Account(detail).setVisible(true);
             }
         });
@@ -569,7 +600,7 @@ public class Account extends javax.swing.JFrame {
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnRefresh;
     private javax.swing.JButton btnSave;
-    private com.toedter.calendar.JDateChooser date;
+    private javax.swing.JComboBox<Role> cbxRole;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

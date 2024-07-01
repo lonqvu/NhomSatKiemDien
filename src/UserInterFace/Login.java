@@ -1,6 +1,7 @@
 
 package UserInterFace;
 
+import Utils.DatabaseUtil;
 import java.awt.Color;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -27,10 +28,8 @@ public class Login extends javax.swing.JFrame {
 
     private void connection(){
         try {
-            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-            String connectionUrl = "jdbc:sqlserver://DESKTOP-L247M4M:1433;databaseName=NhomSatKiemDien;user=sa;password=123;encrypt=false;";
-
-            conn=DriverManager.getConnection(connectionUrl);
+            
+            conn=DatabaseUtil.getConnection();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -232,7 +231,7 @@ public class Login extends javax.swing.JFrame {
             rs=pst.executeQuery();
             if(rs.next()){
                 Detail detail=new Detail(rs.getString("Username").trim(),rs.getString("FullName").trim());
-                if(rs.getString("Username").trim().toString().equals("Admin")){
+                if(rs.getString("RoleID").equals("1")){
                     Home home=new Home(detail);
                     this.setVisible(false);
                     home.setVisible(true);

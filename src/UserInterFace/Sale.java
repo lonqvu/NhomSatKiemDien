@@ -29,6 +29,7 @@ import Entity.Product;
 import Entity.Classify;
 import Entity.Customer;
 import Entity.Unit;
+import Utils.DatabaseUtil;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.HashMap;
@@ -83,10 +84,9 @@ class Sale extends javax.swing.JFrame implements Runnable {
         }
     }
 
-    private void connection() {
+     private void connection() {
         try {
-            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-            conn = DriverManager.getConnection("jdbc:sqlserver://DESKTOP-L247M4M:1433;databaseName=NhomSatKiemDien;user=sa;password=123;encrypt=false;");
+            conn = DatabaseUtil.getConnection();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -816,9 +816,9 @@ class Sale extends javax.swing.JFrame implements Runnable {
                             .addComponent(jLabel2))
                         .addGap(2, 2, 2)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(cbxClassify, 0, 347, Short.MAX_VALUE)
-                            .addComponent(cbxProduct, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(txbCode))))
+                            .addComponent(cbxClassify, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(cbxProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txbCode, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
