@@ -30,11 +30,17 @@ import Entity.Classify;
 import Entity.Customer;
 import Entity.Unit;
 import Utils.DatabaseUtil;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import javax.swing.JScrollPane;
+import javax.swing.Timer;
 import javax.swing.table.TableColumn;
 
 class Sale extends javax.swing.JFrame implements Runnable {
@@ -53,6 +59,10 @@ class Sale extends javax.swing.JFrame implements Runnable {
     private String MaHD = "";
     private String classifyID;
 
+    public Sale() {
+        // Constructor mặc định (có thể thêm các hành động khởi tạo tại đây)
+    }
+
     public Sale(Detail d) {
         initComponents();
         this.setLocationRelativeTo(null);
@@ -68,6 +78,9 @@ class Sale extends javax.swing.JFrame implements Runnable {
         txbAddress.setEnabled(false);
         txbCustomerName.setEnabled(false);
         txbPhoneNumber.setEnabled(false);
+        if (this.detail.getRole() == 1) {
+            btnCustomer.setEnabled(true);
+        }
     }
 
     private void loadCustomer() {
@@ -76,7 +89,7 @@ class Sale extends javax.swing.JFrame implements Runnable {
             pst = conn.prepareStatement(sql);
             rs = pst.executeQuery();
             while (rs.next()) {
-                Customer cus = new Customer(rs.getString("ID"), rs.getString("CustomerName"), rs.getString("Address"), rs.getString("PhoneNumber"));
+                Customer cus = new Customer(rs.getInt("ID"), rs.getString("CustomerName"), rs.getString("Address"), rs.getString("PhoneNumber"));
                 this.cbxCustomer.addItem(cus);
             }
         } catch (Exception e) {
@@ -84,7 +97,7 @@ class Sale extends javax.swing.JFrame implements Runnable {
         }
     }
 
-     private void connection() {
+    private void connection() {
         try {
             conn = DatabaseUtil.getConnection();
         } catch (Exception ex) {
@@ -166,11 +179,18 @@ class Sale extends javax.swing.JFrame implements Runnable {
         lbltotalDebt.setText("0");
         lblSurplus.setText("0");
         txbProductName.setText("");
-//        txbCustomerName.setText("");
-//        txbAddress.setText("");
-//        txbDebt.setText("");
         Disabled();
         tableBill.removeAll();
+    }
+
+    private void refreshCustomer() {
+        txbCustomerName.setText("");
+        txbPhoneNumber.setText("");
+        txbAddress.setText("");
+        txbDebt.setText("");
+        cbxCustomer.removeAllItems();
+        loadCustomer();
+        cbxCustomer.setEnabled(true);
     }
 
     private void deleteOrder() {
@@ -345,7 +365,7 @@ class Sale extends javax.swing.JFrame implements Runnable {
             pst = conn.prepareStatement(sql);
             rs = pst.executeQuery();
             while (rs.next()) {
-                Customer cus = new Customer(rs.getString("ID"), rs.getString("CustomerName"), rs.getString("Address"), rs.getString("PhoneNumber"));
+                Customer cus = new Customer(rs.getInt("ID"), rs.getString("CustomerName"), rs.getString("Address"), rs.getString("PhoneNumber"));
                 this.cbxCustomer.addItem(cus);
             }
         } catch (Exception e) {
@@ -378,7 +398,7 @@ class Sale extends javax.swing.JFrame implements Runnable {
         Customer customer = (Customer) cbxCustomer.getSelectedItem();
         try {
             pst = conn.prepareStatement(sql);
-            pst.setString(1, customer.getId());
+            pst.setInt(1, customer.getId());
             rs = pst.executeQuery();
             while (rs.next()) {
                 txbCustomerName.setText(rs.getString("CustomerName").trim());
@@ -442,7 +462,7 @@ class Sale extends javax.swing.JFrame implements Runnable {
                         }
 
                         if (intoMoney != null) {
-                            vector.add(intoMoney);
+                            vector.add(moneyDis(intoMoney));
                         } else {
                             vector.add("");
                         }
@@ -560,7 +580,7 @@ class Sale extends javax.swing.JFrame implements Runnable {
                     if (classify != null) {
                         this.cbxClassify.setSelectedItem(classify);
                     }
-                    this.txbPrice.setText(price.trim());
+                    this.txbPrice.setText(moneyDis(price.trim()));
                     Product product = new Product(rs.getString("ID"), rs.getString("Name"), rs.getString("UnitID"));
                     this.cbxProduct.addItem(product);
                     this.cbxProduct.setSelectedItem(product);
@@ -932,7 +952,7 @@ class Sale extends javax.swing.JFrame implements Runnable {
             }
         });
 
-        btnPay.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/Save.png"))); // NOI18N
+        btnPay.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/Pay.png"))); // NOI18N
         btnPay.setText("Thanh Toán");
         btnPay.setEnabled(false);
         btnPay.addActionListener(new java.awt.event.ActionListener() {
@@ -957,9 +977,9 @@ class Sale extends javax.swing.JFrame implements Runnable {
                 .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnPay, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btnPrint, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(27, 27, 27))
         );
@@ -996,6 +1016,11 @@ class Sale extends javax.swing.JFrame implements Runnable {
         btnBackHome.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 btnBackHomeMouseClicked(evt);
+            }
+        });
+        btnBackHome.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBackHomeActionPerformed(evt);
             }
         });
 
@@ -1085,6 +1110,7 @@ class Sale extends javax.swing.JFrame implements Runnable {
         });
 
         btnCustomer.setText("...");
+        btnCustomer.setEnabled(false);
         btnCustomer.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnCustomerActionPerformed(evt);
@@ -1250,7 +1276,7 @@ class Sale extends javax.swing.JFrame implements Runnable {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnBackHomeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnBackHomeMouseClicked
-        if (this.detail.getUser().toString().toString().equals("Admin")) {
+        if (this.detail.getRole() == 1) {
             Home home = new Home(detail);
             this.setVisible(false);
             home.setVisible(true);
@@ -1294,10 +1320,8 @@ class Sale extends javax.swing.JFrame implements Runnable {
 
     private void btnRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRefreshActionPerformed
         Refresh();
-        if (MaHD != "") {
-            deleteOrder();
-            ((DefaultTableModel) tableBill.getModel()).setRowCount(0);
-        }
+        refreshCustomer();
+        btnAdd.setEnabled(true);
     }//GEN-LAST:event_btnRefreshActionPerformed
 
     private void btnPrintActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPrintActionPerformed
@@ -1313,7 +1337,6 @@ class Sale extends javax.swing.JFrame implements Runnable {
             JasperPrint print = JasperFillManager.fillReport(report, parameters, conn);
 
             JasperViewer.viewReport(print, false);
-            getCustomer();
         } catch (JRException ex) {
             ex.printStackTrace();
         }
@@ -1356,22 +1379,17 @@ class Sale extends javax.swing.JFrame implements Runnable {
         int Click = JOptionPane.showConfirmDialog(null, "Bạn có muốn tạo 1 hóa đơn bán hàng mới hay không?", "Thông Báo", 2);
         if (Click == JOptionPane.YES_OPTION) {
             try {
-                if (txbCustomerName.getText().isBlank() || txbCustomerName.getText().isEmpty()) {
-                    lblStatus.setText("Vui Lòng chọn khách hàng");
-                } else {
-                    createOrder();
-                    this.lblStatus.setText("Đã tạo hóa đơn mới!");
-                    checkBill();
-                    Refresh();
-                    btnAdd.setEnabled(true);
-                    btnNew.setEnabled(false);
-                    btnRefresh.setEnabled(true);
-//                    checkCustomerInfo.setEnabled(false);
-                    cbxCustomer.setEnabled(false);
-                    txbCustomerName.setEnabled(false);
-                    txbPhoneNumber.setEnabled(false);
-                    txbAddress.setEnabled(false);
+                if (MaHD != "") {
+                    deleteOrder();
+                    ((DefaultTableModel) tableBill.getModel()).setRowCount(0);
                 }
+                createOrder();
+                this.lblStatus.setText("Đã tạo hóa đơn mới!");
+                checkBill();
+                Refresh();
+                btnAdd.setEnabled(true);
+                btnNew.setEnabled(false);
+                btnRefresh.setEnabled(true);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -1387,13 +1405,12 @@ class Sale extends javax.swing.JFrame implements Runnable {
             // Tạo ngày giờ hiện tại
             LocalDateTime now = LocalDateTime.now();
             Timestamp sqlDate = Timestamp.valueOf(now);
-            Customer cus = (Customer) cbxCustomer.getSelectedItem();
 //                // Thêm đơn hàng
-            String insertOrderSQL = "INSERT INTO Orders (ID, CustomerID, Date) VALUES (?, ?, ?)";
+            String insertOrderSQL = "INSERT INTO Orders (ID, Date, IsPayed) VALUES (?, ?, ?)";
             PreparedStatement pstOrder = conn.prepareStatement(insertOrderSQL);
             pstOrder.setString(1, invoiceNumber);
-            pstOrder.setString(2, cus.getId());
-            pstOrder.setTimestamp(3, sqlDate);
+            pstOrder.setTimestamp(2, sqlDate);
+            pstOrder.setBoolean(3, false);
             pstOrder.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
@@ -1426,15 +1443,19 @@ class Sale extends javax.swing.JFrame implements Runnable {
         cbxProduct.setEnabled(false);
         Load();
         txbInputMoney.setText("0");
+        btnNew.setEnabled(false);
     }//GEN-LAST:event_btnSaveActionPerformed
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
         int Click = JOptionPane.showConfirmDialog(null, "Bạn có muốn xóa sản phẩm khỏi hóa đơn hay không?", "Thông Báo", 2);
         if (Click == JOptionPane.YES_OPTION) {
-            String sqlDelete = "DELETE FROM Bill WHERE Code = ?";
+            String sqlDelete = "DELETE FROM Bill WHERE ID = ?";
             try {
+                int click = tableBill.getSelectedRow();
+                TableModel model = tableBill.getModel();
+
                 pst = conn.prepareStatement(sqlDelete);
-                pst.setString(1, String.valueOf(txbCode.getText()));
+                pst.setString(1, model.getValueAt(click, 6).toString().trim());
                 pst.executeUpdate();
                 this.lblStatus.setText("Xóa sản phẩm thành công!");
                 Refresh();
@@ -1455,7 +1476,6 @@ class Sale extends javax.swing.JFrame implements Runnable {
         btnNew.setEnabled(false);
         Enabled();
         LoadClassify();
-        LoadCustomer();
     }//GEN-LAST:event_btnAddActionPerformed
 
     private void txbCustomerNameKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txbCustomerNameKeyReleased
@@ -1479,7 +1499,7 @@ class Sale extends javax.swing.JFrame implements Runnable {
         Customer customer = (Customer) cbxCustomer.getSelectedItem();
         try {
             pst = conn.prepareStatement(sql);
-            pst.setString(1, customer.getId());
+            pst.setInt(1, customer.getId());
             rs = pst.executeQuery();
             while (rs.next()) {
                 txbCustomerName.setText(rs.getString("CustomerName").trim());
@@ -1719,61 +1739,88 @@ class Sale extends javax.swing.JFrame implements Runnable {
     }//GEN-LAST:event_txbInputMoneyKeyReleased
 
     private void btnPayActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPayActionPerformed
-        if (txbInputMoney.getText().isBlank() || txbInputMoney.getText().isEmpty()) {
-            lblStatus.setText("Vui lòng nhập tiền khách thanh toán");
-        } else {
-            BigDecimal totalDebt = BigDecimal.ZERO;
-            BigDecimal surplus = BigDecimal.ZERO;
-            BigDecimal money = convertToMoney(lbltotalMoney.getText());
-            if (convertToMoney(txbInputMoney.getText()).compareTo(BigDecimal.ZERO) < 0) {
-                lblStatus.setText("Số tiền khách thanh toán phải lớn hơn hoặc bằng 0");
+        int Click = JOptionPane.showConfirmDialog(null, "Bạn có muốn thanh toán hóa đơn này không?", "Thông Báo", 2);
+        if (Click == JOptionPane.YES_OPTION) {
+            if (txbCustomerName.getText().isBlank() || txbCustomerName.getText().isEmpty()) {
+                lblStatus.setText("Vui Lòng chọn khách hàng");
             } else {
-                // Update nợ
-                if (convertToMoney(txbDebt.getText()).compareTo(BigDecimal.ZERO) > 0) {
-                    if (convertToMoney(txbInputMoney.getText()).compareTo(BigDecimal.ZERO) == 0) {
-                        totalDebt = convertToMoney(txbDebt.getText()).add(money);
-                    } else {
-                        if (convertToMoney(txbInputMoney.getText()).compareTo(convertToMoney(txbDebt.getText()).add(money)) > 0) {
-                            totalDebt = BigDecimal.ZERO;
-                            surplus = (convertToMoney(txbInputMoney.getText()).subtract(money.add(convertToMoney(txbDebt.getText()))));
-                            lbltotalDebt.setText("0");
-                        } else {
-                            totalDebt = (convertToMoney(txbDebt.getText()).add(money)).subtract(convertToMoney(txbInputMoney.getText()));
-                        }
-                    }
-                } else {
-                    if (convertToMoney(txbInputMoney.getText()).compareTo(BigDecimal.ZERO) == 0) {
-                        totalDebt = money;
-                    } else {
-                        if (convertToMoney(txbInputMoney.getText()).compareTo(money) > 0) {
-                            surplus = (convertToMoney(txbInputMoney.getText()).subtract(money));
-                        } else if (convertToMoney(txbInputMoney.getText()).compareTo(money) < 0) {
-                            totalDebt = money.subtract(convertToMoney(txbInputMoney.getText()));
-                        }
+                if (MaHD.equals("") == false) {
+                    Customer cus = (Customer) cbxCustomer.getSelectedItem();
+                    String sqlUpdate = "Update Orders set CustomerID = ? where ID = ?";
+                    try ( PreparedStatement pst = conn.prepareStatement(sqlUpdate);) {
+                        pst.setInt(1, cus.getId());
+                        pst.setString(2, MaHD);
+                        pst.executeUpdate();
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
                     }
                 }
-            }
-            lbltotalDebt.setText(moneyDis(totalDebt.toString()));
-            lblSurplus.setText(moneyDis(surplus.toString()));
 
-            btnPay.setEnabled(false);
-            txbInputMoney.setEnabled(false);
-            btnPrint.setEnabled(true);
-            btnNew.setEnabled(false);
-            btnAdd.setEnabled(false);
-            btnChange.setEnabled(false);
-            btnDelete.setEnabled(false);
-            updateDebt(totalDebt);
+                if (txbInputMoney.getText().isBlank() || txbInputMoney.getText().isEmpty()) {
+                    lblStatus.setText("Vui lòng nhập tiền khách thanh toán");
+                } else {
+                    BigDecimal totalDebt = BigDecimal.ZERO;
+                    BigDecimal surplus = BigDecimal.ZERO;
+                    BigDecimal money = convertToMoney(lbltotalMoney.getText());
+                    if (convertToMoney(txbInputMoney.getText()).compareTo(BigDecimal.ZERO) < 0) {
+                        lblStatus.setText("Số tiền khách thanh toán phải lớn hơn hoặc bằng 0");
+                    } else {
+                        // Update nợ
+                        if (convertToMoney(txbDebt.getText()).compareTo(BigDecimal.ZERO) > 0) {
+
+                            // Số tiền nhập bằng = 0
+                            if (convertToMoney(txbInputMoney.getText()).compareTo(BigDecimal.ZERO) == 0) {
+                                // Tổng nợ = Nợ cũ + tiền hàng
+                                totalDebt = convertToMoney(txbDebt.getText()).add(money);
+                            } else {
+
+                                // Tiền nhập > Nợ + tổng tiền hàng
+                                if (convertToMoney(txbInputMoney.getText()).compareTo(convertToMoney(txbDebt.getText()).add(money)) > 0) {
+                                    totalDebt = BigDecimal.ZERO;
+                                    surplus = (convertToMoney(txbInputMoney.getText()).subtract(money.add(convertToMoney(txbDebt.getText()))));
+                                    lbltotalDebt.setText("0");
+                                } else {
+                                    totalDebt = (convertToMoney(txbDebt.getText()).add(money)).subtract(convertToMoney(txbInputMoney.getText()));
+                                }
+                            }
+                        } else {
+                            // Nếu tiền nhập = 0
+                            if (convertToMoney(txbInputMoney.getText()).compareTo(BigDecimal.ZERO) == 0) {
+                                totalDebt = money;
+                            } else {
+                                if (convertToMoney(txbInputMoney.getText()).compareTo(money) > 0) {
+                                    surplus = (convertToMoney(txbInputMoney.getText()).subtract(money));
+                                } else if (convertToMoney(txbInputMoney.getText()).compareTo(money) < 0) {
+                                    totalDebt = money.subtract(convertToMoney(txbInputMoney.getText()));
+                                }
+                            }
+                        }
+                    }
+                    lbltotalDebt.setText(moneyDis(totalDebt.toString()));
+                    lblSurplus.setText(moneyDis(surplus.toString()));
+
+                    btnPay.setEnabled(false);
+                    txbInputMoney.setEnabled(false);
+                    btnPrint.setEnabled(true);
+                    btnNew.setEnabled(false);
+                    btnAdd.setEnabled(false);
+                    btnChange.setEnabled(false);
+                    btnDelete.setEnabled(false);
+                    updateDebt(totalDebt);
+                    getCustomer();
+                    updateOrder();
+                }
+            }
         }
     }//GEN-LAST:event_btnPayActionPerformed
 
     private void updateDebt(BigDecimal debt) {
         Customer cus = (Customer) cbxCustomer.getSelectedItem();
-        String Id = cus.getId();
-        String sqlChange = "UPDATE Customer SET Debt=? WHERE ID='" + cus.getId() + "'";
+        String sqlChange = "UPDATE Customer SET Debt=?, OldDebt=? WHERE ID='" + cus.getId() + "'";
         try {
             pst = conn.prepareStatement(sqlChange);
             pst.setBigDecimal(1, debt);
+            pst.setBigDecimal(2, convertToMoney(txbDebt.getText()));
             pst.executeUpdate();
             loadCustomer();
             cbxCustomer.setSelectedItem(cus);
@@ -1781,7 +1828,19 @@ class Sale extends javax.swing.JFrame implements Runnable {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
 
+    private void updateOrder() {
+        if (MaHD.isBlank() == false || MaHD.isEmpty() == false) {
+            String sqlChange = "UPDATE Orders SET IsPayed=? WHERE ID='" + MaHD + "'";
+            try {
+                pst = conn.prepareStatement(sqlChange);
+                pst.setBoolean(1, true);
+                pst.executeUpdate();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
     }
 
     private void btnCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCustomerActionPerformed
@@ -1790,6 +1849,10 @@ class Sale extends javax.swing.JFrame implements Runnable {
         this.setVisible(false);
         cus.setVisible(true);
     }//GEN-LAST:event_btnCustomerActionPerformed
+
+    private void btnBackHomeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackHomeActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnBackHomeActionPerformed
 
     private Unit getUnitById(String id) {
         Unit unit = null;
@@ -1808,8 +1871,38 @@ class Sale extends javax.swing.JFrame implements Runnable {
         return unit;
     }
 
-    public static void main(String args[]) {
+    private void deleteRecords() {
+        String sqlDeleteOrder = "DELETE FROM Orders WHERE ID = ?";
+        String sqlDelete = "DELETE FROM Bill WHERE OrderID = ?";
+        String sql = "SELECT * FROM Orders WHERE IsPayed = ?";
 
+        try ( PreparedStatement pst = conn.prepareStatement(sql)) {
+            pst.setBoolean(1, false);
+            try ( ResultSet rs = pst.executeQuery()) {
+                while (rs.next()) {
+                    String orderId = rs.getString("ID");
+
+                    try ( PreparedStatement pstDeleteBill = conn.prepareStatement(sqlDelete)) {
+                        pstDeleteBill.setString(1, orderId);
+                        pstDeleteBill.executeUpdate();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+
+                    try ( PreparedStatement pstDeleteOrder = conn.prepareStatement(sqlDeleteOrder)) {
+                        pstDeleteOrder.setString(1, orderId);
+                        pstDeleteOrder.executeUpdate();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String args[]) {
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -1893,10 +1986,10 @@ class Sale extends javax.swing.JFrame implements Runnable {
     @Override
     public void run() {
         while (true) {
-            Update();
+            deleteRecords();
             try {
-                Thread.sleep(1);
-            } catch (Exception ex) {
+                TimeUnit.MINUTES.sleep(60);
+            } catch (InterruptedException ex) {
                 ex.printStackTrace();
             }
         }

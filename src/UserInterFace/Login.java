@@ -230,7 +230,7 @@ public class Login extends javax.swing.JFrame {
             pst.setString(2, String.valueOf(this.passWord.getPassword()));
             rs=pst.executeQuery();
             if(rs.next()){
-                Detail detail=new Detail(rs.getString("Username").trim(),rs.getString("FullName").trim());
+                Detail detail=new Detail(rs.getString("Username").trim(),rs.getString("FullName").trim(), rs.getInt("RoleID"));
                 if(rs.getString("RoleID").equals("1")){
                     Home home=new Home(detail);
                     this.setVisible(false);
