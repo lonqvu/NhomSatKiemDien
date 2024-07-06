@@ -150,13 +150,14 @@ public class Customers extends javax.swing.JFrame {
 
     private void addCustomer() {
         if (checkNullCustomer()) {
-            String sqlInsert = "INSERT INTO Customer (CustomerName, Address, PhoneNumber, Debt) VALUES(?,?,?,?)";
+            String sqlInsert = "INSERT INTO Customer (CustomerName, Address, PhoneNumber, Debt, OldDebt) VALUES(?,?,?,?,?)";
             try {
                 pst = conn.prepareStatement(sqlInsert);
                 pst.setString(1, txbCustomerName.getText());
                 pst.setString(2, txbAddress.getText());
                 pst.setString(3, txbPhoneNumber.getText());
                 pst.setBigDecimal(4, convertToMoney(txbDebt.getText()));
+                pst.setBigDecimal(5, convertToMoney(txbDebt.getText()));
                 pst.executeUpdate();
                 lblStatus.setText("Thêm khách hàng thành công!");
                 DisabledCustomer();
@@ -186,13 +187,14 @@ public class Customers extends javax.swing.JFrame {
         int Click = tableCustomer.getSelectedRow();
         TableModel model = tableCustomer.getModel();
         if (checkNullCustomer()) {
-            String sqlChange = "UPDATE Customer SET CustomerName=?, PhoneNumber=?, Address=?, Debt=? WHERE ID='" + model.getValueAt(Click, 0).toString().trim() + "'";;
+            String sqlChange = "UPDATE Customer SET CustomerName=?, PhoneNumber=?, Address=?, Debt=?, OldDebt=? WHERE ID='" + model.getValueAt(Click, 0).toString().trim() + "'";;
             try {
                 pst = conn.prepareStatement(sqlChange);
                 pst.setString(1, txbCustomerName.getText());
                 pst.setString(2, txbPhoneNumber.getText());
                 pst.setString(3, txbAddress.getText());
-                pst.setString(4, txbDebt.getText());
+                pst.setBigDecimal(4, convertToMoney(txbDebt.getText()));
+                pst.setBigDecimal(5, convertToMoney(txbDebt.getText()));
                 pst.executeUpdate();
                 lblStatus.setText("Lưu thay đổi thành công!");
                 DisabledCustomer();

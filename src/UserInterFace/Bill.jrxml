@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Bill" pageWidth="595" pageHeight="842" columnWidth="565" leftMargin="15" rightMargin="15" topMargin="15" bottomMargin="15" uuid="f23f60d8-eb9c-46cb-987d-8131c93e1d83">
 	<property name="ireport.zoom" value="1.4641000000000022"/>
-	<property name="ireport.x" value="196"/>
-	<property name="ireport.y" value="316"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="178"/>
 	<parameter name="ORDER_ID" class="java.lang.String"/>
 	<parameter name="TOTAL_MONEY" class="java.math.BigDecimal"/>
 	<parameter name="INPUT_MONEY" class="java.math.BigDecimal"/>
@@ -45,7 +45,8 @@
 	Customer."Debt" As Debt,
 	Customer."CustomerName" AS CUSTOMER_NAME,
 	Customer."PhoneNumber" AS PHONE_NUMBER,
-	Customer."Address" AS ADDRESS
+	Customer."Address" AS ADDRESS,
+	Customer."OldDebt" AS OLDDEBT
 FROM
     "dbo"."Bill" Bill
 LEFT JOIN
@@ -87,6 +88,7 @@ WHERE
 	<field name="CUSTOMER_NAME" class="java.lang.String"/>
 	<field name="PHONE_NUMBER" class="java.lang.String"/>
 	<field name="ADDRESS" class="java.lang.String"/>
+	<field name="OLDDEBT" class="java.math.BigDecimal"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -181,7 +183,7 @@ WHERE
 				<text><![CDATA[Khách hàng:]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="62" y="49" width="82" height="20" uuid="585cea00-a28c-4f92-98fa-f6fbc28dd438"/>
+				<reportElement x="62" y="49" width="503" height="20" uuid="585cea00-a28c-4f92-98fa-f6fbc28dd438"/>
 				<textElement verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{CUSTOMER_NAME}]]></textFieldExpression>
 			</textField>
@@ -201,7 +203,7 @@ WHERE
 				<text><![CDATA[Địa Chỉ:]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="133" y="69" width="277" height="20" uuid="4ee97928-9ee5-47b9-b976-81dcb3cb5c8f"/>
+				<reportElement x="133" y="69" width="432" height="20" uuid="4ee97928-9ee5-47b9-b976-81dcb3cb5c8f"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{ADDRESS}]]></textFieldExpression>
 			</textField>
@@ -370,7 +372,7 @@ WHERE
 			<textField pattern="#,##0.##">
 				<reportElement x="438" y="20" width="128" height="20" uuid="46f65179-aec5-47d6-a5f2-8b9b26521a53"/>
 				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$P{DEBT}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{OLDDEBT}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="324" y="40" width="73" height="20" uuid="c046d060-914d-4ff9-a466-b79d03a319ab"/>
@@ -396,7 +398,7 @@ WHERE
 			<textField pattern="#,##0.##">
 				<reportElement x="438" y="40" width="127" height="20" uuid="ab8ccf1b-5685-43e9-bc33-b307bd7a6871"/>
 				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$F{Debt}.add($P{TOTAL_MONEY})]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{OLDDEBT}.add($P{TOTAL_MONEY})]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.##">
 				<reportElement x="438" y="60" width="127" height="20" uuid="a331b219-c949-4982-a232-3200a92ae28f"/>

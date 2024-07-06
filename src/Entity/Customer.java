@@ -12,13 +12,13 @@ import java.util.Objects;
  * @author Admin
  */
 public class Customer {
-    private String id;
+    private int id;
     private String customerName;
     private String address;
     private String phoneNumber;
 
     // Constructor
-    public Customer(String id, String customerName, String address, String phoneNumber) {
+    public Customer(int id, String customerName, String address, String phoneNumber) {
         this.id = id;
         this.customerName = customerName;
         this.address = address;
@@ -26,12 +26,12 @@ public class Customer {
     }
 
     // Getter for ID
-    public String getId() {
+    public int getId() {
         return id;
     }
 
     // Setter for ID
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -77,7 +77,7 @@ public class Customer {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Customer customer = (Customer) o;
-        return id.equals(customer.id) &&
+        return id == customer.id &&
                 customerName.equals(customer.customerName) &&
                 address.equals(customer.address) &&
                 phoneNumber.equals(customer.phoneNumber);
