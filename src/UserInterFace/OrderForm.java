@@ -84,7 +84,7 @@ public class OrderForm extends javax.swing.JFrame {
     public void Load(String sql) {
         tableBill.removeAll();
         try {
-            String[] arr = {"Mã Đơn Hàng", "Khách Hàng", "Địa Chỉ", "Số Điện Thoại", "Tổng Tiền", "Nợ", "Ngày Đặt"};
+            String[] arr = {"Mã Đơn Hàng", "Khách Hàng", "Địa Chỉ", "Số Điện Thoại", "Tổng Tiền", "Nợ Cũ", "", "Ngày Đặt"};
             DefaultTableModel modle = new DefaultTableModel(arr, 0);
             pst = conn.prepareStatement(sql);
             rs = pst.executeQuery();
@@ -591,6 +591,11 @@ public class OrderForm extends javax.swing.JFrame {
                 btnRefreshMouseClicked(evt);
             }
         });
+        btnRefresh.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRefreshActionPerformed(evt);
+            }
+        });
 
         btnAdd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/Add.png"))); // NOI18N
         btnAdd.setText("Thêm");
@@ -981,6 +986,10 @@ public class OrderForm extends javax.swing.JFrame {
 //            ex.printStackTrace();
 //        }
     }//GEN-LAST:event_btnFindProducer2ActionPerformed
+
+    private void btnRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRefreshActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnRefreshActionPerformed
 
     public static void main(String args[]) {
         try {
