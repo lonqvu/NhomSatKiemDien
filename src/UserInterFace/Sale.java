@@ -428,6 +428,7 @@ class Sale extends javax.swing.JFrame implements Runnable {
     }
 
     private void Load() {
+        DecimalFormat formatter = new DecimalFormat("#.##");
         // Xóa tất cả các dòng hiện tại trong bảng
         tableBill.removeAll();
         BigDecimal money = BigDecimal.ZERO;
@@ -465,14 +466,14 @@ class Sale extends javax.swing.JFrame implements Runnable {
                         if (product != null && productID == null) {
                             vector.add(product);
                             vector.add(getUnitNameById(rs.getString("UnitID")));
-                            vector.add(amount);
+                            vector.add(formatter.format(amount));
                             vector.add(moneyDis(rs.getString("Price")));
                             money = money.add(rs.getBigDecimal("Price"));
                         } else {
                             Product productEntity = getProductById(productID);
                             vector.add(productEntity.getProductName());
                             vector.add(getUnitNameById(productEntity.getUnitId()));
-                            vector.add(amount);
+                            vector.add(formatter.format(amount));
                             vector.add(moneyDis(rs.getString("ProductPrice")));
                             money = money.add(rs.getBigDecimal("ProductPrice"));
                         }
@@ -1402,7 +1403,7 @@ class Sale extends javax.swing.JFrame implements Runnable {
                 createOrder();
                 this.lblStatus.setText("Đã tạo hóa đơn mới!");
                 checkBill();
-                Refresh();          
+                Refresh();
                 btnAdd.setEnabled(true);
                 btnNew.setEnabled(false);
                 btnRefresh.setEnabled(true);
