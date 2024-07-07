@@ -23,9 +23,7 @@ public class Data extends javax.swing.JFrame {
     private Detail detail;
     private boolean Add = false, Change = false;
 
-    String sql1 = "SELECT * FROM Position";
-    String sql2 = "SELECT * FROM Producer";
-    String sql3 = "SELECT * FROM Classify";
+    String sql3 = "SELECT * FROM Classify Order By Classify ASC";
 
     public Data(Detail d) {
         initComponents();
@@ -181,6 +179,9 @@ public class Data extends javax.swing.JFrame {
         jPanel28 = new javax.swing.JPanel();
         jPanel29 = new javax.swing.JPanel();
         jPanel30 = new javax.swing.JPanel();
+        btnFindProducer = new javax.swing.JButton();
+        txbFind = new javax.swing.JTextField();
+        jLabel6 = new javax.swing.JLabel();
         lblStatus = new javax.swing.JLabel();
         jLabel14 = new javax.swing.JLabel();
         btnBackHome = new javax.swing.JButton();
@@ -312,6 +313,17 @@ public class Data extends javax.swing.JFrame {
             .addGap(0, 0, Short.MAX_VALUE)
         );
 
+        btnFindProducer.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/Find.png"))); // NOI18N
+        btnFindProducer.setText("Tìm");
+        btnFindProducer.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnFindClassifybtnFindCustomerActionPerformed(evt);
+            }
+        });
+
+        jLabel6.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jLabel6.setText("Tìm Kiếm:");
+
         javax.swing.GroupLayout jPanel26Layout = new javax.swing.GroupLayout(jPanel26);
         jPanel26.setLayout(jPanel26Layout);
         jPanel26Layout.setHorizontalGroup(
@@ -336,6 +348,13 @@ public class Data extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnSaveClassify, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18))
+            .addGroup(jPanel26Layout.createSequentialGroup()
+                .addComponent(jLabel6)
+                .addGap(18, 18, 18)
+                .addComponent(txbFind, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnFindProducer)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         jPanel26Layout.setVerticalGroup(
             jPanel26Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -351,6 +370,11 @@ public class Data extends javax.swing.JFrame {
                     .addComponent(btnChangeClassify, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnDeleteClassify, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel28, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel26Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel6)
+                    .addComponent(txbFind, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnFindProducer, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -383,9 +407,9 @@ public class Data extends javax.swing.JFrame {
                         .addComponent(txbClassify, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jLabel13)))
                 .addGap(18, 18, 18)
-                .addComponent(jPanel26, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 329, Short.MAX_VALUE))
+                .addComponent(jPanel26, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 283, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Loại Linh Kiện", jPanel3);
@@ -519,6 +543,26 @@ public class Data extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_btnRefreshClassifyActionPerformed
 
+    private void btnFindClassifybtnFindCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFindClassifybtnFindCustomerActionPerformed
+        DefaultTableModel model = (DefaultTableModel) tableClassify.getModel();
+        DecimalFormat decimalFormat = new DecimalFormat("#,##0.##");
+        model.setRowCount(0);
+        String sql = "Select * from Classify where Classify like ? Order By Classify ASC";
+        try ( PreparedStatement statement = conn.prepareStatement(sql)) {
+            statement.setString(1, "%" + txbFind.getText() + "%");
+            ResultSet rs = statement.executeQuery();
+
+            while (rs.next()) {
+                Vector<String> vector = new Vector<>();
+                vector.add(rs.getString("ID").trim());
+                vector.add(rs.getString("Classify").trim());
+                model.addRow(vector);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }//GEN-LAST:event_btnFindClassifybtnFindCustomerActionPerformed
+
     public static void main(String args[]) {
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
@@ -550,10 +594,12 @@ public class Data extends javax.swing.JFrame {
     private javax.swing.JButton btnBackHome;
     private javax.swing.JButton btnChangeClassify;
     private javax.swing.JButton btnDeleteClassify;
+    private javax.swing.JButton btnFindProducer;
     private javax.swing.JButton btnRefreshClassify;
     private javax.swing.JButton btnSaveClassify;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel15;
     private javax.swing.JPanel jPanel26;
     private javax.swing.JPanel jPanel27;
@@ -566,5 +612,6 @@ public class Data extends javax.swing.JFrame {
     private javax.swing.JLabel lblStatus;
     private javax.swing.JTable tableClassify;
     private javax.swing.JTextField txbClassify;
+    private javax.swing.JTextField txbFind;
     // End of variables declaration//GEN-END:variables
 }

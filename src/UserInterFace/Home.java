@@ -46,7 +46,6 @@ public class Home extends javax.swing.JFrame implements Runnable {
         lblSoftwareName = new javax.swing.JLabel();
         btnProduct = new javax.swing.JButton();
         btnData = new javax.swing.JButton();
-        btnFind = new javax.swing.JButton();
         btnAccount = new javax.swing.JButton();
         btnOrders = new javax.swing.JButton();
         btnLogOut = new javax.swing.JButton();
@@ -89,21 +88,8 @@ public class Home extends javax.swing.JFrame implements Runnable {
             }
         });
 
-        btnFind.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        btnFind.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/Search.png"))); // NOI18N
-        btnFind.setText("Tìm Kiếm");
-        btnFind.setEnabled(false);
-        btnFind.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btnFind.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
-        btnFind.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btnFind.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnFindActionPerformed(evt);
-            }
-        });
-
         btnAccount.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        btnAccount.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/Change PasssWord.png"))); // NOI18N
+        btnAccount.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/Account.png"))); // NOI18N
         btnAccount.setText("Cập nhật khách hàng");
         btnAccount.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnAccount.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
@@ -116,7 +102,6 @@ public class Home extends javax.swing.JFrame implements Runnable {
 
         btnOrders.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/Cart.png"))); // NOI18N
         btnOrders.setText("Cập Nhật Đơn Hàng");
-        btnOrders.setEnabled(false);
         btnOrders.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnOrders.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
         btnOrders.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -183,33 +168,31 @@ public class Home extends javax.swing.JFrame implements Runnable {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(87, 87, 87)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(btnAccount)
-                                .addGap(0, 0, Short.MAX_VALUE))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(btnSale, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(btnFind, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 103, Short.MAX_VALUE)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(btnProduct)
-                                    .addComponent(btnAccount1))
-                                .addGap(128, 128, 128)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(btnData, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(btnLogOut, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(114, 114, 114)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(btnOrders, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(btnExit, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(72, 72, 72)))))
+                            .addComponent(btnSale, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnAccount))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 91, Short.MAX_VALUE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btnProduct, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(btnAccount1, javax.swing.GroupLayout.Alignment.TRAILING))
+                        .addGap(128, 128, 128)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btnData, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnLogOut, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(114, 114, 114)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(btnOrders, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnExit, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(72, 72, 72)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(btnAccount1))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(lblSoftwareName)
                         .addGap(69, 69, 69)
@@ -220,19 +203,14 @@ public class Home extends javax.swing.JFrame implements Runnable {
                             .addComponent(btnSale, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(39, 39, 39)
-                                .addComponent(btnFind))
+                                .addGap(78, 78, 78)
+                                .addComponent(btnAccount))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                .addGap(8, 8, 8)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(btnLogOut, javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(btnExit, javax.swing.GroupLayout.Alignment.TRAILING)))))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(btnAccount1)))
-                .addGap(45, 45, 45)
-                .addComponent(btnAccount)
-                .addContainerGap())
+                                    .addComponent(btnExit, javax.swing.GroupLayout.Alignment.TRAILING))))))
+                .addGap(144, 144, 144))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -285,12 +263,6 @@ public class Home extends javax.swing.JFrame implements Runnable {
         this.setVisible(false);
         customers.setVisible(true);
     }//GEN-LAST:event_btnAccountActionPerformed
-
-    private void btnFindActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFindActionPerformed
-        Find find = new Find(detail);
-        this.setVisible(false);
-        find.setVisible(true);
-    }//GEN-LAST:event_btnFindActionPerformed
 
     private void btnDataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDataActionPerformed
         Data data = new Data(detail);
@@ -361,7 +333,6 @@ public class Home extends javax.swing.JFrame implements Runnable {
     private javax.swing.JButton btnAccount1;
     private javax.swing.JButton btnData;
     private javax.swing.JButton btnExit;
-    private javax.swing.JButton btnFind;
     private javax.swing.JButton btnLogOut;
     private javax.swing.JButton btnOrders;
     private javax.swing.JButton btnProduct;
