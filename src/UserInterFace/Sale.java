@@ -155,6 +155,20 @@ class Sale extends javax.swing.JFrame implements Runnable {
         txbPrice.setEnabled(false);
     }
 
+    private void clear() {
+        txbCode.setText("");
+        txbPrice.setText("");
+        txbAmount.setText("");
+        txbIntoMoney.setText("");
+        txbProductName.setText("");
+        lblStatus.setText("");
+        txbInputMoney.setEnabled(true);
+        checkProduct.setSelected(true);
+        cbxProduct.removeAllItems();
+        cbxClassify.removeAllItems();
+        LoadClassify();
+    }
+
     private void Refresh() {
         Add = false;
         Change = false;
@@ -179,6 +193,7 @@ class Sale extends javax.swing.JFrame implements Runnable {
         lbltotalDebt.setText("0");
         lblSurplus.setText("0");
         txbProductName.setText("");
+        txbInputMoney.setEnabled(true);
         Disabled();
         tableBill.removeAll();
     }
@@ -291,9 +306,9 @@ class Sale extends javax.swing.JFrame implements Runnable {
             Unit unit = (Unit) cbxUnit.getSelectedItem();
             try {
                 pst = conn.prepareStatement(sqlInsert);
-
+                double amount = Double.parseDouble(txbAmount.getText());
                 if (checkProduct.isSelected()) {
-                    pst.setInt(1, Integer.parseInt(txbAmount.getText()));
+                    pst.setBigDecimal(1, BigDecimal.valueOf(amount));
                     pst.setString(2, txbIntoMoney.getText());
                     pst.setString(3, productSelected.getId());
                     pst.setString(4, MaHD);
@@ -307,7 +322,7 @@ class Sale extends javax.swing.JFrame implements Runnable {
                     pst.executeUpdate();
                     lblStatus.setText("Thêm sản phẩm thành công!");
                 } else {
-                    pst.setInt(1, Integer.parseInt(txbAmount.getText()));
+                    pst.setBigDecimal(1, BigDecimal.valueOf(amount));
                     pst.setString(2, txbIntoMoney.getText());
                     pst.setString(3, null);
                     pst.setString(4, MaHD);
@@ -379,8 +394,9 @@ class Sale extends javax.swing.JFrame implements Runnable {
 
         String sqlChange = "UPDATE Bill SET Amount=?, IntoMoney=? WHERE ID='" + model.getValueAt(Click, 6).toString().trim() + "'";
         try {
+            double amount = Double.parseDouble(txbAmount.getText());
             pst = conn.prepareStatement(sqlChange);
-            pst.setInt(1, Integer.parseInt(this.txbAmount.getText()));
+            pst.setBigDecimal(1, BigDecimal.valueOf(amount));
             pst.setBigDecimal(2, convertToMoney(txbIntoMoney.getText()));
             pst.executeUpdate();
             Disabled();
@@ -434,7 +450,7 @@ class Sale extends javax.swing.JFrame implements Runnable {
                     while (rs.next()) {
                         String intoMoney = rs.getString("IntoMoney");
                         String product = rs.getString("Product");
-                        int amount = rs.getInt("Amount");
+                        BigDecimal amount = rs.getBigDecimal("Amount");
                         String productID = rs.getString("ProductID");
                         Unit unitSelect = (Unit) cbxUnit.getSelectedItem();
 
@@ -1319,7 +1335,7 @@ class Sale extends javax.swing.JFrame implements Runnable {
     }//GEN-LAST:event_formWindowClosing
 
     private void btnRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRefreshActionPerformed
-        Refresh();
+        clear();
         refreshCustomer();
         btnAdd.setEnabled(true);
     }//GEN-LAST:event_btnRefreshActionPerformed
@@ -1386,10 +1402,11 @@ class Sale extends javax.swing.JFrame implements Runnable {
                 createOrder();
                 this.lblStatus.setText("Đã tạo hóa đơn mới!");
                 checkBill();
-                Refresh();
+                Refresh();          
                 btnAdd.setEnabled(true);
                 btnNew.setEnabled(false);
                 btnRefresh.setEnabled(true);
+
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -1561,37 +1578,64 @@ class Sale extends javax.swing.JFrame implements Runnable {
         }
     }
 
+    public String getNumberBeforeCommaOrAll(String str) {
+        if (str == null || str.isEmpty()) {
+            return "";
+        }
+        if (str.endsWith(",")) {
+            int index = str.lastIndexOf(',');
+            return str.substring(0, index);
+        } else {
+            return str;
+        }
+    }
+
     private void txbAmountKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txbAmountKeyReleased
         DecimalFormat formatter = new DecimalFormat("###,###,###");
 
-        txbAmount.setText(cutChar(txbAmount.getText()));
+        String text = txbAmount.getText().replaceAll("[^0-9.]", "");
+        txbAmount.setText(text);
+        float soluong = Float.parseFloat(txbAmount.getText());
+
         if (checkProduct.isSelected()) {
-            if (txbAmount.getText().isBlank() || txbAmount.getText().isEmpty()) {
+            if (text.isBlank() || text.isEmpty()) {
                 txbIntoMoney.setText("0");
                 lblStatus.setText("Vui lòng nhập đơn giá");
             } else {
-                int soluong = Integer.parseInt(txbAmount.getText().toString());
-                txbIntoMoney.setText(moneyDis(String.valueOf(convertToMoney(txbPrice.getText()).multiply(BigDecimal.valueOf(soluong)))));
-                btnSave.setEnabled(true);
-                lblStatus.setText("");
+                try {
+                    txbIntoMoney.setText(moneyDis(String.valueOf(convertToMoney(txbPrice.getText()).multiply(BigDecimal.valueOf(soluong)))));
+                    btnSave.setEnabled(true);
+                    lblStatus.setText("");
+                } catch (NumberFormatException e) {
+                    lblStatus.setText("Số lượng không hợp lệ");
+                }
             }
         } else {
-            if (txbAmount.getText().isBlank() || txbAmount.getText().isEmpty()) {
+            if (text.isBlank() || text.isEmpty()) {
                 txbIntoMoney.setText("0");
                 lblStatus.setText("Vui lòng nhập số lượng");
             } else {
                 if (txbPrice.getText().isEmpty() || txbPrice.getText().isBlank()) {
                     lblStatus.setText("Vui lòng nhập đơn giá");
                 } else {
-                    int soluong = Integer.parseInt(txbAmount.getText().toString());
-//                txbIntoMoney.setText(formatter.format(BigDecimal.valueOf(Double.parseDouble(txbPrice.toString()) * soluong)));
-                    txbIntoMoney.setText(moneyDis(String.valueOf(convertToMoney(txbPrice.getText()).multiply(BigDecimal.valueOf(soluong)))));
-                    lblStatus.setText("");
-                    btnSave.setEnabled(true);
+                    try {
+                        txbIntoMoney.setText(moneyDis(String.valueOf(convertToMoney(txbPrice.getText()).multiply(BigDecimal.valueOf(soluong)))));
+                        lblStatus.setText("");
+                        btnSave.setEnabled(true);
+                    } catch (NumberFormatException e) {
+                        lblStatus.setText("Số lượng không hợp lệ");
+                    }
                 }
             }
         }
     }//GEN-LAST:event_txbAmountKeyReleased
+    public boolean endsWithCommaOrDot(String str) {
+        if (str == null || str.isEmpty()) {
+            return false;
+        }
+        char lastChar = str.charAt(str.length() - 1);
+        return lastChar == ',' || lastChar == '.';
+    }
 
     private BigDecimal convertToMoney(String money) {
         String text = money.replace(",", ""); // Remove existing commas
