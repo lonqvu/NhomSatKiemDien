@@ -155,6 +155,20 @@ class Sale extends javax.swing.JFrame implements Runnable {
         txbPrice.setEnabled(false);
     }
 
+    private void clear() {
+        txbCode.setText("");
+        txbPrice.setText("");
+        txbAmount.setText("");
+        txbIntoMoney.setText("");
+        txbProductName.setText("");
+        lblStatus.setText("");
+        txbInputMoney.setEnabled(true);
+        checkProduct.setSelected(true);
+        cbxProduct.removeAllItems();
+        cbxClassify.removeAllItems();
+        LoadClassify();
+    }
+
     private void Refresh() {
         Add = false;
         Change = false;
@@ -308,7 +322,7 @@ class Sale extends javax.swing.JFrame implements Runnable {
                     pst.executeUpdate();
                     lblStatus.setText("Thêm sản phẩm thành công!");
                 } else {
-                   pst.setBigDecimal(1, BigDecimal.valueOf(amount));
+                    pst.setBigDecimal(1, BigDecimal.valueOf(amount));
                     pst.setString(2, txbIntoMoney.getText());
                     pst.setString(3, null);
                     pst.setString(4, MaHD);
@@ -1321,7 +1335,7 @@ class Sale extends javax.swing.JFrame implements Runnable {
     }//GEN-LAST:event_formWindowClosing
 
     private void btnRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRefreshActionPerformed
-        Refresh();
+        clear();
         refreshCustomer();
         btnAdd.setEnabled(true);
     }//GEN-LAST:event_btnRefreshActionPerformed
@@ -1388,10 +1402,11 @@ class Sale extends javax.swing.JFrame implements Runnable {
                 createOrder();
                 this.lblStatus.setText("Đã tạo hóa đơn mới!");
                 checkBill();
-                Refresh();
+                Refresh();          
                 btnAdd.setEnabled(true);
                 btnNew.setEnabled(false);
                 btnRefresh.setEnabled(true);
+
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -1581,7 +1596,7 @@ class Sale extends javax.swing.JFrame implements Runnable {
         String text = txbAmount.getText().replaceAll("[^0-9.]", "");
         txbAmount.setText(text);
         float soluong = Float.parseFloat(txbAmount.getText());
-        
+
         if (checkProduct.isSelected()) {
             if (text.isBlank() || text.isEmpty()) {
                 txbIntoMoney.setText("0");
