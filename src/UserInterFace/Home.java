@@ -277,7 +277,7 @@ public class Home extends javax.swing.JFrame implements Runnable {
     }//GEN-LAST:event_btnProductActionPerformed
 
     private void btnOrdersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOrdersActionPerformed
-        OrderForm orderForm = new OrderForm(detail);
+        OrderHistory orderForm = new OrderHistory(detail);
         this.setVisible(false);
         orderForm.setVisible(true);
     }//GEN-LAST:event_btnOrdersActionPerformed

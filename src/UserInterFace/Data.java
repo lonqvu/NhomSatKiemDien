@@ -31,7 +31,6 @@ public class Data extends javax.swing.JFrame {
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         detail = new Detail(d);
-        lblStatus.setForeground(Color.red);
         connection();
         loadClassify(sql3);
         DisabledClassify();
@@ -82,7 +81,6 @@ public class Data extends javax.swing.JFrame {
 
     private void EnabledClassify() {
         txbClassify.setEnabled(true);
-        lblStatus.setText("Trạng Thái!");
     }
 
     private void DisabledClassify() {
@@ -103,7 +101,7 @@ public class Data extends javax.swing.JFrame {
     private boolean checkNullClassify() {
         boolean kq = true;
         if (String.valueOf(this.txbClassify.getText()).length() == 0) {
-            lblStatus.setText("Bạn chưa nhập loại sản phẩm!");
+             JOptionPane.showMessageDialog(null, "Bạn chưa nhập loại sản phẩm!", "Thông báo", JOptionPane.WARNING_MESSAGE);
             return false;
         }
         return kq;
@@ -116,7 +114,7 @@ public class Data extends javax.swing.JFrame {
                 pst = conn.prepareStatement(sqlInsert);
                 pst.setString(1, txbClassify.getText());
                 pst.executeUpdate();
-                lblStatus.setText("Thêm loại sản phẩm thành công!");
+                JOptionPane.showMessageDialog(null, "Thêm loại sản phẩm thành công", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
                 DisabledClassify();
                 Refresh();
                 loadClassify(sql3);
@@ -135,7 +133,7 @@ public class Data extends javax.swing.JFrame {
                 pst = conn.prepareStatement(sqlChange);
                 pst.setString(1, txbClassify.getText());
                 pst.executeUpdate();
-                lblStatus.setText("Lưu thay đổi thành công!");
+                JOptionPane.showMessageDialog(null, "Lưu thay đổi thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
                 DisabledClassify();
                 Refresh();
                 loadClassify(sql3);
@@ -182,7 +180,6 @@ public class Data extends javax.swing.JFrame {
         btnFindProducer = new javax.swing.JButton();
         txbFind = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
-        lblStatus = new javax.swing.JLabel();
         jLabel14 = new javax.swing.JLabel();
         btnBackHome = new javax.swing.JButton();
 
@@ -414,10 +411,6 @@ public class Data extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("Loại Linh Kiện", jPanel3);
 
-        lblStatus.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        lblStatus.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblStatus.setText("Trạng Thái");
-
         jLabel14.setFont(new java.awt.Font("Times New Roman", 0, 28)); // NOI18N
         jLabel14.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel14.setText("Cập Nhật Thông Tin");
@@ -442,7 +435,6 @@ public class Data extends javax.swing.JFrame {
                         .addComponent(btnBackHome, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jLabel14, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(lblStatus, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jTabbedPane1))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -455,8 +447,7 @@ public class Data extends javax.swing.JFrame {
                     .addComponent(btnBackHome, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTabbedPane1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblStatus))
+                .addContainerGap())
         );
 
         pack();
@@ -497,7 +488,7 @@ public class Data extends javax.swing.JFrame {
                 pst = conn.prepareStatement(sqlDelete);
                 pst.setString(1, model.getValueAt(click, 0).toString());
                 pst.executeUpdate();
-                lblStatus.setText("Xóa loại sản phẩm thành công!");
+                JOptionPane.showMessageDialog(null, "Xóa loại sản phẩm thành công", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
                 DisabledClassify();
                 Refresh();
                 loadClassify(sql3);
@@ -609,7 +600,6 @@ public class Data extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel30;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JLabel lblStatus;
     private javax.swing.JTable tableClassify;
     private javax.swing.JTextField txbClassify;
     private javax.swing.JTextField txbFind;

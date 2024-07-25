@@ -14,13 +14,13 @@ import java.util.Objects;
 public class Product {
     private String id;
     private String productName;
-    private String unitId;
+    private String unitName;
 
     // Constructor
-    public Product(String id, String productName, String unitId) {
+    public Product(String id, String productName, String unitName) {
         this.id = id;
         this.productName = productName;
-        this.unitId = unitId;
+        this.unitName = unitName;
     }
 
     // Getters and Setters
@@ -40,12 +40,12 @@ public class Product {
         this.productName = productName;
     }
     
-     public String getUnitId() {
-        return unitId;
+     public String getUnitName() {
+        return unitName;
     }
 
-    public void setUnitId(String unitId) {
-        this.unitId = unitId;
+    public void setUnitName(String unitName) {
+        this.unitName = unitName;
     }
     @Override
     public boolean equals(Object obj) {

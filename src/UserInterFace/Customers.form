@@ -31,10 +31,7 @@
                   <Group type="102" attributes="0">
                       <Component id="btnBackHome" min="-2" pref="167" max="-2" attributes="0"/>
                       <EmptySpace max="32767" attributes="0"/>
-                      <Group type="103" groupAlignment="1" attributes="0">
-                          <Component id="lblStatus" min="-2" pref="549" max="-2" attributes="0"/>
-                          <Component id="jLabel14" alignment="1" min="-2" pref="1006" max="-2" attributes="0"/>
-                      </Group>
+                      <Component id="jLabel14" min="-2" pref="1006" max="-2" attributes="0"/>
                   </Group>
                   <Component id="jTabbedPane1" min="-2" max="-2" attributes="0"/>
               </Group>
@@ -51,8 +48,7 @@
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="jTabbedPane1" max="32767" attributes="0"/>
-              <EmptySpace min="-2" pref="60" max="-2" attributes="0"/>
-              <Component id="lblStatus" min="-2" max="-2" attributes="0"/>
+              <EmptySpace min="-2" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -500,15 +496,6 @@
         </Container>
       </SubComponents>
     </Container>
-    <Component class="javax.swing.JLabel" name="lblStatus">
-      <Properties>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="Arial" size="14" style="0"/>
-        </Property>
-        <Property name="horizontalAlignment" type="int" value="0"/>
-        <Property name="text" type="java.lang.String" value="Tr&#x1ea1;ng Th&#xe1;i"/>
-      </Properties>
-    </Component>
     <Component class="javax.swing.JLabel" name="jLabel14">
       <Properties>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">

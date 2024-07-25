@@ -41,7 +41,6 @@ public class Account extends javax.swing.JFrame {
         Load(sql);
         Disabled();
         loadRole();
-        lblStatus.setForeground(Color.red);
     }
 
     private void loadRole() {
@@ -123,7 +122,6 @@ public class Account extends javax.swing.JFrame {
     private void Enabled() {
         user.setEnabled(true);
         pass.setEnabled(true);
-        lblStatus.setText("Trạng Thái!");
         cbxRole.setEnabled(true);
         txbName.setEnabled(true);
     }
@@ -169,7 +167,8 @@ public class Account extends javax.swing.JFrame {
                 Load(sql);
                 Disabled();
                 Refresh();
-                lblStatus.setText("Thêm tài khoản thành công!");
+
+                 JOptionPane.showMessageDialog(null, "Thêm tài khoản thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -197,7 +196,7 @@ public class Account extends javax.swing.JFrame {
                 pst.executeUpdate();
                 Disabled();
                 Refresh();
-                lblStatus.setText("Lưu thay đổi thành công!");
+                JOptionPane.showMessageDialog(null, "Lưu thay đổi thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
                 Load(sql);
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -225,11 +224,11 @@ public class Account extends javax.swing.JFrame {
     private boolean checkNull() {
         boolean kq = true;
         if (this.user.getText().equals("")) {
-            lblStatus.setText("Bạn chưa nhập tên đăng nhập");
+            JOptionPane.showMessageDialog(null, "Bạn chưa nhập tên đăng nhập!", "Thông báo", JOptionPane.WARNING_MESSAGE);
             return false;
         }
         if (this.pass.getText().equals("")) {
-            lblStatus.setText("Bạn chưa nhập mật khẩu");
+            JOptionPane.showMessageDialog(null, "Bạn chưa nhập mật khẩu!", "Thông báo", JOptionPane.WARNING_MESSAGE);
             return false;
         }
 //        if(((JTextField)date.getDateEditor().getUiComponent()).getText().equals("")){
@@ -246,7 +245,6 @@ public class Account extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         TableAccount = new javax.swing.JTable();
         btnBack = new javax.swing.JButton();
-        lblStatus = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
@@ -294,12 +292,6 @@ public class Account extends javax.swing.JFrame {
                 btnBackMouseClicked(evt);
             }
         });
-
-        lblStatus.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        lblStatus.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblStatus.setText("Trạng Thái");
-        lblStatus.setFocusable(false);
-        lblStatus.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 
         jLabel6.setFont(new java.awt.Font("Times New Roman", 0, 28)); // NOI18N
         jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -439,7 +431,6 @@ public class Account extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addComponent(lblStatus, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                             .addComponent(btnBack)
@@ -461,9 +452,7 @@ public class Account extends javax.swing.JFrame {
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblStatus, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addContainerGap(13, Short.MAX_VALUE))
         );
 
         pack();
@@ -525,7 +514,7 @@ public class Account extends javax.swing.JFrame {
             if (Check()) {
                 addAccount();
             } else {
-                lblStatus.setText("Thêm tài khoản thất bại, Tên đăng nhập đã tồn tại!");
+                JOptionPane.showMessageDialog(null, "Thêm tài khoản thất bại, Tên đăng nhập đã tồn tại!", "Thông báo", JOptionPane.WARNING_MESSAGE);
             }
         } else if (Change == true) {
             changeAccount();
@@ -536,7 +525,7 @@ public class Account extends javax.swing.JFrame {
         int Click = JOptionPane.showConfirmDialog(null, "Bạn có muốn xóa tài khoản hay không?", "Thông Báo", 2);
         if (Click == JOptionPane.YES_OPTION) {
             if (this.user.getText().equals("Admin")) {
-                this.lblStatus.setText("Không thể xóa tài khoản của Admin");
+                JOptionPane.showMessageDialog(null, "Không thể xóa tài khoản của Admin!", "Thông báo", JOptionPane.WARNING_MESSAGE);
             } else {
                 String sqlDelete = "DELETE FROM Accounts WHERE UserName = ? AND PassWord=?";
                 try {
@@ -544,7 +533,7 @@ public class Account extends javax.swing.JFrame {
                     pst.setString(1, this.user.getText());
                     pst.setString(2, this.pass.getText());
                     pst.executeUpdate();
-                    this.lblStatus.setText("Xóa tài khoản thành công!");
+                    JOptionPane.showMessageDialog(null, "Xóa tài khoản thành công", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
                     Load(sql);
                     Refresh();
                 } catch (Exception ex) {
@@ -609,7 +598,6 @@ public class Account extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JLabel lblStatus;
     private javax.swing.JTextField pass;
     private javax.swing.JTextField txbName;
     private javax.swing.JTextField user;

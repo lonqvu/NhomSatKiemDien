@@ -1,5 +1,6 @@
 package UserInterFace;
 
+import static UserInterFace.PayDialog.user;
 import Utils.DatabaseUtil;
 import java.awt.Color;
 import java.math.BigDecimal;
@@ -22,7 +23,7 @@ public class Customers extends javax.swing.JFrame {
     private PreparedStatement pst = null;
     private ResultSet rs = null;
 
-    private Detail detail;
+    static Detail detail;
     private boolean Add = false, Change = false;
 
     String sql = "SELECT * FROM Customer Order by CustomerName";
@@ -33,10 +34,10 @@ public class Customers extends javax.swing.JFrame {
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         detail = new Detail(d);
-        lblStatus.setForeground(Color.red);
         connection();
         loadCustomer(sql);
         DisabledCustomer();
+        txbPay.setText("0");
 //        if(this.detail.getUser().toString().toString().equals("User")){
 //            jTabbedPane1.setEnabledAt(1, false);
 //        }
@@ -98,7 +99,6 @@ public class Customers extends javax.swing.JFrame {
         txbPhoneNumber.setEnabled(true);
         txbAddress.setEnabled(true);
         txbDebt.setEnabled(true);
-        lblStatus.setText("Trạng Thái!");
     }
 
     private void DisabledCustomer() {
@@ -144,7 +144,7 @@ public class Customers extends javax.swing.JFrame {
     private boolean checkNullCustomer() {
         boolean kq = true;
         if (String.valueOf(this.txbCustomerName.getText()).length() == 0) {
-            lblStatus.setText("Bạn chưa nhập tên khách hàng!");
+            JOptionPane.showMessageDialog(null, "Bạn chưa nhập tên khách hàng!", "Thông báo", JOptionPane.WARNING_MESSAGE);
             return false;
         }
         return kq;
@@ -161,7 +161,7 @@ public class Customers extends javax.swing.JFrame {
                 pst.setBigDecimal(4, convertToMoney(txbDebt.getText()));
                 pst.setBigDecimal(5, convertToMoney(txbDebt.getText()));
                 pst.executeUpdate();
-                lblStatus.setText("Thêm khách hàng thành công!");
+                JOptionPane.showMessageDialog(null, "Thêm khách hàng thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
                 DisabledCustomer();
                 Refresh();
                 loadCustomer(sql);
@@ -186,41 +186,52 @@ public class Customers extends javax.swing.JFrame {
     }
 
     private void changedCustomer() {
-        int Click = tableCustomer.getSelectedRow();
-        TableModel model = tableCustomer.getModel();
-        if (checkNullCustomer()) {
-            String sqlChange = "UPDATE Customer SET CustomerName=?, PhoneNumber=?, Address=?, Debt=?, OldDebt=? WHERE ID='" + model.getValueAt(Click, 0).toString().trim() + "'";;
-            try {
-                pst = conn.prepareStatement(sqlChange);
-                pst.setString(1, txbCustomerName.getText());
-                pst.setString(2, txbPhoneNumber.getText());
-                pst.setString(3, txbAddress.getText());
+        boolean checkLogin = showPasswordDialog();
+        if (checkLogin) {
+            int Click = tableCustomer.getSelectedRow();
+            TableModel model = tableCustomer.getModel();
+            if (checkNullCustomer()) {
+                String sqlChange = "UPDATE Customer SET CustomerName=?, PhoneNumber=?, Address=?, Debt=?, OldDebt=? WHERE ID='" + model.getValueAt(Click, 0).toString().trim() + "'";;
+                try {
+                    pst = conn.prepareStatement(sqlChange);
+                    pst.setString(1, txbCustomerName.getText());
+                    pst.setString(2, txbPhoneNumber.getText());
+                    pst.setString(3, txbAddress.getText());
 
-                if (convertToMoney(txbPay.getText()).compareTo(BigDecimal.ZERO) != 0) {
-                    if (convertToMoney(txbDebt.getText()).compareTo(BigDecimal.ZERO) == 0) {
-                        lblStatus.setText("Khách hàng này hiện chưa có khoản nợ nào!");
-                    } else {
-                        if (convertToMoney(txbDebt.getText()).compareTo(convertToMoney(txbPay.getText())) < 0) {
-                            pst.setBigDecimal(4, BigDecimal.ZERO);
-                            pst.setBigDecimal(5, BigDecimal.ZERO);
+                    if (convertToMoney(txbPay.getText()).compareTo(BigDecimal.ZERO) != 0) {
+                        if (convertToMoney(txbDebt.getText()).compareTo(BigDecimal.ZERO) == 0) {
+                            JOptionPane.showMessageDialog(null, "Khách hàng này hiện chưa có khoản nợ nào!", "Thông báo", JOptionPane.WARNING_MESSAGE);
                         } else {
-                            pst.setBigDecimal(4, convertToMoney(txbDebt.getText()).subtract(convertToMoney(txbPay.getText())));
-                            pst.setBigDecimal(5, convertToMoney(txbDebt.getText()).subtract(convertToMoney(txbPay.getText())));
+                            if (convertToMoney(txbDebt.getText()).compareTo(convertToMoney(txbPay.getText())) < 0) {
+                                pst.setBigDecimal(4, BigDecimal.ZERO);
+                                pst.setBigDecimal(5, BigDecimal.ZERO);
+                            } else {
+                                pst.setBigDecimal(4, convertToMoney(txbDebt.getText()).subtract(convertToMoney(txbPay.getText())));
+                                pst.setBigDecimal(5, convertToMoney(txbDebt.getText()).subtract(convertToMoney(txbPay.getText())));
+                            }
                         }
+                    } else {
+                        pst.setBigDecimal(4, convertToMoney(txbDebt.getText()));
+                        pst.setBigDecimal(5, convertToMoney(txbDebt.getText()));
                     }
-                } else {
-                    pst.setBigDecimal(4, convertToMoney(txbDebt.getText()));
-                    pst.setBigDecimal(5, convertToMoney(txbDebt.getText()));
+                    pst.executeUpdate();
+                    JOptionPane.showMessageDialog(null, "Lưu thay đổi thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                    DisabledCustomer();
+                    Refresh();
+                    loadCustomer(sql);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
-                pst.executeUpdate();
-                lblStatus.setText("Lưu thay đổi thành công!");
-                DisabledCustomer();
-                Refresh();
-                loadCustomer(sql);
-            } catch (Exception ex) {
-                ex.printStackTrace();
             }
+        } else {
+            JOptionPane.showMessageDialog(null, "Mật khẩu không hợp lệ", "Thông báo", JOptionPane.WARNING_MESSAGE);
         }
+    }
+
+    private static boolean showPasswordDialog() {
+        CheckAdminDialog dialog = new CheckAdminDialog(new javax.swing.JFrame(), true, detail.getUser());
+        dialog.setVisible(true);
+        return dialog.isCheckLogin();
     }
 
     private double convertedToNumbers(String s) {
@@ -269,7 +280,6 @@ public class Customers extends javax.swing.JFrame {
         jLabel6 = new javax.swing.JLabel();
         txbFind = new javax.swing.JTextField();
         btnFindProducer = new javax.swing.JButton();
-        lblStatus = new javax.swing.JLabel();
         jLabel14 = new javax.swing.JLabel();
         btnBackHome = new javax.swing.JButton();
 
@@ -581,10 +591,6 @@ public class Customers extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("Khách Hàng", jPanel3);
 
-        lblStatus.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        lblStatus.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblStatus.setText("Trạng Thái");
-
         jLabel14.setFont(new java.awt.Font("Times New Roman", 0, 28)); // NOI18N
         jLabel14.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel14.setText("Cập Nhật Thông Tin Khách Hàng");
@@ -607,9 +613,7 @@ public class Customers extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(btnBackHome, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(lblStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 549, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 1006, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 1006, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(0, 0, Short.MAX_VALUE))
         );
@@ -621,8 +625,7 @@ public class Customers extends javax.swing.JFrame {
                     .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTabbedPane1)
-                .addGap(60, 60, 60)
-                .addComponent(lblStatus))
+                .addContainerGap())
         );
 
         jTabbedPane1.getAccessibleContext().setAccessibleName("Khách hàng");
@@ -678,7 +681,7 @@ public class Customers extends javax.swing.JFrame {
             if (checkCustomer()) {
                 addCustomer();
             } else {
-                lblStatus.setText("Mã khách hàng hoặc tên khách hàng bạn nhập đã tồn tại!");
+                JOptionPane.showMessageDialog(null, "Mã khách hàng hoặc tên khách hàng bạn nhập đã tồn tại!", "Thông báo", JOptionPane.WARNING_MESSAGE);
             }
         else {
             if (Change == true) {
@@ -688,22 +691,25 @@ public class Customers extends javax.swing.JFrame {
     }//GEN-LAST:event_btnSaveCustomerActionPerformed
 
     private void btnDeleteCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteCustomerActionPerformed
-        int Click = JOptionPane.showConfirmDialog(null, "Bạn có muốn xóa khách hàng hay không?", "Thông Báo", 2);
-        if (Click == JOptionPane.YES_OPTION) {
-            String sqlDelete = "DELETE FROM Customer WHERE ID=?";
-            try {
-                pst = conn.prepareStatement(sqlDelete);
-                int click = tableCustomer.getSelectedRow();
-                TableModel model = tableCustomer.getModel();
+        boolean checkLogin = showPasswordDialog();
+        if (checkLogin) {
+            int Click = JOptionPane.showConfirmDialog(null, "Bạn có muốn xóa khách hàng hay không?", "Thông Báo", 2);
+            if (Click == JOptionPane.YES_OPTION) {
+                String sqlDelete = "DELETE FROM Customer WHERE ID=?";
+                try {
+                    pst = conn.prepareStatement(sqlDelete);
+                    int click = tableCustomer.getSelectedRow();
+                    TableModel model = tableCustomer.getModel();
 
-                pst.setString(1, model.getValueAt(Click, 0).toString());
-                pst.executeUpdate();
-                lblStatus.setText("Xóa khách hàng thành công!");
-                DisabledCustomer();
-                Refresh();
-                loadCustomer(sql);
-            } catch (Exception ex) {
-                ex.printStackTrace();
+                    pst.setString(1, model.getValueAt(click, 0).toString());
+                    pst.executeUpdate();
+                    JOptionPane.showMessageDialog(null, "Xóa khách hàng thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                    DisabledCustomer();
+                    Refresh();
+                    loadCustomer(sql);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             }
         }
     }//GEN-LAST:event_btnDeleteCustomerActionPerformed
@@ -823,7 +829,6 @@ public class Customers extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel30;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JLabel lblStatus;
     private javax.swing.JTable tableCustomer;
     private javax.swing.JTextField txbAddress;
     private javax.swing.JTextField txbCustomerName;

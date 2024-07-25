@@ -1,160 +1,94 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Bill" pageWidth="595" pageHeight="842" columnWidth="565" leftMargin="15" rightMargin="15" topMargin="15" bottomMargin="15" uuid="f23f60d8-eb9c-46cb-987d-8131c93e1d83">
-	<property name="ireport.zoom" value="1.7715610000000017"/>
+	<property name="ireport.zoom" value="1.4641000000000022"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="296"/>
+	<property name="ireport.y" value="178"/>
 	<parameter name="ORDER_ID" class="java.lang.String"/>
+	<parameter name="TOTAL_MONEY" class="java.math.BigDecimal"/>
+	<parameter name="INPUT_MONEY" class="java.math.BigDecimal"/>
+	<parameter name="TOTAL_DEBT" class="java.math.BigDecimal"/>
+	<parameter name="DEBT" class="java.math.BigDecimal"/>
 	<queryString>
 		<![CDATA[SELECT ROW_NUMBER() OVER (ORDER BY Bill."ID") AS STT,
     Bill."ID" AS Bill_ID,
+    Bill."Product" AS Bill_Product,
     Bill."Amount" AS Bill_Amount,
     Bill."IntoMoney" AS Bill_IntoMoney,
     Bill."ProductID" AS Bill_ProductID,
     Bill."OrderID" AS Bill_OrderID,
     Bill."RegistDate" AS Bill_RegistDate,
-    Bill."SoTam" AS Bill_SoTam,
- Bill."Price" AS Bill_Price,
- Bill."UnitName" AS Bill_UnitName,
-   Bill."HeSo" AS Bill_HeSo,   Bill."TongSoLuong" AS Bill_TongSoLuong,
     Products."ID" AS Products_ID,
     Products."ClassifyID" AS Products_ClassifyID,
     Products."Name" AS Products_Name,
-    Products."UnitName" AS Products_UnitName,
+    Products."UnitID" AS Products_UnitID,
     Products."Price" AS Products_Price,
     Orders."ID" AS Orders_ID,
-    Orders."Date" AS Orders_Date, 
-	Orders."Customer" AS Customer, 
-	Orders."Address" AS Address, 
-	Orders."Phone" AS Phone_Number, 
-	Orders."OldDebt" AS Old_Debt,  
-	Orders."TotalMoneyBill" AS "Total_Money_Bill",  
-	Orders."TotalMoneyOrder" AS "Total_Money_Order",  
-	Orders."PayMoney" AS "Pay_Money",  
-	Orders."DebtBack" AS "Debt_Back"
+    Orders."Customer" AS Orders_Customer,
+    Orders."Address" AS Orders_Address,
+    Orders."Phone" AS Orders_Phone,
+    Orders."Date" AS Orders_Date,
+    Orders."CustomerID" AS Orders_CustomerID,
+    COALESCE(Unit."Unit", u2."Unit") AS UnitName,
+    CASE 
+        WHEN Bill."ProductID" IS NOT NULL THEN Products."Name"
+        ELSE Bill."Product"
+    END AS ProductName,
+	CASE 
+        WHEN Bill."ProductID" IS NOT NULL THEN Products."Price"
+        ELSE Bill.Price
+    END AS ProductPrice,
 
+	CASE 
+        WHEN Bill."ProductID" IS  NULL THEN 'P000'
+        ELSE Products.ClassifyID
+    END AS ProductID,
+	Customer."Debt" As Debt,
+	Customer."CustomerName" AS CUSTOMER_NAME,
+	Customer."PhoneNumber" AS PHONE_NUMBER,
+	Customer."Address" AS ADDRESS,
+	Customer."OldDebt" AS OLDDEBT
 FROM
     "dbo"."Bill" Bill
 LEFT JOIN
     "dbo"."Products" Products ON Bill."ProductID" = Products."ID"
 INNER JOIN
     "dbo"."Orders" Orders ON Bill."OrderID" = Orders."ID"
+LEFT JOIN
+    "dbo"."Unit" Unit ON Bill."UnitID" = Unit."ID"
+LEFT JOIN
+    "dbo"."Unit" u2 ON Products."UnitID" = u2."ID"
 JOIN "dbo"."Customer" Customer ON Orders.CustomerID = Customer.ID
-
-Where Orders.ID = $P{ORDER_ID}
-Order by Products_Name DESC]]>
+WHERE
+    Bill."OrderID" = $P{ORDER_ID}]]>
 	</queryString>
-	<field name="STT" class="java.lang.Long"/>
 	<field name="Bill_ID" class="java.lang.Integer"/>
+	<field name="Bill_Product" class="java.lang.String"/>
 	<field name="Bill_Amount" class="java.math.BigDecimal"/>
 	<field name="Bill_IntoMoney" class="java.math.BigDecimal"/>
-	<field name="Bill_ProductID" class="java.lang.Integer"/>
+	<field name="Bill_ProductID" class="java.lang.String"/>
 	<field name="Bill_OrderID" class="java.lang.String"/>
 	<field name="Bill_RegistDate" class="java.sql.Timestamp"/>
-	<field name="Bill_SoTam" class="java.lang.Integer"/>
-	<field name="Bill_Price" class="java.math.BigDecimal"/>
-	<field name="Bill_UnitName" class="java.lang.String"/>
-	<field name="Bill_HeSo" class="java.math.BigDecimal"/>
-	<field name="Bill_TongSoLuong" class="java.math.BigDecimal"/>
-	<field name="Products_ID" class="java.lang.Integer"/>
-	<field name="Products_ClassifyID" class="java.lang.Integer"/>
+	<field name="Products_ID" class="java.lang.String"/>
+	<field name="Products_ClassifyID" class="java.lang.String"/>
 	<field name="Products_Name" class="java.lang.String"/>
-	<field name="Products_UnitName" class="java.lang.String"/>
+	<field name="Products_UnitID" class="java.lang.String"/>
 	<field name="Products_Price" class="java.lang.String"/>
 	<field name="Orders_ID" class="java.lang.String"/>
+	<field name="Orders_Customer" class="java.lang.String"/>
+	<field name="Orders_Address" class="java.lang.String"/>
+	<field name="Orders_Phone" class="java.lang.String"/>
 	<field name="Orders_Date" class="java.sql.Timestamp"/>
-	<field name="Customer" class="java.lang.String"/>
-	<field name="Address" class="java.lang.String"/>
-	<field name="Phone_Number" class="java.lang.String"/>
-	<field name="Old_Debt" class="java.math.BigDecimal"/>
-	<field name="Total_Money_Bill" class="java.math.BigDecimal"/>
-	<field name="Total_Money_Order" class="java.math.BigDecimal"/>
-	<field name="Pay_Money" class="java.math.BigDecimal"/>
-	<field name="Debt_Back" class="java.math.BigDecimal"/>
-	<variable name="HeSo" class="java.lang.String" resetType="Group" resetGroup="ProductGroup" incrementType="Group" incrementGroup="ProductGroup">
-		<variableExpression><![CDATA[new java.math.BigDecimal($F{Bill_Amount}.toString()).multiply(new java.math.BigDecimal($F{Bill_SoTam}.toString())).multiply(new java.math.BigDecimal($F{Bill_HeSo}.toString()))]]></variableExpression>
-	</variable>
-	<variable name="SumSoLuong" class="java.math.BigDecimal" resetType="Group" resetGroup="ProductGroup" calculation="Sum">
-		<variableExpression><![CDATA[$F{Bill_TongSoLuong}]]></variableExpression>
-		<initialValueExpression><![CDATA[]]></initialValueExpression>
-	</variable>
-	<variable name="DisplayTotalAmount" class="java.math.BigDecimal" resetType="None">
-		<variableExpression><![CDATA[$V{SumSoLuong}]]></variableExpression>
-		<initialValueExpression><![CDATA[new java.math.BigDecimal(0)]]></initialValueExpression>
-	</variable>
-	<variable name="SumSoTien" class="java.math.BigDecimal" resetType="Group" resetGroup="ProductGroup" calculation="Sum">
-		<variableExpression><![CDATA[$F{Bill_IntoMoney}]]></variableExpression>
-		<initialValueExpression><![CDATA[]]></initialValueExpression>
-	</variable>
-	<variable name="DisplayTongTien" class="java.math.BigDecimal" resetType="None">
-		<variableExpression><![CDATA[$V{SumSoTien}]]></variableExpression>
-		<initialValueExpression><![CDATA[]]></initialValueExpression>
-	</variable>
-	<variable name="GroupCount" class="java.lang.Integer" incrementType="Group" incrementGroup="ProductGroup" calculation="Count">
-		<variableExpression><![CDATA[1]]></variableExpression>
-	</variable>
-	<variable name="GlobalCount" class="java.lang.Integer">
-		<variableExpression><![CDATA[$V{GroupCount} +1]]></variableExpression>
-		<initialValueExpression><![CDATA[1]]></initialValueExpression>
-	</variable>
-	<group name="ProductGroup">
-		<groupExpression><![CDATA[$F{Products_Name}]]></groupExpression>
-		<groupHeader>
-			<band height="21">
-				<line>
-					<reportElement x="282" y="-1" width="1" height="22" uuid="cfb0d714-8028-44e4-b2bc-529dc8c5c9d5"/>
-				</line>
-				<line>
-					<reportElement x="0" y="-1" width="1" height="22" uuid="609cd0ff-26c9-4fe0-b147-7323b8e05c6d"/>
-				</line>
-				<textField isBlankWhenNull="true">
-					<reportElement isPrintRepeatedValues="false" x="37" y="0" width="244" height="21" uuid="f0b4dee7-a918-4bbc-b151-2d5db1b9d57a"/>
-					<textElement verticalAlignment="Middle">
-						<font fontName="Arial"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$F{Products_Name}]]></textFieldExpression>
-				</textField>
-				<line>
-					<reportElement x="35" y="-1" width="1" height="22" uuid="4c7bb744-9a92-4992-bd95-c7940d9c1aa6"/>
-				</line>
-				<line>
-					<reportElement x="373" y="-1" width="1" height="22" uuid="596b496c-2bc7-4633-ae8b-c1491bb8c9d7"/>
-				</line>
-				<line>
-					<reportElement x="467" y="-1" width="1" height="22" uuid="2470e335-1dd7-4077-a58b-1cabdad1e851"/>
-				</line>
-				<line>
-					<reportElement x="565" y="-1" width="1" height="22" uuid="634d6f80-26cb-4e89-af54-30c4b1780414"/>
-				</line>
-				<textField isStretchWithOverflow="true" evaluationTime="Group" evaluationGroup="ProductGroup" pattern="" isBlankWhenNull="false">
-					<reportElement isPrintRepeatedValues="false" x="283" y="0" width="90" height="20" isPrintInFirstWholeBand="true" uuid="ec3651db-61f5-4fd1-b61d-911f080af04d"/>
-					<textElement textAlignment="Center" verticalAlignment="Middle"/>
-					<textFieldExpression><![CDATA[new java.math.BigDecimal($V{DisplayTotalAmount}.toString()).setScale(3, java.math.RoundingMode.HALF_UP).stripTrailingZeros().toString() + " "+$F{Bill_UnitName}]]></textFieldExpression>
-				</textField>
-				<textField isStretchWithOverflow="true" pattern="#,##0.##" isBlankWhenNull="false">
-					<reportElement isPrintRepeatedValues="false" x="374" y="0" width="93" height="20" isPrintInFirstWholeBand="true" uuid="b13ccbd4-b407-4ea5-a8b4-af8e27bef995"/>
-					<textElement textAlignment="Center" verticalAlignment="Middle"/>
-					<textFieldExpression><![CDATA[$F{Bill_Price}]]></textFieldExpression>
-				</textField>
-				<textField isStretchWithOverflow="true" evaluationTime="Group" evaluationGroup="ProductGroup" pattern="#,##0.##" isBlankWhenNull="false">
-					<reportElement isPrintRepeatedValues="false" x="468" y="0" width="97" height="20" isPrintInFirstWholeBand="true" uuid="d29a9cbd-0218-4ee8-9a29-1833e514abe8"/>
-					<textElement textAlignment="Center" verticalAlignment="Middle"/>
-					<textFieldExpression><![CDATA[$V{DisplayTongTien}]]></textFieldExpression>
-				</textField>
-				<textField isBlankWhenNull="false">
-					<reportElement x="1" y="0" width="34" height="20" isPrintWhenDetailOverflows="true" uuid="d311080d-eb31-4997-b0c3-ef132a0c76e4"/>
-					<textElement textAlignment="Center"/>
-					<textFieldExpression><![CDATA[$V{GlobalCount}]]></textFieldExpression>
-				</textField>
-			</band>
-		</groupHeader>
-		<groupFooter>
-			<band height="1">
-				<line>
-					<reportElement x="0" y="-1" width="566" height="1" uuid="d6635ca2-1e7f-4cc5-a486-a758008eeac0"/>
-				</line>
-			</band>
-		</groupFooter>
-	</group>
+	<field name="Orders_CustomerID" class="java.lang.String"/>
+	<field name="UnitName" class="java.lang.String"/>
+	<field name="ProductName" class="java.lang.String"/>
+	<field name="ProductID" class="java.lang.String"/>
+	<field name="STT" class="java.lang.String"/>
+	<field name="Debt" class="java.math.BigDecimal"/>
+	<field name="ProductPrice" class="java.math.BigDecimal"/>
+	<field name="CUSTOMER_NAME" class="java.lang.String"/>
+	<field name="PHONE_NUMBER" class="java.lang.String"/>
+	<field name="ADDRESS" class="java.lang.String"/>
+	<field name="OLDDEBT" class="java.math.BigDecimal"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -251,7 +185,7 @@ Order by Products_Name DESC]]>
 			<textField>
 				<reportElement x="62" y="49" width="503" height="20" uuid="585cea00-a28c-4f92-98fa-f6fbc28dd438"/>
 				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$F{Customer}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{CUSTOMER_NAME}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="0" y="69" width="24" height="20" uuid="19bb463e-ae44-429c-9a0f-bc7bb0a178b0"/>
@@ -261,7 +195,7 @@ Order by Products_Name DESC]]>
 			<textField>
 				<reportElement x="24" y="69" width="70" height="20" uuid="af1ac138-34a0-479d-9417-264648e0c8e0"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$F{Phone_Number}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{PHONE_NUMBER}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="95" y="69" width="38" height="20" uuid="43906485-7f74-468a-b9fc-36838018b84e"/>
@@ -269,9 +203,9 @@ Order by Products_Name DESC]]>
 				<text><![CDATA[Địa Chỉ:]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="133" y="69" width="70" height="20" uuid="a4b0d8f8-efd7-468a-b653-136fc28cf03e"/>
+				<reportElement x="133" y="69" width="432" height="20" uuid="4ee97928-9ee5-47b9-b976-81dcb3cb5c8f"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$F{Address}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{ADDRESS}]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageHeader>
@@ -298,6 +232,13 @@ Order by Products_Name DESC]]>
 				</textElement>
 				<text><![CDATA[STT]]></text>
 			</staticText>
+			<staticText>
+				<reportElement x="282" y="0" width="42" height="20" uuid="99e9deac-1619-4db0-92e3-7fcc1ad7f85f"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Đơn vị]]></text>
+			</staticText>
 			<line>
 				<reportElement x="0" y="0" width="1" height="21" uuid="0f0115d5-97e5-459e-820e-3f99a2ea55e5"/>
 			</line>
@@ -305,7 +246,10 @@ Order by Products_Name DESC]]>
 				<reportElement x="35" y="0" width="1" height="21" uuid="d07db32b-889f-4f1d-8a88-a7f427362d54"/>
 			</line>
 			<line>
-				<reportElement x="282" y="0" width="1" height="21" uuid="c56bbd2f-137a-40e2-abf2-c1f088e7a4a3"/>
+				<reportElement x="282" y="0" width="1" height="21" uuid="82413585-90a4-4abe-b004-7f24551987ac"/>
+			</line>
+			<line>
+				<reportElement x="324" y="0" width="1" height="21" uuid="c56bbd2f-137a-40e2-abf2-c1f088e7a4a3"/>
 			</line>
 			<line>
 				<reportElement x="373" y="0" width="1" height="21" uuid="3b446eaf-d34e-47f0-8ae5-21e8a17aad99"/>
@@ -314,7 +258,7 @@ Order by Products_Name DESC]]>
 				<reportElement x="565" y="0" width="1" height="21" uuid="1fea4754-7ea3-4552-b532-4661276b4dfb"/>
 			</line>
 			<staticText>
-				<reportElement x="283" y="0" width="90" height="20" uuid="1dbd25f5-5a6d-40a3-8dfa-dca1729fba07"/>
+				<reportElement x="325" y="0" width="49" height="20" uuid="1dbd25f5-5a6d-40a3-8dfa-dca1729fba07"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Arial" isBold="true"/>
 				</textElement>
@@ -330,19 +274,21 @@ Order by Products_Name DESC]]>
 				</textElement>
 				<text><![CDATA[Đơn giá]]></text>
 			</staticText>
-			<line>
-				<reportElement x="467" y="0" width="1" height="21" uuid="32fad291-3441-4e5d-841c-aee63f9c913b"/>
-			</line>
 		</band>
 	</columnHeader>
 	<detail>
 		<band height="21" splitType="Stretch">
-			<printWhenExpression><![CDATA[$F{Bill_SoTam} != 0]]></printWhenExpression>
 			<line>
-				<reportElement x="35" y="-1" width="1" height="21" uuid="9f1183a0-fbab-4155-ab67-f61a7279d8d2"/>
+				<reportElement x="35" y="0" width="1" height="21" uuid="9f1183a0-fbab-4155-ab67-f61a7279d8d2"/>
 			</line>
 			<line>
-				<reportElement x="282" y="0" width="1" height="21" uuid="d7f7c80f-5922-4fe4-8f7e-7bf58a2bbb29"/>
+				<reportElement x="0" y="0" width="1" height="21" uuid="609cd0ff-26c9-4fe0-b147-7323b8e05c6d"/>
+			</line>
+			<line>
+				<reportElement x="282" y="0" width="1" height="21" uuid="b24bd1f4-aeac-4f7c-8189-5201fef3f089"/>
+			</line>
+			<line>
+				<reportElement x="324" y="0" width="1" height="21" uuid="d7f7c80f-5922-4fe4-8f7e-7bf58a2bbb29"/>
 			</line>
 			<line>
 				<reportElement x="373" y="0" width="1" height="21" uuid="aea4ed6c-08a0-42d7-952e-e21ba14d761b"/>
@@ -350,40 +296,72 @@ Order by Products_Name DESC]]>
 			<line>
 				<reportElement x="565" y="0" width="1" height="21" uuid="da2a8091-7c9f-4340-83ff-c55a786cdfc6"/>
 			</line>
+			<textField pattern="#,##0.##" isBlankWhenNull="false">
+				<reportElement x="468" y="0" width="97" height="20" uuid="16629cee-234e-4904-a59c-7f00559a845b"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Arial"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Bill_IntoMoney}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="36" y="-1" width="246" height="21" uuid="f0b4dee7-a918-4bbc-b151-2d5db1b9d57a"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ProductName}]]></textFieldExpression>
+			</textField>
 			<line>
-				<reportElement x="467" y="0" width="1" height="21" uuid="e7f4ffec-6bfa-4556-8ea3-7bb0cdd522aa"/>
-			</line>
-			<line>
-				<reportElement x="0" y="-1" width="1" height="21" uuid="652ce2cf-38e8-42d8-9ba6-a16cb833deea"/>
+				<reportElement x="0" y="20" width="565" height="1" uuid="ef2f3b8a-75ce-4f7c-b238-625c79f87575"/>
 			</line>
 			<textField>
-				<reportElement x="94" y="0" width="123" height="20" uuid="ebd60645-4546-4055-88b1-03133fd380af"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[new java.math.BigDecimal($F{Bill_Amount}.toString()).setScale(3, java.math.RoundingMode.HALF_UP).stripTrailingZeros().toString() 
-+ " (m) x " + 
-$F{Bill_SoTam}.toString() + " (tấm)"
-+ " x " + 
-new java.math.BigDecimal($F{Bill_HeSo}.toString()).setScale(3, java.math.RoundingMode.HALF_UP).stripTrailingZeros().toString()]]></textFieldExpression>
+				<reportElement x="1" y="1" width="34" height="19" uuid="78378633-26cf-4f9f-a03f-7fa3283f262f"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{STT}]]></textFieldExpression>
 			</textField>
-			<textField pattern="#.###">
-				<reportElement x="217" y="0" width="64" height="20" uuid="a2a1eabd-916b-47da-9631-b6e58c1998e8"/>
-				<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None"/>
-				<textFieldExpression><![CDATA[" = " + new java.math.BigDecimal($F{Bill_TongSoLuong}.toString()).setScale(3, java.math.RoundingMode.HALF_UP).stripTrailingZeros().toString()  + "mét"]]></textFieldExpression>
+			<textField>
+				<reportElement x="283" y="0" width="41" height="20" uuid="b8e472d4-98f8-4310-ab50-2b9ad6bf3540"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{UnitName}]]></textFieldExpression>
 			</textField>
+			<textField pattern="#,##0.##">
+				<reportElement x="374" y="0" width="93" height="20" uuid="5a1f75ee-f4c3-4445-8eb2-8c8913703347"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Arial"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ProductPrice}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#.##">
+				<reportElement x="325" y="0" width="48" height="20" uuid="afcbb4e0-9f57-4aea-af4a-75a037679a9e"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{Bill_Amount}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="467" y="-1" width="1" height="21" uuid="c9a8d07f-2ec0-4e67-ad35-e37cc0f658c4"/>
+			</line>
+			<line>
+				<reportElement x="467" y="-21" width="1" height="21" uuid="e7f4ffec-6bfa-4556-8ea3-7bb0cdd522aa"/>
+			</line>
 		</band>
 	</detail>
 	<pageFooter>
-		<band splitType="Stretch"/>
+		<band height="20" splitType="Stretch"/>
 	</pageFooter>
 	<summary>
 		<band height="144" splitType="Stretch">
 			<staticText>
-				<reportElement x="324" y="1" width="114" height="20" uuid="706793a9-58da-4709-bdd8-ed6958a5795e"/>
+				<reportElement x="324" y="0" width="114" height="20" uuid="706793a9-58da-4709-bdd8-ed6958a5795e"/>
 				<textElement verticalAlignment="Middle">
 					<font size="12" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Tổng tiền hóa đơn:]]></text>
 			</staticText>
+			<textField pattern="#,##0.##">
+				<reportElement x="438" y="0" width="129" height="20" uuid="c7a83432-fbee-43e1-8893-e697818aaa12"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{TOTAL_MONEY}]]></textFieldExpression>
+			</textField>
 			<staticText>
 				<reportElement x="324" y="20" width="73" height="20" uuid="543515b9-408a-4f01-8f36-bf8461843941"/>
 				<textElement verticalAlignment="Middle">
@@ -391,32 +369,10 @@ new java.math.BigDecimal($F{Bill_HeSo}.toString()).setScale(3, java.math.Roundin
 				</textElement>
 				<text><![CDATA[Nợ cũ:]]></text>
 			</staticText>
-			<staticText>
-				<reportElement x="324" y="80" width="73" height="20" uuid="46b7b1ff-aab9-463b-939f-76e2fb87246e"/>
-				<textElement verticalAlignment="Middle">
-					<font size="12" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Nợ lại:]]></text>
-			</staticText>
-			<textField pattern="#,##0.##">
-				<reportElement x="438" y="40" width="127" height="20" uuid="ab8ccf1b-5685-43e9-bc33-b307bd7a6871"/>
-				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$F{Total_Money_Order}]]></textFieldExpression>
-			</textField>
-			<textField pattern="#,##0.##">
-				<reportElement x="438" y="60" width="127" height="20" uuid="a331b219-c949-4982-a232-3200a92ae28f"/>
-				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$F{Pay_Money}]]></textFieldExpression>
-			</textField>
-			<textField pattern="#,##0.##">
-				<reportElement x="438" y="80" width="127" height="20" uuid="6bc6911e-3cf2-463d-a069-e48b374f072d"/>
-				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$F{Debt_Back}]]></textFieldExpression>
-			</textField>
 			<textField pattern="#,##0.##">
 				<reportElement x="438" y="20" width="128" height="20" uuid="46f65179-aec5-47d6-a5f2-8b9b26521a53"/>
 				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$F{Old_Debt}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{OLDDEBT}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="324" y="40" width="73" height="20" uuid="c046d060-914d-4ff9-a466-b79d03a319ab"/>
@@ -432,10 +388,27 @@ new java.math.BigDecimal($F{Bill_HeSo}.toString()).setScale(3, java.math.Roundin
 				</textElement>
 				<text><![CDATA[Thanh toán:]]></text>
 			</staticText>
+			<staticText>
+				<reportElement x="324" y="80" width="73" height="20" uuid="46b7b1ff-aab9-463b-939f-76e2fb87246e"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nợ lại:]]></text>
+			</staticText>
 			<textField pattern="#,##0.##">
-				<reportElement x="438" y="1" width="128" height="20" uuid="8c677632-740a-43e4-8660-87606adf4430"/>
+				<reportElement x="438" y="40" width="127" height="20" uuid="ab8ccf1b-5685-43e9-bc33-b307bd7a6871"/>
 				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$F{Total_Money_Bill}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{OLDDEBT}.add($P{TOTAL_MONEY})]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.##">
+				<reportElement x="438" y="60" width="127" height="20" uuid="a331b219-c949-4982-a232-3200a92ae28f"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{INPUT_MONEY}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.##">
+				<reportElement x="438" y="80" width="127" height="20" uuid="6bc6911e-3cf2-463d-a069-e48b374f072d"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{TOTAL_DEBT}]]></textFieldExpression>
 			</textField>
 		</band>
 	</summary>
