@@ -29,7 +29,7 @@ public class Account extends javax.swing.JFrame {
     private Boolean Add = false, Change = false;
     private String sql = "SELECT * FROM Accounts";
 
-    private Detail detail;
+    private static Detail detail;
 
     public Account(Detail d) {
         initComponents();
@@ -41,6 +41,12 @@ public class Account extends javax.swing.JFrame {
         Load(sql);
         Disabled();
         loadRole();
+    }
+
+    private static boolean showPasswordDialog() {
+        CheckAdminDialog dialog = new CheckAdminDialog(new javax.swing.JFrame(), true, detail.getUser());
+        dialog.setVisible(true);
+        return dialog.isCheckLogin();
     }
 
     private void loadRole() {
@@ -70,14 +76,14 @@ public class Account extends javax.swing.JFrame {
 
         try ( PreparedStatement pst = conn.prepareStatement(sql)) {
             String[] arr = {"Tên Đăng Nhập", "Mật Khẩu", "Tên Nhân Viên", "Quyền", "Ngày Tạo", "HiddenValue"};
-                DefaultTableModel modle = new DefaultTableModel(arr, 0){
-                     @Override
-                    public boolean isCellEditable(int row, int column) {
-                        // Làm cho toàn bộ bảng không thể chỉnh sửa
-                        return false;
-                    }
-                };
-            try (ResultSet rs = pst.executeQuery()){
+            DefaultTableModel modle = new DefaultTableModel(arr, 0) {
+                @Override
+                public boolean isCellEditable(int row, int column) {
+                    // Làm cho toàn bộ bảng không thể chỉnh sửa
+                    return false;
+                }
+            };
+            try ( ResultSet rs = pst.executeQuery()) {
                 while (rs.next()) {
                     Date date = rs.getDate("RegistDate");
 
@@ -148,58 +154,64 @@ public class Account extends javax.swing.JFrame {
     }
 
     private void addAccount() {
-        Role role = (Role) cbxRole.getSelectedItem();
-        String sqlInsert = "INSERT INTO Accounts (UserName,PassWord,FullName,RoleID ,RegistDate, UpdateDate) VALUES(?,?,?,?,?,?)";
-        if (checkNull()) {
-            try {
-                pst = conn.prepareStatement(sqlInsert);
-                pst.setString(1, this.user.getText());
-                pst.setString(2, this.pass.getText());
-                pst.setString(3, txbName.getText());
-                pst.setInt(4, role.getId());
+        boolean checkLogin = showPasswordDialog();
+        if (checkLogin) {
+            Role role = (Role) cbxRole.getSelectedItem();
+            String sqlInsert = "INSERT INTO Accounts (UserName,PassWord,FullName,RoleID ,RegistDate, UpdateDate) VALUES(?,?,?,?,?,?)";
+            if (checkNull()) {
+                try {
+                    pst = conn.prepareStatement(sqlInsert);
+                    pst.setString(1, this.user.getText());
+                    pst.setString(2, this.pass.getText());
+                    pst.setString(3, txbName.getText());
+                    pst.setInt(4, role.getId());
 
-                LocalDateTime now = LocalDateTime.now();
-                Timestamp sqlDate = Timestamp.valueOf(now);
+                    LocalDateTime now = LocalDateTime.now();
+                    Timestamp sqlDate = Timestamp.valueOf(now);
 
-                pst.setTimestamp(5, sqlDate);
-                pst.setTimestamp(6, sqlDate);
-                pst.executeUpdate();
-                Load(sql);
-                Disabled();
-                Refresh();
+                    pst.setTimestamp(5, sqlDate);
+                    pst.setTimestamp(6, sqlDate);
+                    pst.executeUpdate();
+                    Load(sql);
+                    Disabled();
+                    Refresh();
 
-                 JOptionPane.showMessageDialog(null, "Thêm tài khoản thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-            } catch (Exception ex) {
-                ex.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "Thêm tài khoản thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             }
         }
     }
 
     private void changeAccount() {
-        int Click = TableAccount.getSelectedRow();
-        TableModel model = TableAccount.getModel();
-        Role role = (Role) cbxRole.getSelectedItem();
-        String sqlUpdate = "UPDATE Accounts SET UserName=?,PassWord=?,FullName=?,UpdateDate=?, RoleID=? WHERE UserName='" + model.getValueAt(Click, 0).toString().trim() + "'";
+        boolean checkLogin = showPasswordDialog();
+        if (checkLogin) {
+            int Click = TableAccount.getSelectedRow();
+            TableModel model = TableAccount.getModel();
+            Role role = (Role) cbxRole.getSelectedItem();
+            String sqlUpdate = "UPDATE Accounts SET UserName=?,PassWord=?,FullName=?,UpdateDate=?, RoleID=? WHERE UserName='" + model.getValueAt(Click, 0).toString().trim() + "'";
 
-        if (checkNull()) {
-            try {
-                pst = conn.prepareStatement(sqlUpdate);
-                pst.setString(1, this.user.getText());
-                pst.setString(2, this.pass.getText());
-                pst.setString(3, this.txbName.getText());
+            if (checkNull()) {
+                try {
+                    pst = conn.prepareStatement(sqlUpdate);
+                    pst.setString(1, this.user.getText());
+                    pst.setString(2, this.pass.getText());
+                    pst.setString(3, this.txbName.getText());
 
-                LocalDateTime date = LocalDateTime.now();
-                Timestamp timestamp = Timestamp.valueOf(date);
-                pst.setTimestamp(4, timestamp);
-                pst.setInt(5, role.getId());
+                    LocalDateTime date = LocalDateTime.now();
+                    Timestamp timestamp = Timestamp.valueOf(date);
+                    pst.setTimestamp(4, timestamp);
+                    pst.setInt(5, role.getId());
 
-                pst.executeUpdate();
-                Disabled();
-                Refresh();
-                JOptionPane.showMessageDialog(null, "Lưu thay đổi thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-                Load(sql);
-            } catch (Exception ex) {
-                ex.printStackTrace();
+                    pst.executeUpdate();
+                    Disabled();
+                    Refresh();
+                    JOptionPane.showMessageDialog(null, "Lưu thay đổi thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                    Load(sql);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             }
         }
     }
@@ -522,22 +534,25 @@ public class Account extends javax.swing.JFrame {
     }//GEN-LAST:event_btnSaveActionPerformed
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
-        int Click = JOptionPane.showConfirmDialog(null, "Bạn có muốn xóa tài khoản hay không?", "Thông Báo", 2);
-        if (Click == JOptionPane.YES_OPTION) {
-            if (this.user.getText().equals("Admin")) {
-                JOptionPane.showMessageDialog(null, "Không thể xóa tài khoản của Admin!", "Thông báo", JOptionPane.WARNING_MESSAGE);
-            } else {
-                String sqlDelete = "DELETE FROM Accounts WHERE UserName = ? AND PassWord=?";
-                try {
-                    pst = conn.prepareStatement(sqlDelete);
-                    pst.setString(1, this.user.getText());
-                    pst.setString(2, this.pass.getText());
-                    pst.executeUpdate();
-                    JOptionPane.showMessageDialog(null, "Xóa tài khoản thành công", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-                    Load(sql);
-                    Refresh();
-                } catch (Exception ex) {
-                    ex.printStackTrace();
+        boolean checkLogin = showPasswordDialog();
+        if (checkLogin) {
+            int Click = JOptionPane.showConfirmDialog(null, "Bạn có muốn xóa tài khoản hay không?", "Thông Báo", 2);
+            if (Click == JOptionPane.YES_OPTION) {
+                if (this.user.getText().equals("Admin")) {
+                    JOptionPane.showMessageDialog(null, "Không thể xóa tài khoản của Admin!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+                } else {
+                    String sqlDelete = "DELETE FROM Accounts WHERE UserName = ? AND PassWord=?";
+                    try {
+                        pst = conn.prepareStatement(sqlDelete);
+                        pst.setString(1, this.user.getText());
+                        pst.setString(2, this.pass.getText());
+                        pst.executeUpdate();
+                        JOptionPane.showMessageDialog(null, "Xóa tài khoản thành công", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                        Load(sql);
+                        Refresh();
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
                 }
             }
         }
