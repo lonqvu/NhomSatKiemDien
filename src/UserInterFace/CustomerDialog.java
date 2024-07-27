@@ -418,26 +418,31 @@ public class CustomerDialog extends javax.swing.JDialog {
     private void btnSave1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSave1ActionPerformed
         String sqlInsert = "INSERT INTO Customer (CustomerName, Address, PhoneNumber, Debt, OldDebt, RegistDate) VALUES(?,?,?,?,?,?)";
 
-        try {
-            pst = conn.prepareStatement(sqlInsert);
+        String checkNull = checkNull();
+        if (StringUtils.isEmpty(checkNull) == false) {
+            JOptionPane.showMessageDialog(null, "Vui lòng nhập thông tin khách hàng!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+        } else {
+            try {
+                pst = conn.prepareStatement(sqlInsert);
 
-            LocalDateTime now = LocalDateTime.now();
-            Timestamp sqlDate = Timestamp.valueOf(now);
+                LocalDateTime now = LocalDateTime.now();
+                Timestamp sqlDate = Timestamp.valueOf(now);
 
-            pst.setString(1, txbKhachHang.getText());
-            pst.setString(2, txbDiaChi.getText());
-            pst.setString(3, txbSoDienThoai.getText());
-            pst.setBigDecimal(4, BigDecimal.ZERO);
-            pst.setBigDecimal(5, BigDecimal.ZERO);
-            pst.setTimestamp(6, sqlDate);
-            pst.executeUpdate();
-            
-            Load();
-            
-            JOptionPane.showMessageDialog(null, "Thêm khách hàng thành công", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);
-            ex.printStackTrace();
+                pst.setString(1, txbKhachHang.getText());
+                pst.setString(2, txbDiaChi.getText());
+                pst.setString(3, txbSoDienThoai.getText());
+                pst.setBigDecimal(4, BigDecimal.ZERO);
+                pst.setBigDecimal(5, BigDecimal.ZERO);
+                pst.setTimestamp(6, sqlDate);
+                pst.executeUpdate();
+
+                Load();
+
+                JOptionPane.showMessageDialog(null, "Thêm khách hàng thành công", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);
+                ex.printStackTrace();
+            }
         }
     }//GEN-LAST:event_btnSave1ActionPerformed
 

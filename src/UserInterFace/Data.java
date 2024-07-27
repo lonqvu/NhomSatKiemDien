@@ -423,6 +423,11 @@ public class Data extends javax.swing.JFrame {
                 btnBackHomeMouseClicked(evt);
             }
         });
+        btnBackHome.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBackHomeActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -553,6 +558,10 @@ public class Data extends javax.swing.JFrame {
             ex.printStackTrace();
         }
     }//GEN-LAST:event_btnFindClassifybtnFindCustomerActionPerformed
+
+    private void btnBackHomeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackHomeActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnBackHomeActionPerformed
 
     public static void main(String args[]) {
         try {

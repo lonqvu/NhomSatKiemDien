@@ -70,7 +70,7 @@ public class OrderHistory extends javax.swing.JFrame {
         DecimalFormat decimalFormat = new DecimalFormat("#,##0.##");
         model.setRowCount(0);
         try ( PreparedStatement pst = conn.prepareStatement(sql);  ResultSet rs = pst.executeQuery()) {
-            String[] arr = {"STT","Mã hóa đơn", "Ngày", "Người lập đơn", "Tiền hàng", "Nợ cũ", "Tổng cộng", "Đã thu", "Còn nợ", "Khách hàng", "Điện thoại", "Địa chỉ", "Ghi chú"};
+            String[] arr = {"STT", "Mã hóa đơn", "Ngày", "Người lập đơn", "Tiền hàng", "Nợ cũ", "Tổng cộng", "Đã thu", "Còn nợ", "Khách hàng", "Điện thoại", "Địa chỉ", "Ghi chú"};
             DefaultTableModel modle = new DefaultTableModel(arr, 0) {
                 @Override
                 public boolean isCellEditable(int row, int column) {
@@ -169,6 +169,11 @@ public class OrderHistory extends javax.swing.JFrame {
                 btnBackHomeMouseClicked(evt);
             }
         });
+        btnBackHome.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBackHomeActionPerformed(evt);
+            }
+        });
 
         jLabel10.setFont(new java.awt.Font("Times New Roman", 0, 28)); // NOI18N
         jLabel10.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -221,15 +226,10 @@ public class OrderHistory extends javax.swing.JFrame {
     }//GEN-LAST:event_tableOrderHistoryMouseClicked
 
     private void btnBackHomeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnBackHomeMouseClicked
-        if (this.detail.getUser().toString().toString().equals("Admin")) {
-            Home home = new Home(detail);
-            this.setVisible(false);
-            home.setVisible(true);
-        } else {
-            HomeUser home = new HomeUser(detail);
-            this.setVisible(false);
-            home.setVisible(true);
-        }
+        Home home = new Home(detail);
+        this.setVisible(false);
+        home.setVisible(true);
+
     }//GEN-LAST:event_btnBackHomeMouseClicked
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
@@ -242,6 +242,10 @@ public class OrderHistory extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_formWindowClosing
+
+    private void btnBackHomeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackHomeActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnBackHomeActionPerformed
 
     public static void main(String args[]) {
 
