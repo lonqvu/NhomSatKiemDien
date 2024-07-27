@@ -2,6 +2,7 @@ package UserInterFace;
 
 import Entity.Classify;
 import Entity.Unit;
+import static UserInterFace.Customers.detail;
 import Utils.DatabaseUtil;
 import java.awt.Color;
 import java.math.BigDecimal;
@@ -46,7 +47,7 @@ public class Product extends javax.swing.JFrame {
     private String sql = "SELECT * FROM Products Order By Name ASC";
     private boolean Add = false, Change = false;
 
-    private Detail detail;
+    private static Detail detail;
 
     public Product(Detail d) {
         initComponents();
@@ -119,6 +120,12 @@ public class Product extends javax.swing.JFrame {
             e.printStackTrace();
         }
         return unit;
+    }
+
+    private static boolean showPasswordDialog() {
+        CheckAdminDialog dialog = new CheckAdminDialog(new javax.swing.JFrame(), true, detail.getUser());
+        dialog.setVisible(true);
+        return dialog.isCheckLogin();
     }
 
     private Classify getClassifyById(String id) {
@@ -246,27 +253,30 @@ public class Product extends javax.swing.JFrame {
         int Click = tableProduct.getSelectedRow();
         TableModel model = tableProduct.getModel();
 
-        if (checkNull()) {
-            String sqlChange = "UPDATE Products set ClassifyID=?,Name=?,UnitName=?,Price=?,RegistDate=? WHERE ID='" + model.getValueAt(Click, 0).toString().trim() + "'";
-            try {
-                Classify classify = (Classify) cbxClassify.getSelectedItem();
-                LocalDate now = LocalDate.now();
-                Date sqlDate = Date.valueOf(now);
-                String classifyId = classify.getId();
+        boolean checkLogin = showPasswordDialog();
+        if (checkLogin) {
+            if (checkNull()) {
+                String sqlChange = "UPDATE Products set ClassifyID=?,Name=?,UnitName=?,Price=?,RegistDate=? WHERE ID='" + model.getValueAt(Click, 0).toString().trim() + "'";
+                try {
+                    Classify classify = (Classify) cbxClassify.getSelectedItem();
+                    LocalDate now = LocalDate.now();
+                    Date sqlDate = Date.valueOf(now);
+                    String classifyId = classify.getId();
 
-                pst = conn.prepareStatement(sqlChange);
-                pst.setString(1, classifyId);
-                pst.setString(2, (String) txbName.getText());
-                pst.setString(3, txbUnit.getText());
-                pst.setBigDecimal(4, convertToMoney(txbPrice.getText()));
-                pst.setDate(5, sqlDate);
-                pst.executeUpdate();
-                JOptionPane.showMessageDialog(null, "Lưu thay đổi thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-                Disabled();
-                Refresh();
-                Load(sql);
-            } catch (Exception ex) {
-                ex.printStackTrace();
+                    pst = conn.prepareStatement(sqlChange);
+                    pst.setString(1, classifyId);
+                    pst.setString(2, (String) txbName.getText());
+                    pst.setString(3, txbUnit.getText());
+                    pst.setBigDecimal(4, convertToMoney(txbPrice.getText()));
+                    pst.setDate(5, sqlDate);
+                    pst.executeUpdate();
+                    JOptionPane.showMessageDialog(null, "Lưu thay đổi thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                    Disabled();
+                    Refresh();
+                    Load(sql);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             }
         }
     }
@@ -710,23 +720,26 @@ public class Product extends javax.swing.JFrame {
     }//GEN-LAST:event_btnSaveActionPerformed
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
-        int Click = JOptionPane.showConfirmDialog(null, "Bạn có muốn xóa sản phẩm hay không?", "Thông Báo", 2);
-        if (Click == JOptionPane.YES_OPTION) {
-            String sqlDelete = "DELETE FROM Products WHERE ID=? AND Name=? ";
-            try {
-                pst = conn.prepareStatement(sqlDelete);
+        boolean checkLogin = showPasswordDialog();
+        if (checkLogin) {
+            int Click = JOptionPane.showConfirmDialog(null, "Bạn có muốn xóa sản phẩm hay không?", "Thông Báo", 2);
+            if (Click == JOptionPane.YES_OPTION) {
+                String sqlDelete = "DELETE FROM Products WHERE ID=? AND Name=? ";
+                try {
+                    pst = conn.prepareStatement(sqlDelete);
 
-                int click = tableProduct.getSelectedRow();
-                TableModel model = tableProduct.getModel();
-                pst.setString(1, model.getValueAt(click, 0).toString());
-                pst.setString(2, txbName.getText());
-                pst.executeUpdate();
-                JOptionPane.showMessageDialog(null, "Xóa sản phẩm thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-                Disabled();
-                Refresh();
-                Load(sql);
-            } catch (Exception ex) {
-                ex.printStackTrace();
+                    int click = tableProduct.getSelectedRow();
+                    TableModel model = tableProduct.getModel();
+                    pst.setString(1, model.getValueAt(click, 0).toString());
+                    pst.setString(2, txbName.getText());
+                    pst.executeUpdate();
+                    JOptionPane.showMessageDialog(null, "Xóa sản phẩm thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                    Disabled();
+                    Refresh();
+                    Load(sql);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             }
         }
     }//GEN-LAST:event_btnDeleteActionPerformed
