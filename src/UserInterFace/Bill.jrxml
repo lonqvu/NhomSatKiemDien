@@ -38,7 +38,7 @@ LEFT JOIN
     "dbo"."Products" Products ON Bill."ProductID" = Products."ID"
 INNER JOIN
     "dbo"."Orders" Orders ON Bill."OrderID" = Orders."ID"
-JOIN "dbo"."Customer" Customer ON Orders.CustomerID = Customer.ID
+LEFT JOIN "dbo"."Customer" Customer ON Orders.CustomerID = Customer.ID
 
 Where Orders.ID = $P{ORDER_ID}
 Order by Products_Name DESC]]>

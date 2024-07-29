@@ -31,6 +31,7 @@ import Entity.Customer;
 import Entity.Unit;
 import Utils.DatabaseUtil;
 import com.microsoft.sqlserver.jdbc.StringUtils;
+import com.sun.tools.javac.util.ArrayUtils;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -65,18 +66,15 @@ class Sale extends javax.swing.JFrame implements Runnable {
     private Connection conn = null;
     private PreparedStatement pst = null;
     private ResultSet rs = null;
-
-    private boolean Add = false, Change = false, Pay = false;
     private String sql = "SELECT * FROM Bill";
 
     private Thread thread;
     private Detail detail;
-    private Customers customer;
 
     private String MaHD = "";
     private String customerId = "";
 
-    private JTextField textField;
+    private String[] khachHang;
 
     public Sale() {
         // Constructor mặc định (có thể thêm các hành động khởi tạo tại đây)
@@ -175,9 +173,6 @@ class Sale extends javax.swing.JFrame implements Runnable {
     }
 
     private void Refresh() {
-        Add = false;
-        Change = false;
-        Pay = false;
         btnDelete.setEnabled(false);
         btnPrint.setEnabled(false);
         btnNew.setEnabled(true);
@@ -206,7 +201,7 @@ class Sale extends javax.swing.JFrame implements Runnable {
         txbDebt.setText("");
         txbSoDienThoai.setText("");
     }
-    
+
     private void refreshOrderDetail() {
         lblTong.setText("0");
         lbltotalMoney.setText("0");
@@ -1318,10 +1313,29 @@ class Sale extends javax.swing.JFrame implements Runnable {
     }//GEN-LAST:event_txbDebtMouseClicked
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        txbKhachHang.setText("");
+        txbDiaChi.setText("");
+        txbDebt.setText("");
+        txbSoDienThoai.setText("");
         CustomerDialog diglog = new CustomerDialog(this, true);
         diglog.setVisible(true);
-        loadCustomer(diglog.getKhachHang());
-        customerId = diglog.getKhachHang();
+        khachHang = diglog.getKhachLe().split(",");
+        if (khachHang.length == 0) {
+            loadCustomer(diglog.getKhachHang());
+            customerId = diglog.getKhachHang();
+        } else {
+            customerId = "";
+            txbKhachHang.setText(khachHang[0]);
+            txbDebt.setText("0");
+            if (khachHang.length > 1) {
+                txbDiaChi.setText(khachHang[1]);
+            }
+
+            if (khachHang.length > 2) {
+                txbSoDienThoai.setText(khachHang[2]);
+            }
+
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void btnDeleteOrderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteOrderActionPerformed

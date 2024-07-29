@@ -563,17 +563,19 @@ public class ProductDialog extends javax.swing.JDialog {
         txbPrice.setText(price[0]);
         txbHeSo.setText("0");
         txbSoTam.setText("0");
-        txbAmount.setText("1");
+//        txbAmount.setText("1");
         maSP = model.getValueAt(click, 1).toString();
         tenSP = model.getValueAt(click, 2).toString();
         txbFind.setText(model.getValueAt(click, 2).toString());
         updateTableDefault(model.getValueAt(click, 2).toString());
 
-        BigDecimal amount = BigDecimal.valueOf(Double.parseDouble(txbAmount.getText()));
-        BigDecimal price1 = convertToMoney(txbPrice.getText());
+        if (StringUtils.isEmpty(txbAmount.getText()) == false) {
+            BigDecimal amount = BigDecimal.valueOf(Double.parseDouble(txbAmount.getText()));
+            BigDecimal price1 = convertToMoney(txbPrice.getText());
 
-        txbIntoMoney.setText(moneyDis(amount.multiply(price1).toString()));
-        txbTotalAmount.setText(decimalFormat.format(getTongSoLuong()));
+            txbIntoMoney.setText(moneyDis(amount.multiply(price1).toString()));
+            txbTotalAmount.setText(decimalFormat.format(getTongSoLuong()));
+        }
     }//GEN-LAST:event_tableProductMouseClicked
 
     private void txbSoTamupdateTotal(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_txbSoTamupdateTotal
@@ -591,7 +593,7 @@ public class ProductDialog extends javax.swing.JDialog {
         DecimalFormat df = new DecimalFormat("#");
         txbSoTam.setText(df.format(convertedToNumbers(text)));
         if (text.equals("0") == false) {
-            txbHeSo.setText("1");
+            txbHeSo.setText("1.08");
         }
 
         String checkNull = checkNull();
@@ -669,29 +671,34 @@ public class ProductDialog extends javax.swing.JDialog {
         if (StringUtils.isEmpty(maSP)) {
             JOptionPane.showMessageDialog(null, "Vui lòng chọn sản phẩm!", "Error", JOptionPane.WARNING_MESSAGE);
         } else {
-            String sqlInsert = "INSERT INTO Bill (Amount, IntoMoney, ProductID, OrderID, RegistDate, UnitName, Price, HeSo, SoTam, TongSoLuong, ProductName) VALUES(?,?,?,?,?,?,?,?,?,?,?)";
-            try {
-                pst = conn.prepareStatement(sqlInsert);
-                double amount = Double.parseDouble(txbAmount.getText());
-                pst.setBigDecimal(1, BigDecimal.valueOf(amount));
-                pst.setBigDecimal(2, convertToMoney(txbIntoMoney.getText()));
-                pst.setString(3, maSP);
-                pst.setString(4, maHD);
+            String checkNull = checkNull();
+            if (StringUtils.isEmpty(checkNull)) {
+                String sqlInsert = "INSERT INTO Bill (Amount, IntoMoney, ProductID, OrderID, RegistDate, UnitName, Price, HeSo, SoTam, TongSoLuong, ProductName) VALUES(?,?,?,?,?,?,?,?,?,?,?)";
+                try {
+                    pst = conn.prepareStatement(sqlInsert);
+                    double amount = Double.parseDouble(txbAmount.getText());
+                    pst.setBigDecimal(1, BigDecimal.valueOf(amount));
+                    pst.setBigDecimal(2, convertToMoney(txbIntoMoney.getText()));
+                    pst.setString(3, maSP);
+                    pst.setString(4, maHD);
 
-                LocalDateTime now = LocalDateTime.now();
-                Timestamp sqlDate = Timestamp.valueOf(now);
-                pst.setTimestamp(5, sqlDate);
-                pst.setString(6, txbUnit.getText());
-                pst.setBigDecimal(7, convertToMoney(txbPrice.getText()));
-                pst.setBigDecimal(8, BigDecimal.valueOf(Double.parseDouble(txbHeSo.getText())));
-                pst.setInt(9, Integer.valueOf(txbSoTam.getText()));
-                pst.setBigDecimal(10, BigDecimal.valueOf(Double.parseDouble(txbTotalAmount.getText())));
-                pst.setString(11, tenSP);
-                pst.executeUpdate();
-                this.dispose();
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);
-                ex.printStackTrace();
+                    LocalDateTime now = LocalDateTime.now();
+                    Timestamp sqlDate = Timestamp.valueOf(now);
+                    pst.setTimestamp(5, sqlDate);
+                    pst.setString(6, txbUnit.getText());
+                    pst.setBigDecimal(7, convertToMoney(txbPrice.getText()));
+                    pst.setBigDecimal(8, BigDecimal.valueOf(Double.parseDouble(txbHeSo.getText())));
+                    pst.setInt(9, Integer.valueOf(txbSoTam.getText()));
+                    pst.setBigDecimal(10, BigDecimal.valueOf(Double.parseDouble(txbTotalAmount.getText())));
+                    pst.setString(11, tenSP);
+                    pst.executeUpdate();
+                    this.dispose();
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);
+                    ex.printStackTrace();
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, checkNull, "Error", JOptionPane.WARNING_MESSAGE);
             }
         }
     }//GEN-LAST:event_btnSave1ActionPerformed
