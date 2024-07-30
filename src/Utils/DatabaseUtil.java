@@ -10,7 +10,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DatabaseUtil {
-    private static final String URL = "jdbc:sqlserver://LONGVIPPRONO1\\SQLEXPRESS01:1433;databaseName=NhomSatKiemDien;encrypt=false";
+    private static final String URL = "jdbc:sqlserver://DESKTOP-L247M4M:1433;databaseName=NhomSatKiemDien;encrypt=false";
     private static final String USER = "sa";
     private static final String PASSWORD = "123";
     private static Connection connection = null;

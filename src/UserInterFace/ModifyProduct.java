@@ -400,7 +400,8 @@ public class ModifyProduct extends javax.swing.JDialog {
     private void txbSoTamKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txbSoTamKeyReleased
         String text = txbSoTam.getText().replaceAll("[^0-9]", "");
         DecimalFormat decimalFormat = new DecimalFormat("#.###");
-        txbSoTam.setText(text);
+        DecimalFormat df = new DecimalFormat("#");
+        txbSoTam.setText(df.format(convertedToNumbers(text)));
 
         if (text.equals("0") == false) {
             txbHeSo.setText("1");

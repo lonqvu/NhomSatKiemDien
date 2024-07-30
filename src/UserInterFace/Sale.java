@@ -977,6 +977,7 @@ class Sale extends javax.swing.JFrame implements Runnable {
             ModifyProduct dialog = new ModifyProduct(this, true, amount, soTam, heSo, gia, tongSoLuong, tongTien, maBill);
             dialog.setVisible(true);
             Load();
+            Pays();
         }
         btnDelete.setEnabled(true);
     }//GEN-LAST:event_tableBillMouseClicked

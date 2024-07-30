@@ -42,7 +42,7 @@ public class ProductDialog extends javax.swing.JDialog {
     private Connection conn = null;
     private PreparedStatement pst = null;
     private ResultSet rs = null;
-    String sql = "select * from products";
+    String sql = "select * from products order by Name ASC";
     private String maSP = "";
     private String tenSP = "";
     private String maHD = "";
@@ -688,7 +688,8 @@ public class ProductDialog extends javax.swing.JDialog {
                 pst.setBigDecimal(10, BigDecimal.valueOf(Double.parseDouble(txbTotalAmount.getText())));
                 pst.setString(11, tenSP);
                 pst.executeUpdate();
-                this.dispose();
+                JOptionPane.showMessageDialog(null, "Lưu thành công", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                Load();
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);
                 ex.printStackTrace();

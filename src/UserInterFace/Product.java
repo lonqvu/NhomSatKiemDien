@@ -659,15 +659,10 @@ public class Product extends javax.swing.JFrame {
     }
 
     private void btnBackHomeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnBackHomeMouseClicked
-        if (this.detail.getUser().toString().toString().equals("Admin")) {
-            Home home = new Home(detail);
-            this.setVisible(false);
-            home.setVisible(true);
-        } else {
-            HomeUser home = new HomeUser(detail);
-            this.setVisible(false);
-            home.setVisible(true);
-        }
+        Home home = new Home(detail);
+        this.setVisible(false);
+        home.setVisible(true);
+
     }//GEN-LAST:event_btnBackHomeMouseClicked
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
@@ -709,40 +704,36 @@ public class Product extends javax.swing.JFrame {
     }//GEN-LAST:event_cbxClassifyActionPerformed
 
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
-        boolean checkLogin = showPasswordDialog();
-        if (checkLogin) {
-            if (Add == true) {
-                addProduct();
-
-            } else if (Change == true) {
-                changeProduct();
-            }
+        if (Add == true) {
+            addProduct();
+        } else if (Change == true) {
+            changeProduct();
         }
+
     }//GEN-LAST:event_btnSaveActionPerformed
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
-        boolean checkLogin = showPasswordDialog();
-        if (checkLogin) {
-            int Click = JOptionPane.showConfirmDialog(null, "Bạn có muốn xóa sản phẩm hay không?", "Thông Báo", 2);
-            if (Click == JOptionPane.YES_OPTION) {
-                String sqlDelete = "DELETE FROM Products WHERE ID=? AND Name=? ";
-                try {
-                    pst = conn.prepareStatement(sqlDelete);
 
-                    int click = tableProduct.getSelectedRow();
-                    TableModel model = tableProduct.getModel();
-                    pst.setString(1, model.getValueAt(click, 0).toString());
-                    pst.setString(2, txbName.getText());
-                    pst.executeUpdate();
-                    JOptionPane.showMessageDialog(null, "Xóa sản phẩm thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-                    Disabled();
-                    Refresh();
-                    Load(sql);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
+        int Click = JOptionPane.showConfirmDialog(null, "Bạn có muốn xóa sản phẩm hay không?", "Thông Báo", 2);
+        if (Click == JOptionPane.YES_OPTION) {
+            String sqlDelete = "DELETE FROM Products WHERE ID=? AND Name=? ";
+            try {
+                pst = conn.prepareStatement(sqlDelete);
+
+                int click = tableProduct.getSelectedRow();
+                TableModel model = tableProduct.getModel();
+                pst.setString(1, model.getValueAt(click, 0).toString());
+                pst.setString(2, txbName.getText());
+                pst.executeUpdate();
+                JOptionPane.showMessageDialog(null, "Xóa sản phẩm thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                Disabled();
+                Refresh();
+                Load(sql);
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
         }
+
     }//GEN-LAST:event_btnDeleteActionPerformed
 
     private void btnChangeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChangeActionPerformed
