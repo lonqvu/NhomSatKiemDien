@@ -336,7 +336,7 @@ public class PayDialog extends javax.swing.JDialog {
                     .addComponent(txbConLai, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnExit, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnSave1, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnSave2, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -386,8 +386,9 @@ public class PayDialog extends javax.swing.JDialog {
     }
 
     private void countMoney() {
-        if (StringUtils.isEmpty(checkNull()) == false) {
-            JOptionPane.showMessageDialog(null, checkNull(), "Lỗi", JOptionPane.ERROR);
+         String checkNull = checkNull();
+        if (StringUtils.isEmpty(checkNull) == false) {
+            JOptionPane.showMessageDialog(null, checkNull, "Error", JOptionPane.WARNING_MESSAGE);
         } else {
             BigDecimal tongTien = convertToMoney(txbTongTien.getText());
             BigDecimal noCu = convertToMoney(txbNoCu.getText());
@@ -484,16 +485,23 @@ public class PayDialog extends javax.swing.JDialog {
             pst.setBigDecimal(4, convertToMoney(txbKhachTra.getText()));
             pst.setBigDecimal(5, convertToMoney(txbConLai.getText()));
             pst.setBoolean(6, true);
-            pst.setString(7, maKH);
+            if(StringUtils.isEmpty(maKH) == false){
+                pst.setString(7, maKH);
+            }
+            else{
+                pst.setString(7,null);
+            }
             pst.setString(8, tenKh);
             pst.setString(9, diaChi);
             pst.setString(10, sdt);
 
             pst.executeUpdate();
 
-            pst = conn.prepareStatement(sqlUpdateDebt);
-            pst.setBigDecimal(1, convertToMoney(txbConLai.getText()));
-            pst.executeUpdate();
+            if (StringUtils.isEmpty(maKH) == false) {
+                pst = conn.prepareStatement(sqlUpdateDebt);
+                pst.setBigDecimal(1, convertToMoney(txbConLai.getText()));
+                pst.executeUpdate();
+            }
             isPayed = true;
             this.dispose();
             JOptionPane.showMessageDialog(null, "Lưu thay đổi thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
@@ -551,23 +559,27 @@ public class PayDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_txbNoCuKeyReleased
 
     private void btnUpdateDebtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateDebtActionPerformed
-        boolean checkLogin = showPasswordDialog();
-        if (checkLogin) {
-            int Click = JOptionPane.showConfirmDialog(null, "Bạn có muốn cập nhật nợ cũ cho khách hàng này không?", "Thông Báo", 2);
-            if (Click == JOptionPane.YES_OPTION) {
-                String sqlChange = "UPDATE Customer SET Debt=?, OldDebt=? WHERE ID='" + maKH + "'";
-                try {
-                    pst = conn.prepareStatement(sqlChange);
-                    pst.setBigDecimal(1, convertToMoney(txbNoCu.getText()));
-                    pst.setBigDecimal(2, convertToMoney(txbNoCu.getText()));
+        if (StringUtils.isEmpty(maKH) == false) {
+            boolean checkLogin = showPasswordDialog();
+            if (checkLogin) {
+                int Click = JOptionPane.showConfirmDialog(null, "Bạn có muốn cập nhật nợ cũ cho khách hàng này không?", "Thông Báo", 2);
+                if (Click == JOptionPane.YES_OPTION) {
+                    String sqlChange = "UPDATE Customer SET Debt=?, OldDebt=? WHERE ID='" + maKH + "'";
+                    try {
+                        pst = conn.prepareStatement(sqlChange);
+                        pst.setBigDecimal(1, convertToMoney(txbNoCu.getText()));
+                        pst.setBigDecimal(2, convertToMoney(txbNoCu.getText()));
 
-                    pst.executeUpdate();
-                    countMoney();
-                    JOptionPane.showMessageDialog(null, "Cập nhật nợ cũ thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
+                        pst.executeUpdate();
+                        countMoney();
+                        JOptionPane.showMessageDialog(null, "Cập nhật nợ cũ thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
                 }
             }
+        } else {
+            JOptionPane.showMessageDialog(null, "Khách lẻ ko thể cập nhật nợ cũ!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
         }
     }//GEN-LAST:event_btnUpdateDebtActionPerformed
 
