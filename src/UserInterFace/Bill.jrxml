@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Bill" pageWidth="595" pageHeight="842" columnWidth="565" leftMargin="15" rightMargin="15" topMargin="15" bottomMargin="15" uuid="f23f60d8-eb9c-46cb-987d-8131c93e1d83">
-	<property name="ireport.zoom" value="1.7715610000000017"/>
-	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="296"/>
+	<property name="ireport.zoom" value="1.6105100000000012"/>
+	<property name="ireport.x" value="15"/>
+	<property name="ireport.y" value="120"/>
 	<parameter name="ORDER_ID" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[SELECT ROW_NUMBER() OVER (ORDER BY Bill."ID") AS STT,
@@ -128,7 +128,7 @@ Order by Products_Name DESC]]>
 				<textField isStretchWithOverflow="true" evaluationTime="Group" evaluationGroup="ProductGroup" pattern="" isBlankWhenNull="false">
 					<reportElement isPrintRepeatedValues="false" x="283" y="0" width="90" height="20" isPrintInFirstWholeBand="true" uuid="ec3651db-61f5-4fd1-b61d-911f080af04d"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle"/>
-					<textFieldExpression><![CDATA[new java.math.BigDecimal($V{DisplayTotalAmount}.toString()).setScale(3, java.math.RoundingMode.HALF_UP).stripTrailingZeros().toString() + " "+$F{Bill_UnitName}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[new java.math.BigDecimal($V{DisplayTotalAmount}.toString()).setScale(3, java.math.RoundingMode.HALF_UP).stripTrailingZeros().toPlainString() + " "+$F{Bill_UnitName}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="#,##0.##" isBlankWhenNull="false">
 					<reportElement isPrintRepeatedValues="false" x="374" y="0" width="93" height="20" isPrintInFirstWholeBand="true" uuid="b13ccbd4-b407-4ea5-a8b4-af8e27bef995"/>
