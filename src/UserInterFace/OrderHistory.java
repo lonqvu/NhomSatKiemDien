@@ -3,6 +3,7 @@ package UserInterFace;
 import Entity.Classify;
 import Entity.Unit;
 import Utils.DatabaseUtil;
+import com.microsoft.sqlserver.jdbc.StringUtils;
 import java.awt.Color;
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -86,11 +87,11 @@ public class OrderHistory extends javax.swing.JFrame {
                 vector.add(rs.getString("ID").trim());
                 vector.add(rs.getDate("Date"));
                 vector.add(rs.getString("StaffName"));
-                vector.add(decimalFormat.format(rs.getBigDecimal("TotalMoneyBill")));
-                vector.add(decimalFormat.format(rs.getBigDecimal("OldDebt")));
-                vector.add(decimalFormat.format(rs.getBigDecimal("TotalMoneyOrder")));
-                vector.add(decimalFormat.format(rs.getBigDecimal("PayMoney")));
-                vector.add(decimalFormat.format(rs.getBigDecimal("DebtBack")));
+                vector.add(moneyDis(rs.getString("TotalMoneyBill")));
+                vector.add(moneyDis(rs.getString("OldDebt")));
+                vector.add(moneyDis(rs.getString("TotalMoneyOrder")));
+                vector.add(moneyDis(rs.getString("PayMoney")));
+                vector.add(moneyDis(rs.getString("DebtBack")));
                 vector.add(rs.getString("Customer"));
                 vector.add(rs.getString("Phone"));
                 vector.add(rs.getString("Address"));
@@ -102,6 +103,15 @@ public class OrderHistory extends javax.swing.JFrame {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    public String moneyDis(String money) {
+        String price = "";
+        if (StringUtils.isEmpty(money) == false) {
+            DecimalFormat format = new DecimalFormat("###,###,###");
+            price = format.format(Double.parseDouble(money));
+        }
+        return price;
     }
 
     private Unit getUnitById(String id) {

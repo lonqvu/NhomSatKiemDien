@@ -25,36 +25,7 @@ public class Home extends javax.swing.JFrame implements Runnable {
         lblSoftwareName.setForeground(Color.GREEN);
         this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         detail = new Detail(d);
-        // Tạo ScheduledExecutorService để lên lịch công việc
-        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-
-        // Lệnh sao lưu sẽ chạy ngay khi bắt đầu ứng dụng và sau đó lặp lại mỗi 24 giờ
-//        scheduler.scheduleAtFixedRate(() -> {
-//            // Thực hiện sao lưu dữ liệu
-//            DatabaseBackup.backupDatabase();
-//        }, 0, 24, TimeUnit.HOURS);
-        scheduler.schedule(() -> {
-            // Thực hiện tác vụ sau 10 giây
-            DatabaseBackup.backupDatabase();
-        }, 10, TimeUnit.SECONDS);
         //Start();
-    }
-
-    public static long calculateInitialDelay(int hour, int minute) {
-        Calendar now = Calendar.getInstance();
-        Calendar nextRun = Calendar.getInstance();
-        nextRun.set(Calendar.HOUR_OF_DAY, hour);
-        nextRun.set(Calendar.MINUTE, minute);
-        nextRun.set(Calendar.SECOND, 0);
-        nextRun.set(Calendar.MILLISECOND, 0);
-
-        // Nếu thời điểm hiện tại đã qua thời điểm mục tiêu trong ngày, tính toán cho ngày hôm sau
-        if (now.after(nextRun)) {
-            nextRun.add(Calendar.DAY_OF_MONTH, 1);
-        }
-
-        long initialDelay = nextRun.getTimeInMillis() - now.getTimeInMillis();
-        return initialDelay;
     }
 
     private void Start() {
@@ -353,17 +324,6 @@ public class Home extends javax.swing.JFrame implements Runnable {
         }
         //</editor-fold>
         //</editor-fold>
-
-        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-
-        // Tính thời gian từ bây giờ đến 9h sáng ngày kế tiếp
-        // Tính thời gian từ bây giờ đến 7h35 PM ngày kế tiếp
-        long initialDelay = calculateInitialDelay(19, 38);
-
-        // Lên lịch để chạy tác vụ lúc 7h35 PM mỗi ngày
-        scheduler.scheduleAtFixedRate(() -> {
-            DatabaseBackup.backupDatabase();
-        }, initialDelay, TimeUnit.DAYS.toMillis(1), TimeUnit.MILLISECONDS);
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
