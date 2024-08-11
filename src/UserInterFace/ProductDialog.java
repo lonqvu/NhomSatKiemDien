@@ -709,6 +709,9 @@ public class ProductDialog extends javax.swing.JDialog {
                     ex.printStackTrace();
                 }
             }
+            else{
+                JOptionPane.showMessageDialog(null, checkNull, "Thông báo", JOptionPane.WARNING_MESSAGE);
+            }
         }
     }//GEN-LAST:event_btnSave1ActionPerformed
 

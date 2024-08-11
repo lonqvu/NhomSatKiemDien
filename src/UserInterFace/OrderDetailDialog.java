@@ -7,10 +7,12 @@ package UserInterFace;
 
 import Entity.Classify;
 import Entity.Unit;
+import static UserInterFace.Sale.checkIfFileExists;
 import Utils.DatabaseUtil;
 import com.microsoft.sqlserver.jdbc.StringUtils;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.io.File;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -34,6 +36,7 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
@@ -168,6 +171,7 @@ public class OrderDetailDialog extends javax.swing.JDialog {
         tableOrderDetail = new javax.swing.JTable();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setBackground(new java.awt.Color(102, 102, 255));
@@ -208,6 +212,13 @@ public class OrderDetailDialog extends javax.swing.JDialog {
             }
         });
 
+        jButton3.setText("Lưu hóa đơn");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -219,9 +230,11 @@ public class OrderDetailDialog extends javax.swing.JDialog {
             .addGroup(layout.createSequentialGroup()
                 .addGap(414, 414, 414)
                 .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addGap(12, 12, 12)
+                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(370, Short.MAX_VALUE))
+                .addContainerGap(257, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -229,9 +242,10 @@ public class OrderDetailDialog extends javax.swing.JDialog {
                 .addContainerGap()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 467, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(21, 21, 21)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
+                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
+                    .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -264,6 +278,63 @@ public class OrderDetailDialog extends javax.swing.JDialog {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         this.dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    public static boolean checkIfFileExists(String directory, String fileName) {
+        // Tạo đối tượng File cho file PDF cần kiểm tra
+        File file = new File(directory + File.separator + fileName + ".pdf");
+
+        // Kiểm tra xem file có tồn tại không
+        return file.exists();
+    }
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        try {
+            // Biên dịch mẫu báo cáo JasperReports
+            JasperReport report = JasperCompileManager.compileReport("D:\\NhomSatKiemDien\\src\\UserInterFace\\Bill.jrxml");
+
+            // Thay thế các tham số theo yêu cầu
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put("ORDER_ID", orderId);
+
+            // Điền dữ liệu vào báo cáo
+            JasperPrint print = JasperFillManager.fillReport(report, parameters, conn);
+
+//            // Hiển thị báo cáo trong JasperViewer
+//            JasperViewer.viewReport(print, false);
+            // Tạo đường dẫn và tên file PDF
+            String directoryPath = "D:/Hóa Đơn"; // Đường dẫn thư mục lưu trữ
+            String fileName = orderId + ".pdf"; // Tên file dựa trên mã hóa đơn
+            String filePath = directoryPath + File.separator + fileName;
+
+            // Đảm bảo thư mục tồn tại
+            File directory = new File(directoryPath);
+            if (!directory.exists()) {
+                directory.mkdirs(); // Tạo thư mục nếu không tồn tại
+            }
+
+            // Kiểm tra xem file đã tồn tại chưa
+            if (checkIfFileExists(directoryPath, fileName) == false) {
+                // Xuất báo cáo JasperReports thành file PDF
+                JasperExportManager.exportReportToPdfFile(print, filePath);
+
+                // Thông báo thành công
+                JOptionPane.showMessageDialog(null, "Hóa đơn đã được lưu tại: " + filePath);
+            } else {
+                int Click = JOptionPane.showConfirmDialog(null, "Hóa đơn nãy đã được lưu, bạn có muốn lưu lại không?", "Thông Báo", 2);
+                if (Click == JOptionPane.YES_OPTION) {
+                    // Xuất báo cáo JasperReports thành file PDF
+                    JasperExportManager.exportReportToPdfFile(print, filePath);
+
+                    // Thông báo thành công
+                    JOptionPane.showMessageDialog(null, "Hóa đơn đã được lưu tại: " + filePath);
+                }
+            }
+
+        } catch (JRException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Đã xảy ra lỗi khi tạo file PDF.");
+        }
+    }//GEN-LAST:event_jButton3ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -313,6 +384,7 @@ public class OrderDetailDialog extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable tableOrderDetail;
     // End of variables declaration//GEN-END:variables

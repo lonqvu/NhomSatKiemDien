@@ -36,6 +36,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Timestamp;
@@ -60,6 +61,7 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
 import javax.swing.text.PlainDocument;
+import net.sf.jasperreports.engine.util.JRProperties;
 
 class Sale extends javax.swing.JFrame implements Runnable {
 
@@ -178,6 +180,7 @@ class Sale extends javax.swing.JFrame implements Runnable {
         btnNew.setEnabled(true);
         btnAdd.setEnabled(false);
         btnPay.setEnabled(false);
+        btnSavePdf.setEnabled(false);
         lbltotalMoney.setText("0");
         lblNoCu.setText("0");
         lblTong.setText("0");
@@ -490,6 +493,7 @@ class Sale extends javax.swing.JFrame implements Runnable {
         btnDelete = new javax.swing.JButton();
         btnPrint = new javax.swing.JButton();
         btnPay = new javax.swing.JButton();
+        btnSavePdf = new javax.swing.JButton();
         jLabel11 = new javax.swing.JLabel();
         btnBackHome = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
@@ -573,7 +577,7 @@ class Sale extends javax.swing.JFrame implements Runnable {
         });
 
         btnPrint.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/Print Sale.png"))); // NOI18N
-        btnPrint.setText("Xuất HD");
+        btnPrint.setText("Xuất HĐ");
         btnPrint.setEnabled(false);
         btnPrint.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -590,6 +594,15 @@ class Sale extends javax.swing.JFrame implements Runnable {
             }
         });
 
+        btnSavePdf.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/Print Sale.png"))); // NOI18N
+        btnSavePdf.setText("Lưu HĐ");
+        btnSavePdf.setEnabled(false);
+        btnSavePdf.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSavePdfActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -603,6 +616,8 @@ class Sale extends javax.swing.JFrame implements Runnable {
                 .addComponent(btnPay, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(btnPrint, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(btnSavePdf, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
@@ -613,7 +628,8 @@ class Sale extends javax.swing.JFrame implements Runnable {
                     .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnPay, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnPrint, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnPrint, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnSavePdf, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
@@ -988,8 +1004,8 @@ class Sale extends javax.swing.JFrame implements Runnable {
         }
     }//GEN-LAST:event_formWindowClosing
 
-    private void btnPrintActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPrintActionPerformed
 
+    private void btnPrintActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPrintActionPerformed
         try {
             JasperReport report = JasperCompileManager.compileReport("D:\\NhomSatKiemDien\\src\\UserInterFace\\Bill.jrxml");
             Map<String, Object> parameters = new HashMap<>();
@@ -997,6 +1013,7 @@ class Sale extends javax.swing.JFrame implements Runnable {
             JasperPrint print = JasperFillManager.fillReport(report, parameters, conn);
 
             JasperViewer.viewReport(print, false);
+            btnSavePdf.setEnabled(true);
         } catch (JRException ex) {
             ex.printStackTrace();
         }
@@ -1049,6 +1066,8 @@ class Sale extends javax.swing.JFrame implements Runnable {
                 refreshOrderDetail();
                 btnAdd.setEnabled(true);
                 btnNew.setEnabled(false);
+                btnPrint.setEnabled(false);
+                btnSavePdf.setEnabled(false);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -1361,6 +1380,63 @@ class Sale extends javax.swing.JFrame implements Runnable {
         }
     }//GEN-LAST:event_btnDeleteOrderActionPerformed
 
+    public static boolean checkIfFileExists(String directory, String fileName) {
+        // Tạo đối tượng File cho file PDF cần kiểm tra
+        File file = new File(directory + File.separator + fileName + ".pdf");
+
+        // Kiểm tra xem file có tồn tại không
+        return file.exists();
+    }
+
+    private void btnSavePdfActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSavePdfActionPerformed
+        try {
+            // Biên dịch mẫu báo cáo JasperReports
+            JasperReport report = JasperCompileManager.compileReport("D:\\NhomSatKiemDien\\src\\UserInterFace\\Bill.jrxml");
+
+            // Thay thế các tham số theo yêu cầu
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put("ORDER_ID", MaHD);
+
+            // Điền dữ liệu vào báo cáo
+            JasperPrint print = JasperFillManager.fillReport(report, parameters, conn);
+
+//            // Hiển thị báo cáo trong JasperViewer
+//            JasperViewer.viewReport(print, false);
+            // Tạo đường dẫn và tên file PDF
+            String directoryPath = "D:/Hóa Đơn"; // Đường dẫn thư mục lưu trữ
+            String fileName = MaHD + ".pdf"; // Tên file dựa trên mã hóa đơn
+            String filePath = directoryPath + File.separator + fileName;
+
+            // Đảm bảo thư mục tồn tại
+            File directory = new File(directoryPath);
+            if (!directory.exists()) {
+                directory.mkdirs(); // Tạo thư mục nếu không tồn tại
+            }
+
+            // Kiểm tra xem file đã tồn tại chưa
+            if (checkIfFileExists(directoryPath, fileName) == false) {
+                // Xuất báo cáo JasperReports thành file PDF
+                JasperExportManager.exportReportToPdfFile(print, filePath);
+
+                // Thông báo thành công
+                JOptionPane.showMessageDialog(null, "Hóa đơn đã được lưu tại: " + filePath);
+            } else {
+                int Click = JOptionPane.showConfirmDialog(null, "Hóa đơn nãy đã được lưu, bạn có muốn lưu lại không?", "Thông Báo", 2);
+                if (Click == JOptionPane.YES_OPTION) {
+                    // Xuất báo cáo JasperReports thành file PDF
+                    JasperExportManager.exportReportToPdfFile(print, filePath);
+
+                    // Thông báo thành công
+                    JOptionPane.showMessageDialog(null, "Hóa đơn đã được lưu tại: " + filePath);
+                }
+            }
+
+        } catch (JRException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Đã xảy ra lỗi khi tạo file PDF.");
+        }
+    }//GEN-LAST:event_btnSavePdfActionPerformed
+
     private void deleteRecords() {
         String sqlDeleteOrder = "DELETE FROM Orders WHERE ID = ?";
         String sqlDelete = "DELETE FROM Bill WHERE OrderID = ?";
@@ -1432,6 +1508,7 @@ class Sale extends javax.swing.JFrame implements Runnable {
     private javax.swing.JButton btnNew;
     private javax.swing.JButton btnPay;
     private javax.swing.JButton btnPrint;
+    private javax.swing.JButton btnSavePdf;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
