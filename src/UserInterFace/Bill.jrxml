@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Bill" pageWidth="595" pageHeight="1000" columnWidth="565" leftMargin="15" rightMargin="15" topMargin="15" bottomMargin="15" uuid="f23f60d8-eb9c-46cb-987d-8131c93e1d83">
-	<property name="ireport.zoom" value="1.2100000000000009"/>
-	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="192"/>
+	<property name="ireport.zoom" value="1.948717100000002"/>
+	<property name="ireport.x" value="36"/>
+	<property name="ireport.y" value="476"/>
 	<parameter name="ORDER_ID" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[SELECT ROW_NUMBER() OVER (ORDER BY Bill."ID") AS STT,
@@ -98,10 +98,26 @@ Order by Products_Name DESC]]>
 		<variableExpression><![CDATA[$V{GroupCount} +1]]></variableExpression>
 		<initialValueExpression><![CDATA[1]]></initialValueExpression>
 	</variable>
+	<variable name="sumSoTam" class="java.lang.Integer" resetType="Group" resetGroup="ProductGroup" calculation="Sum">
+		<variableExpression><![CDATA[$F{Bill_SoTam}]]></variableExpression>
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
+	</variable>
+	<variable name="DisplaySoTam" class="java.lang.Integer" resetType="None">
+		<variableExpression><![CDATA[$V{sumSoTam}]]></variableExpression>
+	</variable>
 	<group name="ProductGroup">
 		<groupExpression><![CDATA[$F{Products_Name}]]></groupExpression>
 		<groupHeader>
 			<band height="21">
+				<textField isStretchWithOverflow="true" evaluationTime="Group" evaluationGroup="ProductGroup" pattern="" isBlankWhenNull="false">
+					<reportElement isPrintRepeatedValues="false" x="191" y="0" width="90" height="20" isPrintInFirstWholeBand="true" uuid="ec7780a5-402d-4499-ad14-bb4b70514c1d">
+						<printWhenExpression><![CDATA[$F{Bill_SoTam} != 0]]></printWhenExpression>
+					</reportElement>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="DejaVu Sans" size="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{DisplaySoTam} + " tấm x " + new java.math.BigDecimal($F{Bill_HeSo}.toString()).setScale(3, java.math.RoundingMode.HALF_UP).stripTrailingZeros().toString()]]></textFieldExpression>
+				</textField>
 				<line>
 					<reportElement x="282" y="-1" width="1" height="22" uuid="cfb0d714-8028-44e4-b2bc-529dc8c5c9d5"/>
 				</line>
@@ -387,7 +403,7 @@ Order by Products_Name DESC]]>
 				<reportElement x="0" y="-1" width="1" height="21" uuid="652ce2cf-38e8-42d8-9ba6-a16cb833deea"/>
 			</line>
 			<textField>
-				<reportElement x="95" y="0" width="123" height="20" uuid="ebd60645-4546-4055-88b1-03133fd380af"/>
+				<reportElement x="92" y="0" width="123" height="20" uuid="ebd60645-4546-4055-88b1-03133fd380af"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="DejaVu Sans" size="10"/>
 				</textElement>
@@ -395,14 +411,14 @@ Order by Products_Name DESC]]>
 + " m x " + 
 $F{Bill_SoTam}.toString() + " tấm"
 + " x " + 
-new java.math.BigDecimal($F{Bill_HeSo}.toString()).setScale(3, java.math.RoundingMode.HALF_UP).stripTrailingZeros().toString()]]></textFieldExpression>
+new java.math.BigDecimal($F{Bill_HeSo}.toString()).setScale(3, java.math.RoundingMode.HALF_UP).stripTrailingZeros().toString() + " = "]]></textFieldExpression>
 			</textField>
 			<textField pattern="#.###">
-				<reportElement x="218" y="0" width="64" height="20" uuid="a2a1eabd-916b-47da-9631-b6e58c1998e8"/>
-				<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None">
+				<reportElement x="203" y="0" width="78" height="20" uuid="a2a1eabd-916b-47da-9631-b6e58c1998e8"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" rotation="None">
 					<font fontName="DejaVu Sans" size="10"/>
 				</textElement>
-				<textFieldExpression><![CDATA[" = " + new java.math.BigDecimal($F{Bill_TongSoLuong}.toString()).setScale(3, java.math.RoundingMode.HALF_UP).stripTrailingZeros().toString()  + " m2"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[new java.math.BigDecimal($F{Bill_TongSoLuong}.toString()).setScale(3, java.math.RoundingMode.HALF_UP).stripTrailingZeros().toString()  + " m2"]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
