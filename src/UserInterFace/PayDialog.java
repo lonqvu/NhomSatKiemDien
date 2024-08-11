@@ -540,6 +540,14 @@ public class PayDialog extends javax.swing.JDialog {
                         JOptionPane.showMessageDialog(null, "Lưu thay đổi thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
                     }
                 }
+                else{
+                    pst = conn.prepareStatement(sqlUpdateDebt);
+                        pst.setBigDecimal(1, convertToMoney(txbConLai.getText()));
+                        pst.executeUpdate();
+                        isPayed = true;
+                        this.dispose();
+                        JOptionPane.showMessageDialog(null, "Lưu thay đổi thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                }
 
             } catch (Exception ex) {
                 ex.printStackTrace();

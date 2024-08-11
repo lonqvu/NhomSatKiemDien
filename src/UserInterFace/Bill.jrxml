@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Bill" pageWidth="595" pageHeight="1000" columnWidth="565" leftMargin="15" rightMargin="15" topMargin="15" bottomMargin="15" uuid="f23f60d8-eb9c-46cb-987d-8131c93e1d83">
 	<property name="ireport.zoom" value="1.2100000000000009"/>
-	<property name="ireport.x" value="0"/>
+	<property name="ireport.x" value="40"/>
 	<property name="ireport.y" value="192"/>
 	<parameter name="ORDER_ID" class="java.lang.String"/>
 	<queryString>
@@ -402,7 +402,7 @@ new java.math.BigDecimal($F{Bill_HeSo}.toString()).setScale(3, java.math.Roundin
 				<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None">
 					<font fontName="DejaVu Sans" size="10"/>
 				</textElement>
-				<textFieldExpression><![CDATA[" = " + new java.math.BigDecimal($F{Bill_TongSoLuong}.toString()).setScale(3, java.math.RoundingMode.HALF_UP).stripTrailingZeros().toString()  + "mét"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[" = " + new java.math.BigDecimal($F{Bill_TongSoLuong}.toString()).setScale(3, java.math.RoundingMode.HALF_UP).stripTrailingZeros().toString()  + "m2"]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

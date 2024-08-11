@@ -311,11 +311,6 @@
       </Events>
     </Component>
     <Component class="javax.swing.JTextField" name="txbShippingFee">
-      <Properties>
-        <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-          <Color blue="ff" green="ff" red="ff" type="rgb"/>
-        </Property>
-      </Properties>
       <Events>
         <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="txbShippingFeeKeyReleased"/>
       </Events>
