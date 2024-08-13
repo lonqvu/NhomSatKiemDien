@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Bill" pageWidth="595" pageHeight="1000" columnWidth="565" leftMargin="15" rightMargin="15" topMargin="15" bottomMargin="15" uuid="f23f60d8-eb9c-46cb-987d-8131c93e1d83">
-	<property name="ireport.zoom" value="1.948717100000002"/>
-	<property name="ireport.x" value="36"/>
-	<property name="ireport.y" value="476"/>
+	<property name="ireport.zoom" value="1.3310000000000015"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="156"/>
 	<parameter name="ORDER_ID" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[SELECT ROW_NUMBER() OVER (ORDER BY Bill."ID") AS STT,
@@ -31,7 +31,8 @@
 	Orders."TotalMoneyOrder" AS "Total_Money_Order",  
 	Orders."PayMoney" AS "Pay_Money",  
 	Orders."DebtBack" AS "Debt_Back",
-	Orders."ShippingFee" AS "Shipping_Fee"
+	Orders."ShippingFee" AS "Shipping_Fee",
+	Orders."StaffName" AS "Staff"
 
 FROM
     "dbo"."Bill" Bill
@@ -72,6 +73,7 @@ Order by Products_Name DESC]]>
 	<field name="Pay_Money" class="java.math.BigDecimal"/>
 	<field name="Debt_Back" class="java.math.BigDecimal"/>
 	<field name="Shipping_Fee" class="java.math.BigDecimal"/>
+	<field name="Staff" class="java.lang.String"/>
 	<variable name="HeSo" class="java.lang.String" resetType="Group" resetGroup="ProductGroup" incrementType="Group" incrementGroup="ProductGroup">
 		<variableExpression><![CDATA[new java.math.BigDecimal($F{Bill_Amount}.toString()).multiply(new java.math.BigDecimal($F{Bill_SoTam}.toString())).multiply(new java.math.BigDecimal($F{Bill_HeSo}.toString()))]]></variableExpression>
 	</variable>
@@ -238,9 +240,9 @@ Order by Products_Name DESC]]>
 		</band>
 	</title>
 	<pageHeader>
-		<band height="90" splitType="Stretch">
+		<band height="116" splitType="Stretch">
 			<line>
-				<reportElement x="0" y="89" width="566" height="1" uuid="ff6d9379-db42-425b-a2be-493861588e27"/>
+				<reportElement x="0" y="115" width="566" height="1" uuid="ff6d9379-db42-425b-a2be-493861588e27"/>
 			</line>
 			<staticText>
 				<reportElement x="187" y="4" width="210" height="20" uuid="d22cfc94-9ea4-49af-9663-a519f3e5e99a"/>
@@ -278,46 +280,60 @@ Order by Products_Name DESC]]>
 				<textFieldExpression><![CDATA[$F{Orders_Date}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="0" y="49" width="63" height="20" uuid="b70dbd74-1ffc-44fd-97a5-86478c2882ad"/>
+				<reportElement x="0" y="75" width="63" height="20" uuid="b70dbd74-1ffc-44fd-97a5-86478c2882ad"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="DejaVu Sans"/>
 				</textElement>
 				<text><![CDATA[Khách hàng:]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="63" y="49" width="502" height="20" uuid="585cea00-a28c-4f92-98fa-f6fbc28dd438"/>
+				<reportElement x="63" y="75" width="502" height="20" uuid="585cea00-a28c-4f92-98fa-f6fbc28dd438"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="DejaVu Sans"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{Customer}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="0" y="69" width="24" height="20" uuid="19bb463e-ae44-429c-9a0f-bc7bb0a178b0"/>
+				<reportElement x="0" y="95" width="24" height="20" uuid="19bb463e-ae44-429c-9a0f-bc7bb0a178b0"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="DejaVu Sans"/>
 				</textElement>
 				<text><![CDATA[SĐT:]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="25" y="69" width="70" height="20" uuid="af1ac138-34a0-479d-9417-264648e0c8e0"/>
+				<reportElement x="25" y="95" width="85" height="20" uuid="af1ac138-34a0-479d-9417-264648e0c8e0"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="DejaVu Sans"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{Phone_Number}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="105" y="69" width="40" height="20" uuid="43906485-7f74-468a-b9fc-36838018b84e"/>
+				<reportElement x="110" y="95" width="40" height="20" uuid="43906485-7f74-468a-b9fc-36838018b84e"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="DejaVu Sans"/>
 				</textElement>
 				<text><![CDATA[Địa Chỉ:]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="145" y="69" width="70" height="20" uuid="a4b0d8f8-efd7-468a-b653-136fc28cf03e"/>
+				<reportElement x="150" y="95" width="415" height="20" uuid="a4b0d8f8-efd7-468a-b653-136fc28cf03e"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="DejaVu Sans"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{Address}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="55" width="85" height="20" uuid="c9e19a58-1f2f-4126-88a6-614493644f2a"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Sans"/>
+				</textElement>
+				<text><![CDATA[Người bán hàng:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="85" y="55" width="480" height="20" uuid="11d9baa3-7e00-4b6a-a6f0-5c13e39d4ff2"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Sans"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Staff}]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageHeader>
