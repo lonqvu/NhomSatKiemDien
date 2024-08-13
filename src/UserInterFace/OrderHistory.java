@@ -44,7 +44,7 @@ public class OrderHistory extends javax.swing.JFrame {
     private PreparedStatement pst = null;
     private ResultSet rs = null;
 
-    private String sql = "SELECT * FROM Orders  where isPayed = 1 Order By Date ASC ";
+    private String sql = "SELECT * FROM Orders  where isPayed = 1 Order By Date DESC ";
 
     private Detail detail;
 
