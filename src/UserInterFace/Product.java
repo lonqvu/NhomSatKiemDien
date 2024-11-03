@@ -749,17 +749,16 @@ public class Product extends javax.swing.JFrame {
             while (rs.next()) {
                 String productName = rs.getString("Name").trim();
                 String price = decimalFormat.format(Double.parseDouble(rs.getString("Price").trim()));
-                String unitId = rs.getString("UnitID").trim();
+                String unitName = rs.getString("UnitName").trim();
                 String classifyId = rs.getString("ClassifyID").trim();
 
                 Vector<String> vector = new Vector<>();
                 vector.add(rs.getString("ID").trim());
                 vector.add(getClassifyById(rs.getString("ClassifyID").trim()).getClassify());
                 vector.add(productName);
-                vector.add(getUnitById(unitId).getUnit());
+                vector.add(unitName);
                 vector.add(price);
                 vector.add(classifyId);
-                vector.add(unitId);
                 model.addRow(vector);
             }
         } catch (Exception ex) {

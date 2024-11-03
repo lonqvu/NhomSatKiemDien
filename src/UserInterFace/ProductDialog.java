@@ -42,7 +42,7 @@ public class ProductDialog extends javax.swing.JDialog {
     private Connection conn = null;
     private PreparedStatement pst = null;
     private ResultSet rs = null;
-    String sql = "select * from products order by Name ASC";
+    String sql = "select * from products order by Name DESC";
     private String maSP = "";
     private String tenSP = "";
     private String maHD = "";
@@ -110,7 +110,7 @@ public class ProductDialog extends javax.swing.JDialog {
     private void updateTableDefault(String name) {
         DefaultTableModel model = (DefaultTableModel) tableProduct.getModel();
 
-        String query = "SELECT * FROM Products WHERE Name LIKE ?";
+        String query = "SELECT * FROM Products WHERE Name LIKE ? Order by Name ASC";
 
         try ( PreparedStatement statement = conn.prepareStatement(query)) {
             statement.setString(1, "%" + name + "%");

@@ -66,14 +66,24 @@ public class Customers extends javax.swing.JFrame {
             pst = conn.prepareStatement(sql);
             rs = pst.executeQuery();
             while (rs.next()) {
-                String disp = rs.getString("Debt").trim();
-
+                String disp = "";
+                String debt = rs.getString("Debt");
+                if(debt == null || debt.isBlank() || debt.isEmpty()){
+                  disp  = "";
+                }
+                else{
+                   disp =  debt.trim();
+                }
+                 
                 Vector vector = new Vector();
                 vector.add(rs.getString("ID").trim());
                 vector.add(rs.getString("CustomerName").trim());
                 vector.add(rs.getString("PhoneNumber").trim());
                 vector.add(rs.getString("Address").trim());
+                
+                if(!disp.equals("")){
                 vector.add(moneyDis(disp));
+                }
                 modle.addRow(vector);
             }
             tableCustomer.setModel(modle);
@@ -197,7 +207,10 @@ public class Customers extends javax.swing.JFrame {
                     pst.setString(1, txbCustomerName.getText());
                     pst.setString(2, txbPhoneNumber.getText());
                     pst.setString(3, txbAddress.getText());
-
+                    if(txbDebt.getText().isBlank() || txbDebt.getText().isEmpty()){
+                        JOptionPane.showMessageDialog(null, "Vui lòng khônng đươc để trống", "Thông báo", JOptionPane.ERROR);
+                    }
+                    else{
                     if (convertToMoney(txbPay.getText()).compareTo(BigDecimal.ZERO) != 0) {
                         if (convertToMoney(txbDebt.getText()).compareTo(BigDecimal.ZERO) == 0) {
                             JOptionPane.showMessageDialog(null, "Khách hàng này hiện chưa có khoản nợ nào!", "Thông báo", JOptionPane.WARNING_MESSAGE);
@@ -213,7 +226,7 @@ public class Customers extends javax.swing.JFrame {
                     } else {
                         pst.setBigDecimal(4, convertToMoney(txbDebt.getText()));
                         pst.setBigDecimal(5, convertToMoney(txbDebt.getText()));
-                    }
+                    }}
                     pst.executeUpdate();
                     JOptionPane.showMessageDialog(null, "Lưu thay đổi thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
                     DisabledCustomer();
@@ -691,27 +704,53 @@ public class Customers extends javax.swing.JFrame {
     }//GEN-LAST:event_btnSaveCustomerActionPerformed
 
     private void btnDeleteCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteCustomerActionPerformed
-        boolean checkLogin = showPasswordDialog();
-        if (checkLogin) {
-            int Click = JOptionPane.showConfirmDialog(null, "Bạn có muốn xóa khách hàng hay không?", "Thông Báo", 2);
-            if (Click == JOptionPane.YES_OPTION) {
-                String sqlDelete = "DELETE FROM Customer WHERE ID=?";
-                try {
-                    pst = conn.prepareStatement(sqlDelete);
-                    int click = tableCustomer.getSelectedRow();
+         boolean checkLogin = showPasswordDialog();
+    if (checkLogin) {
+        int click = JOptionPane.showConfirmDialog(null, "Bạn có muốn xóa khách hàng hay không?", "Thông Báo", JOptionPane.YES_NO_OPTION);
+        if (click == JOptionPane.YES_OPTION) {
+            String sqlDelete = "DELETE FROM Customer WHERE ID=?";
+            String sqlDeleteOrder = "DELETE FROM Orders WHERE CustomerID=?";
+            String sqlDeleteBill = "DELETE FROM Bill WHERE OrderID IN "
+                    + "(SELECT o.ID FROM Orders o Join Customer c on o.CustomerID = c.Id"
+                    + " Where c.id = ?)";
+            try {
+                int selectedRow = tableCustomer.getSelectedRow();
+                if (selectedRow != -1) { // Ensure a row is selected
                     TableModel model = tableCustomer.getModel();
-
-                    pst.setString(1, model.getValueAt(click, 0).toString());
+                    String customerId = model.getValueAt(selectedRow, 0).toString();
+                    // Delete bill for the order
+                    pst = conn.prepareStatement(sqlDeleteBill);
+                    pst.setString(1, customerId);
                     pst.executeUpdate();
+                    
+                    // Delete bill for the order
+                    pst = conn.prepareStatement(sqlDeleteOrder);
+                    pst.setString(1, customerId);
+                    pst.executeUpdate();
+                    
+                    // Delete orders for the customer
+                    pst = conn.prepareStatement(sqlDeleteOrder);
+                    pst.setString(1, customerId);
+                    pst.executeUpdate();
+
+                    // Delete customer
+                    pst = conn.prepareStatement(sqlDelete);
+                    pst.setString(1, customerId);
+                    pst.executeUpdate();
+
                     JOptionPane.showMessageDialog(null, "Xóa khách hàng thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
                     DisabledCustomer();
                     Refresh();
                     loadCustomer(sql);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
+                } else {
+                    JOptionPane.showMessageDialog(null, "Vui lòng chọn khách hàng để xóa!", "Thông báo", JOptionPane.WARNING_MESSAGE);
                 }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Có lỗi xảy ra khi xóa khách hàng!", "Lỗi", JOptionPane.ERROR_MESSAGE);
             }
         }
+    }
     }//GEN-LAST:event_btnDeleteCustomerActionPerformed
 
     private void btnChangeCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChangeCustomerActionPerformed
@@ -747,7 +786,7 @@ public class Customers extends javax.swing.JFrame {
 
         txbPay.setText(cutChar(txbPay.getText()));
         if (txbPay.getText().equals("")) {
-            return;
+           txbPay.setText("0");
         } else {
             txbPay.setText(formatter.format(convertedToNumbers(txbPay.getText())));
         }
@@ -759,7 +798,7 @@ public class Customers extends javax.swing.JFrame {
 
         txbDebt.setText(cutChar(txbDebt.getText()));
         if (txbDebt.getText().equals("")) {
-            return;
+            txbDebt.setText("0");
         } else {
             txbDebt.setText(formatter.format(convertedToNumbers(txbDebt.getText())));
         }
