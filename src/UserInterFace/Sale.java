@@ -36,7 +36,11 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Timestamp;
@@ -91,6 +95,7 @@ class Sale extends javax.swing.JFrame implements Runnable {
         connection();
         Start();
         checkBill();
+        btnZalo.setEnabled(false);
 //        if (this.detail.getRole() == 1) {
 //            btnCustomer.setEnabled(true);
 //        }
@@ -494,6 +499,7 @@ class Sale extends javax.swing.JFrame implements Runnable {
         btnPrint = new javax.swing.JButton();
         btnPay = new javax.swing.JButton();
         btnSavePdf = new javax.swing.JButton();
+        btnZalo = new javax.swing.JButton();
         jLabel11 = new javax.swing.JLabel();
         btnBackHome = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
@@ -603,6 +609,13 @@ class Sale extends javax.swing.JFrame implements Runnable {
             }
         });
 
+        btnZalo.setText("Gửi Zalo");
+        btnZalo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnZaloActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -618,18 +631,24 @@ class Sale extends javax.swing.JFrame implements Runnable {
                 .addComponent(btnPrint, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(btnSavePdf, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(61, 61, 61)
+                .addComponent(btnZalo, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap(27, Short.MAX_VALUE)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnPay, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnPrint, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnSavePdf, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnPay, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnPrint, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnSavePdf, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(btnZalo, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -1068,6 +1087,7 @@ class Sale extends javax.swing.JFrame implements Runnable {
                 btnNew.setEnabled(false);
                 btnPrint.setEnabled(false);
                 btnSavePdf.setEnabled(false);
+                btnZalo.setEnabled(false);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -1207,6 +1227,7 @@ class Sale extends javax.swing.JFrame implements Runnable {
                     btnNew.setEnabled(true);
                     btnAdd.setEnabled(false);
                     btnDeleteOrder.setEnabled(false);
+                    btnSavePdf.setEnabled(true);
                 } else {
                     btnPay.setEnabled(true);
                     btnPrint.setEnabled(false);
@@ -1403,7 +1424,7 @@ class Sale extends javax.swing.JFrame implements Runnable {
 //            // Hiển thị báo cáo trong JasperViewer
 //            JasperViewer.viewReport(print, false);
             // Tạo đường dẫn và tên file PDF
-            String directoryPath = "D:/Hóa Đơn"; // Đường dẫn thư mục lưu trữ
+            String directoryPath = "D:/HoaDon"; // Đường dẫn thư mục lưu trữ
             String fileName = MaHD + ".pdf"; // Tên file dựa trên mã hóa đơn
             String filePath = directoryPath + File.separator + fileName;
 
@@ -1420,6 +1441,7 @@ class Sale extends javax.swing.JFrame implements Runnable {
 
                 // Thông báo thành công
                 JOptionPane.showMessageDialog(null, "Hóa đơn đã được lưu tại: " + filePath);
+                btnZalo.setEnabled(true);
             } else {
                 int Click = JOptionPane.showConfirmDialog(null, "Hóa đơn nãy đã được lưu, bạn có muốn lưu lại không?", "Thông Báo", 2);
                 if (Click == JOptionPane.YES_OPTION) {
@@ -1436,6 +1458,25 @@ class Sale extends javax.swing.JFrame implements Runnable {
             JOptionPane.showMessageDialog(null, "Đã xảy ra lỗi khi tạo file PDF.");
         }
     }//GEN-LAST:event_btnSavePdfActionPerformed
+
+    private void btnZaloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnZaloActionPerformed
+
+        // Giả sử đường dẫn Zalo được cài đặt sẵn trong hệ thống
+        String zaloPath = "C:\\Users\\LongVX\\AppData\\Local\\Programs\\Zalo\\Zalo.exe";  // Đường dẫn tới ứng dụng Zalo
+        String filePath = "‪‪D:\\HoaDon\\" + lblMaHoaDon.getText() +".pdf"; // Đường dẫn file muốn gửi
+        String cleanedPath = filePath.replaceAll("[^\\x00-\\x7F]", "");  // Loại bỏ các ký tự ngoài phạm vi ASCII chuẩn
+
+        try {
+            
+            
+            String command = "\"" + zaloPath + "\" " + "\"" + cleanedPath + "\"";
+            // Chạy lệnh
+            Process process = Runtime.getRuntime().exec(command);
+        } catch (Exception e) {
+            System.err.println("Lỗi: " + e.getMessage());
+        }
+
+    }//GEN-LAST:event_btnZaloActionPerformed
 
     private void deleteRecords() {
         String sqlDeleteOrder = "DELETE FROM Orders WHERE ID = ?";
@@ -1509,6 +1550,7 @@ class Sale extends javax.swing.JFrame implements Runnable {
     private javax.swing.JButton btnPay;
     private javax.swing.JButton btnPrint;
     private javax.swing.JButton btnSavePdf;
+    private javax.swing.JButton btnZalo;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;

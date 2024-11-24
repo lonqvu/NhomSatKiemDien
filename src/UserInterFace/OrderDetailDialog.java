@@ -64,6 +64,7 @@ public class OrderDetailDialog extends javax.swing.JDialog {
         this.orderId = orderId;
         Load();
         setLocationRelativeTo(null);
+        btnZalo.setEnabled(false);
     }
 
     private void connection() {
@@ -172,6 +173,7 @@ public class OrderDetailDialog extends javax.swing.JDialog {
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
+        btnZalo = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setBackground(new java.awt.Color(102, 102, 255));
@@ -219,22 +221,31 @@ public class OrderDetailDialog extends javax.swing.JDialog {
             }
         });
 
+        btnZalo.setText("Gửi Zalo");
+        btnZalo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnZaloActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1000, Short.MAX_VALUE)
                 .addContainerGap())
             .addGroup(layout.createSequentialGroup()
-                .addGap(414, 414, 414)
+                .addGap(252, 252, 252)
                 .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(12, 12, 12)
                 .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnZalo, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(257, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -245,7 +256,8 @@ public class OrderDetailDialog extends javax.swing.JDialog {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
                     .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
-                    .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE))
+                    .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
+                    .addComponent(btnZalo, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -302,7 +314,7 @@ public class OrderDetailDialog extends javax.swing.JDialog {
 //            // Hiển thị báo cáo trong JasperViewer
 //            JasperViewer.viewReport(print, false);
             // Tạo đường dẫn và tên file PDF
-            String directoryPath = "D:/Hóa Đơn"; // Đường dẫn thư mục lưu trữ
+            String directoryPath = "D:/HoaDon"; // Đường dẫn thư mục lưu trữ
             String fileName = orderId + ".pdf"; // Tên file dựa trên mã hóa đơn
             String filePath = directoryPath + File.separator + fileName;
 
@@ -319,6 +331,7 @@ public class OrderDetailDialog extends javax.swing.JDialog {
 
                 // Thông báo thành công
                 JOptionPane.showMessageDialog(null, "Hóa đơn đã được lưu tại: " + filePath);
+                btnZalo.setEnabled(true);
             } else {
                 int Click = JOptionPane.showConfirmDialog(null, "Hóa đơn nãy đã được lưu, bạn có muốn lưu lại không?", "Thông Báo", 2);
                 if (Click == JOptionPane.YES_OPTION) {
@@ -335,6 +348,23 @@ public class OrderDetailDialog extends javax.swing.JDialog {
             JOptionPane.showMessageDialog(null, "Đã xảy ra lỗi khi tạo file PDF.");
         }
     }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void btnZaloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnZaloActionPerformed
+        // Giả sử đường dẫn Zalo được cài đặt sẵn trong hệ thống
+        String zaloPath = "C:\\Users\\LongVX\\AppData\\Local\\Programs\\Zalo\\Zalo.exe";  // Đường dẫn tới ứng dụng Zalo
+        String filePath = "‪‪D:\\HoaDon\\" + orderId +".pdf"; // Đường dẫn file muốn gửi
+        String cleanedPath = filePath.replaceAll("[^\\x00-\\x7F]", "");  // Loại bỏ các ký tự ngoài phạm vi ASCII chuẩn
+
+        try {
+            
+            
+            String command = "\"" + zaloPath + "\" " + "\"" + cleanedPath + "\"";
+            // Chạy lệnh
+            Process process = Runtime.getRuntime().exec(command);
+        } catch (Exception e) {
+            System.err.println("Lỗi: " + e.getMessage());
+        }
+    }//GEN-LAST:event_btnZaloActionPerformed
 
     /**
      * @param args the command line arguments
@@ -382,6 +412,7 @@ public class OrderDetailDialog extends javax.swing.JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnZalo;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;

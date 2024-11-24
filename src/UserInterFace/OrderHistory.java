@@ -21,11 +21,15 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
+import javax.swing.DefaultCellEditor;
 import javax.swing.ImageIcon;
+import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
@@ -37,6 +41,9 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.view.JasperViewer;
+import javax.swing.*;
+import javax.swing.table.*;
+import java.awt.*;
 
 public class OrderHistory extends javax.swing.JFrame {
 
@@ -71,18 +78,18 @@ public class OrderHistory extends javax.swing.JFrame {
         DecimalFormat decimalFormat = new DecimalFormat("#,##0.##");
         model.setRowCount(0);
         try ( PreparedStatement pst = conn.prepareStatement(sql);  ResultSet rs = pst.executeQuery()) {
-            String[] arr = {"STT", "Mã hóa đơn", "Ngày", "Người lập đơn", "Tiền hàng", "Nợ cũ", "Tổng cộng", "Đã thu", "Còn nợ", "Khách hàng", "Điện thoại", "Địa chỉ", "Ghi chú"};
+            String[] arr = {"Chọn", "STT", "Mã hóa đơn", "Ngày", "Người lập đơn", "Tiền hàng", "Nợ cũ", "Tổng cộng", "Đã thu", "Còn nợ", "Khách hàng", "Điện thoại", "Địa chỉ", "Ghi chú"};
             DefaultTableModel modle = new DefaultTableModel(arr, 0) {
                 @Override
                 public boolean isCellEditable(int row, int column) {
-                    // Làm cho toàn bộ bảng không thể chỉnh sửa
-                    return false;
+                    return column == 0;
                 }
             };
             int stt = 1;
             while (rs.next()) {
                 stt++;
                 Vector vector = new Vector();
+                vector.add(false);
                 vector.add(stt);
                 vector.add(rs.getString("ID").trim());
                 vector.add(rs.getDate("Date"));
@@ -99,7 +106,17 @@ public class OrderHistory extends javax.swing.JFrame {
                 modle.addRow(vector);
             }
             tableOrderHistory.setModel(modle);
-
+            tableOrderHistory.getColumnModel().getColumn(0).setCellEditor(new DefaultCellEditor(new JCheckBox()));
+            tableOrderHistory.getColumnModel().getColumn(0).setCellRenderer(new DefaultTableCellRenderer() {
+                @Override
+                public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                    JCheckBox checkBox = new JCheckBox();
+                    checkBox.setSelected((Boolean) value); // Chọn checkbox dựa trên giá trị Boolean
+                    return checkBox;
+                }
+            });
+            tableOrderHistory.getColumnModel().getColumn(0).setPreferredWidth(20);
+            tableOrderHistory.getColumnModel().getColumn(1).setPreferredWidth(50);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -140,6 +157,7 @@ public class OrderHistory extends javax.swing.JFrame {
         lblStatus = new javax.swing.JLabel();
         btnBackHome = new javax.swing.JButton();
         jLabel10 = new javax.swing.JLabel();
+        btnDelete = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -156,9 +174,17 @@ public class OrderHistory extends javax.swing.JFrame {
 
             },
             new String [] {
-
+                "null"
             }
-        ));
+        ) {
+            Class[] types = new Class [] {
+                java.lang.Boolean.class
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+        });
         tableOrderHistory.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 tableOrderHistoryMouseClicked(evt);
@@ -189,6 +215,14 @@ public class OrderHistory extends javax.swing.JFrame {
         jLabel10.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel10.setText("Lịch Sử Đơn Hàng");
 
+        btnDelete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/Delete.png"))); // NOI18N
+        btnDelete.setText("Xóa");
+        btnDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -198,21 +232,27 @@ public class OrderHistory extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lblStatus, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1169, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1169, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 1, Short.MAX_VALUE))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(btnBackHome)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                        .addGap(0, 11, Short.MAX_VALUE))))
+                                .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 886, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnDelete, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addGap(10, 10, 10))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnBackHome, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(btnBackHome, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 491, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -228,7 +268,7 @@ public class OrderHistory extends javax.swing.JFrame {
         TableModel model = tableOrderHistory.getModel();
 
         if (evt.getClickCount() == 2) {
-            OrderDetailDialog dialog = new OrderDetailDialog(this, true, model.getValueAt(Click, 1).toString());
+            OrderDetailDialog dialog = new OrderDetailDialog(this, true, model.getValueAt(Click, 2).toString());
             dialog.setLocationRelativeTo(null);
             dialog.setVisible(true);
         }
@@ -256,6 +296,51 @@ public class OrderHistory extends javax.swing.JFrame {
     private void btnBackHomeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackHomeActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_btnBackHomeActionPerformed
+
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
+        DefaultTableModel model = (DefaultTableModel) tableOrderHistory.getModel();
+        List<String> isDelete = new ArrayList<>();
+        // Lặp qua các hàng và xóa những hàng có checkbox được chọn
+        for (int i = tableOrderHistory.getRowCount() - 1; i >= 0; i--) {
+            Boolean isSelected = (Boolean) tableOrderHistory.getValueAt(i, 0);  // Cột "Chọn" có index là 0
+            if (isSelected != null && isSelected) {
+                isDelete.add(model.getValueAt(i, 2).toString());
+            }
+        }
+
+        if (isDelete.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Không có bản ghi nào được chọn!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+
+            int click = JOptionPane.showConfirmDialog(null, "Bạn có muốn xóa hóa đơn không?", "Thông Báo", JOptionPane.YES_NO_OPTION);
+            if (click == JOptionPane.YES_OPTION) {
+                for (String i : isDelete) {
+                    deleteRecord(i);
+                }
+                JOptionPane.showMessageDialog(null, "Xóa hóa đơn thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+            }
+            Load(sql);
+        }
+    }//GEN-LAST:event_btnDeleteActionPerformed
+
+    public void deleteRecord(String maHd) {
+
+        try {
+            String sqlDelete = "DELETE FROM Orders WHERE ID=?";
+            String sqlDeleteBill = "DELETE FROM Bill WHERE OrderID = ?";
+            pst = conn.prepareStatement(sqlDelete);
+            pst.setString(1, maHd);
+            pst.executeUpdate();
+
+            pst = conn.prepareStatement(sqlDeleteBill);
+            pst.setString(1, maHd);
+            pst.executeUpdate();
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Xóa khách hàng thất bại!" + " " + e, "Thông báo", JOptionPane.ERROR_MESSAGE);
+        }
+
+    }
 
     public static void main(String args[]) {
 
@@ -287,6 +372,7 @@ public class OrderHistory extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnBackHome;
+    private javax.swing.JButton btnDelete;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lblStatus;
