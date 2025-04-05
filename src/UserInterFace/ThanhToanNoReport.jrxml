@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="HoaDonThanhToanCongNo" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="b88b7a0b-46b4-4cfd-92d4-820cc842fb8c">
+	<property name="ireport.zoom" value="1.3636363636363675"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="CustomerID" class="java.lang.String"/>
+	<parameter name="PaymentAmount" class="java.lang.Double"/>
+	<queryString>
+		<![CDATA[SELECT c.ID, c.CustomerName, c.Address, c.PhoneNumber, c.Debt, c.OldDebt,
+        ph.Amount, ph.PaymentDate, ph.RemainingDebt, ph.OldDebt as PaymentOldDebt
+        FROM Customer c
+        LEFT JOIN PaymentHistory ph ON c.ID = ph.CustomerID
+        WHERE c.ID = $P{CustomerID} AND ph.Deleted = 0
+        ORDER BY ph.PaymentDate ASC]]>
+	</queryString>
+	<field name="ID" class="java.lang.Integer"/>
+	<field name="CustomerName" class="java.lang.String"/>
+	<field name="Address" class="java.lang.String"/>
+	<field name="PhoneNumber" class="java.lang.String"/>
+	<field name="Debt" class="java.lang.Double"/>
+	<field name="OldDebt" class="java.lang.Double"/>
+	<field name="Amount" class="java.lang.Double"/>
+	<field name="PaymentDate" class="java.sql.Timestamp"/>
+	<field name="RemainingDebt" class="java.lang.Double"/>
+	<field name="PaymentOldDebt" class="java.lang.Double"/>
+	<variable name="TotalPayments" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{Amount}]]></variableExpression>
+		<initialValueExpression><![CDATA[0.0]]></initialValueExpression>
+	</variable>
+	<background>
+		<band/>
+	</background>
+	<title>
+		<band height="180">
+			<staticText>
+				<reportElement x="0" y="0" width="555" height="30" uuid="f9e3748d-4d41-47a7-ac7b-62104acfc24c"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="20" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[NHÀ MÁY CÁN TÔN KIỂM DIÊN]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="30" width="555" height="20" uuid="cde602ca-4fa2-47c3-bc40-2b473a4746ec"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="14" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[CHUYÊN CUNG CẤP CÁC LOẠI SẮT HÌNH, HỘP U,V,C]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="50" width="555" height="20" uuid="a72d4b17-80bf-4014-80ef-6546be172442"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="14" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[NHÔM, KẼM, TÔN LỢP, TRẦN NHỰA, CỬA XẾP, CỬA CUỐN]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="70" width="555" height="20" uuid="69976d7e-542c-409b-8bc5-c3151f2a7b4c"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="14" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Địa chỉ: Xóm 1 - Hồng Thắng - Yên Mạc - Yên Mô - Ninh Bình]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="90" width="555" height="20" uuid="0ac1e5e4-edb8-4fc0-88a4-67802ad80add"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="14" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[ĐT: 0356.717.693 - 039.221.3986]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="110" width="555" height="20" uuid="155be00c-c399-4e35-8a0c-c2ce6107dcfd"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="14" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[STK: Vũ Xuân Kiểm: 108878791212 NH Viettin Bank Ninh Bình]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="130" width="555" height="20" uuid="dcaa22eb-b589-4871-be85-012d953a50ce"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="14" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[STK: Nguyễn Thị Diên: 3307205106828 NH Agribank ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="159" width="555" height="20" uuid="7b6d9ede-a7f0-411a-a08b-6919e4452ede"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="16" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[BIÊN LAI THANH TOÁN CÔNG NỢ]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="80">
+			<staticText>
+				<reportElement x="0" y="10" width="120" height="20" uuid="f327ad62-9928-4301-9c91-1300783c021d"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="12" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Tên khách hàng:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="130" y="10" width="425" height="20" uuid="e6f77c39-16fc-41c6-887e-308b34f3cbea"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="12" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CustomerName}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="30" width="120" height="20" uuid="55bc38e6-763e-4160-8844-a6e29345265d"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="12" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Địa chỉ:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="130" y="30" width="425" height="20" uuid="ae791350-4865-4f6f-b0fd-f7e08232db95"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="12" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Address}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="50" width="120" height="20" uuid="1ec4a646-8945-4aed-96d3-2bfb7c70f6f5"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="12" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Số điện thoại:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="130" y="50" width="425" height="20" uuid="8ba47d0a-26cd-48f5-8175-280a1827f7b7"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="12" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PhoneNumber}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy HH:mm:ss">
+				<reportElement x="370" y="10" width="185" height="20" uuid="1a0e5bac-c3ce-4fc1-a045-9c8b7a719c21"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="10" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="20">
+			<staticText>
+				<reportElement x="0" y="0" width="140" height="20" uuid="b6eee5f6-efbc-4fb4-a486-41bf5cf7b143"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="12" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Ngày thanh toán]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="140" y="0" width="140" height="20" uuid="31b0a7ce-9f72-4399-b926-d9122464280b"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="12" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Nợ cũ ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="280" y="0" width="140" height="20" uuid="31b0a7ce-9f72-4399-b926-d9122464281b"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="12" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Số tiền thanh toán]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="420" y="0" width="135" height="20" uuid="12ffe4fa-7065-429f-ba21-bd2141ee26ac"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="12" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Số tiền còn nợ]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="19">
+			<textField pattern="dd/MM/yyyy HH:mm">
+				<reportElement x="0" y="-1" width="140" height="20" uuid="4b44152c-60c4-4e31-98ec-d750699b4c46"/>
+				<box>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="12" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PaymentDate}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0">
+				<reportElement x="140" y="-1" width="140" height="20" uuid="31b0a7ce-9f72-4399-b926-d9122464281b"/>
+				<box>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="12" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PaymentOldDebt}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0">
+				<reportElement x="280" y="-1" width="140" height="20" uuid="611ec344-0e2e-4b94-a99e-f9ac8871fe70"/>
+				<box>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="12" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Amount}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0">
+				<reportElement x="420" y="-1" width="135" height="20" uuid="c3474a78-b78b-44ba-af9f-48a94cfb0f80"/>
+				<box>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="12" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{RemainingDebt}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band/>
+	</pageFooter>
+	<summary>
+		<band height="150">
+			<staticText>
+				<reportElement x="0" y="6" width="180" height="20" uuid="a8ec92c9-b4d1-44de-b6b8-2634f3ea7ad5"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="12" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Tiền nợ hiện tại:]]></text>
+			</staticText>
+			<textField pattern="#,##0">
+				<reportElement x="120" y="6" width="375" height="20" uuid="ca8752c1-8f11-42e7-869c-d7c88c93f750"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="12" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Debt}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="360" y="30" width="195" height="20" uuid="5b36b20d-ed71-4f5b-a8c2-597bfd398bde"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="12" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Người thu tiền]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="360" y="50" width="195" height="20" uuid="9dc4df19-1158-4eb9-9662-7bbb0b4b415f"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="12" isBold="false" isItalic="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[(Ký, ghi rõ họ tên)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="26" width="306" height="24" uuid="4be66a08-ce7c-4d75-add2-2acd1c036c76"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="9" isBold="false" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Chú ý: Tiền nợ hiện tại có thể thay đổi trong các giao dịch mới]]></text>
+			</staticText>
+		</band>
+	</summary>
+</jasperReport>

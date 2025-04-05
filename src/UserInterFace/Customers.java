@@ -25,6 +25,7 @@ public class Customers extends javax.swing.JFrame {
 
     static Detail detail;
     private boolean Add = false, Change = false;
+    private static Customers instance;
 
     String sql = "SELECT * FROM Customer Order by CustomerName";
 
@@ -38,10 +39,15 @@ public class Customers extends javax.swing.JFrame {
         loadCustomer(sql);
         DisabledCustomer();
         txbPay.setText("0");
+        instance = this; // Lưu instance hiện tại
 //        if(this.detail.getUser().toString().toString().equals("User")){
 //            jTabbedPane1.setEnabledAt(1, false);
 //        }
+    }
 
+    // Phương thức static để lấy instance hiện tại
+    public static Customers getInstance() {
+        return instance;
     }
 
     private void connection() {
@@ -90,6 +96,11 @@ public class Customers extends javax.swing.JFrame {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    // Phương thức công khai để cập nhật dữ liệu từ ThanhToanNo
+    public void loadData() {
+        loadCustomer(sql);
     }
 
     private String moneyDis(String money) {
@@ -616,6 +627,11 @@ public class Customers extends javax.swing.JFrame {
                 btnBackHomeMouseClicked(evt);
             }
         });
+        btnBackHome.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBackHomeActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -815,7 +831,20 @@ public class Customers extends javax.swing.JFrame {
 
         btnChangeCustomer.setEnabled(true);
         btnDeleteCustomer.setEnabled(true);
+
+        if (evt.getClickCount() == 2) {
+            int row = tableCustomer.getSelectedRow();
+            if (row >= 0) {
+                String customerId = tableCustomer.getValueAt(row, 0).toString();
+                ThanhToanNo dialog = new ThanhToanNo(customerId, detail);
+                dialog.setVisible(true);
+            }
+        }
     }//GEN-LAST:event_tableCustomerMouseClicked
+
+    private void btnBackHomeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackHomeActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnBackHomeActionPerformed
 
     public static void main(String args[]) {
         try {

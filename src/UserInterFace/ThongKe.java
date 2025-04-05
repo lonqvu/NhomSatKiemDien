@@ -28,6 +28,8 @@ import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
 import java.text.DecimalFormat;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.Locale;
+import java.util.Calendar;
 
 public class ThongKe extends javax.swing.JFrame {
 
@@ -51,12 +53,23 @@ public class ThongKe extends javax.swing.JFrame {
         modelTopSP = (DefaultTableModel) tblSanPham.getModel();
         modelTopKH = (DefaultTableModel) tblKhachHang.getModel();
         
+        // Cài đặt format và ngôn ngữ cho JDateChooser
+        startDate.setDateFormatString("dd/MM/yyyy");
+        endDate.setDateFormatString("dd/MM/yyyy");
+        startDate.setLocale(new Locale("vi", "VN"));
+        endDate.setLocale(new Locale("vi", "VN"));
+        
+        // Set giá trị mặc định cho startDate và endDate là ngày hôm nay
+        startDate.setDate(new Date());
+        endDate.setDate(new Date());
+        
         connection();
         loadDoanhThu();
         loadDonHang(); 
         loadKhachHang();
         loadBieuDo();
-        loadImprove(); // Thêm hàm mới để tính % tăng trưởng
+        loadImprove();
+        loadBieuDoTheoNgay();
     }
 
    private void connection() {
@@ -414,10 +427,273 @@ public class ThongKe extends javax.swing.JFrame {
         }
     }
 
+    // Thêm hàm mới để load dữ liệu theo khoảng thời gian
+    private void loadDoanhThuTheoNgay() {
+        try {
+            if (conn == null) return;
+            
+            // Doanh thu theo ngày
+            String sqlNgay = "SELECT SUM(IntoMoney) FROM Bill WHERE CONVERT(date, RegistDate) BETWEEN ? AND ?";
+            pst = conn.prepareStatement(sqlNgay);
+            pst.setDate(1, new java.sql.Date(startDate.getDate().getTime()));
+            pst.setDate(2, new java.sql.Date(endDate.getDate().getTime()));
+            rs = pst.executeQuery();
+            if(rs != null && rs.next() && lblDoanhThuNgay != null) {
+                double doanhThu = rs.getDouble(1);
+                lblDoanhThuNgay.setText(String.format("%,.0f VNĐ", doanhThu));
+            }
+
+            // Doanh thu theo tuần  
+            String sqlTuan = "SELECT SUM(IntoMoney) FROM Bill WHERE CONVERT(date, RegistDate) BETWEEN ? AND ?";
+            pst = conn.prepareStatement(sqlTuan);
+            pst.setDate(1, new java.sql.Date(startDate.getDate().getTime()));
+            pst.setDate(2, new java.sql.Date(endDate.getDate().getTime()));
+            rs = pst.executeQuery();
+            if(rs != null && rs.next() && lblDoanhThuTuan != null) {
+                double doanhThu = rs.getDouble(1);
+                lblDoanhThuTuan.setText(String.format("%,.0f VNĐ", doanhThu));
+            }
+
+            // Doanh thu theo tháng
+            String sqlThang = "SELECT SUM(IntoMoney) FROM Bill WHERE CONVERT(date, RegistDate) BETWEEN ? AND ?";
+            pst = conn.prepareStatement(sqlThang);
+            pst.setDate(1, new java.sql.Date(startDate.getDate().getTime()));
+            pst.setDate(2, new java.sql.Date(endDate.getDate().getTime()));
+            rs = pst.executeQuery();
+            if(rs != null && rs.next() && lblDoanhThuThang != null) {
+                double doanhThu = rs.getDouble(1);
+                lblDoanhThuThang.setText(String.format("%,.0f VNĐ", doanhThu));
+            }
+
+            // Doanh thu theo năm
+            String sqlNam = "SELECT SUM(IntoMoney) FROM Bill WHERE CONVERT(date, RegistDate) BETWEEN ? AND ?";
+            pst = conn.prepareStatement(sqlNam);
+            pst.setDate(1, new java.sql.Date(startDate.getDate().getTime()));
+            pst.setDate(2, new java.sql.Date(endDate.getDate().getTime()));
+            rs = pst.executeQuery();
+            if(rs != null && rs.next() && lblDoanhThuNam != null) {
+                double doanhThu = rs.getDouble(1);
+                lblDoanhThuNam.setText(String.format("%,.0f VNĐ", doanhThu));
+            }
+
+            // Top sản phẩm bán chạy
+            if (modelTopSP != null) {
+                modelTopSP.setRowCount(0); // Xóa dữ liệu cũ
+                String sqlTopSP = "SELECT TOP 10 b.ProductID, b.ProductName, " +
+                                "SUM(b.TongSoLuong) as SoLuong, " +
+                                "SUM(b.IntoMoney) as DoanhThu " +
+                                "FROM Bill b " + 
+                                "WHERE CONVERT(date, b.RegistDate) BETWEEN ? AND ? " +
+                                "GROUP BY b.ProductID, b.ProductName " +
+                                "ORDER BY " + (filterProduct.getSelectedItem().toString().equals("Số lượng bán") ? 
+                                             "SoLuong DESC" : "DoanhThu DESC");
+                pst = conn.prepareStatement(sqlTopSP);
+                pst.setDate(1, new java.sql.Date(startDate.getDate().getTime()));
+                pst.setDate(2, new java.sql.Date(endDate.getDate().getTime()));
+                rs = pst.executeQuery();
+                while(rs != null && rs.next()) {
+                    modelTopSP.addRow(new Object[]{
+                        rs.getString("ProductID"),
+                        rs.getString("ProductName"),
+                        rs.getInt("SoLuong"),
+                        String.format("%,.0f VNĐ", rs.getDouble("DoanhThu"))
+                    });
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadKhachHangTheoNgay() {
+        try {
+            if (conn == null) return;
+            
+            // Số khách hàng mới
+            String sqlKHMoi = "SELECT COUNT(*) FROM Customer WHERE CONVERT(date, RegistDate) BETWEEN ? AND ?";
+            pst = conn.prepareStatement(sqlKHMoi);
+            pst.setDate(1, new java.sql.Date(startDate.getDate().getTime()));
+            pst.setDate(2, new java.sql.Date(endDate.getDate().getTime()));
+            rs = pst.executeQuery();
+            if(rs != null && rs.next() && lblKhachHangMoi != null) {
+                lblKhachHangMoi.setText(rs.getString(1));
+            }
+
+            // Tính tỷ lệ khách hàng quay lại
+            String sqlQuayLai = "SELECT COUNT(DISTINCT o.CustomerID) as SoKHQuayLai " +
+                               "FROM Orders o " +
+                               "WHERE o.CustomerID IN (SELECT CustomerID FROM Orders GROUP BY CustomerID HAVING COUNT(*) > 1) " +
+                               "AND CONVERT(date, o.Date) BETWEEN ? AND ?";
+            pst = conn.prepareStatement(sqlQuayLai);
+            pst.setDate(1, new java.sql.Date(startDate.getDate().getTime()));
+            pst.setDate(2, new java.sql.Date(endDate.getDate().getTime()));
+            rs = pst.executeQuery();
+            if(rs != null && rs.next()) {
+                int soKHQuayLai = rs.getInt("SoKHQuayLai");
+                String sqlTongKH = "SELECT COUNT(*) FROM Customer";
+                pst = conn.prepareStatement(sqlTongKH);
+                rs = pst.executeQuery();
+                if(rs != null && rs.next()) {
+                    int tongKH = rs.getInt(1);
+                    double tyLe = (double)soKHQuayLai / tongKH * 100;
+                    lblKhachHangQuayLai.setText(String.format("%.1f%%", tyLe));
+                }
+            }
+
+            // Top khách hàng thân thiết
+            if (modelTopKH != null) {
+                modelTopKH.setRowCount(0); // Xóa dữ liệu cũ
+                String sqlTopKH = "";
+                
+                // Xác định câu SQL dựa trên lựa chọn filterBy
+                if(filterBy.getSelectedItem().toString().equals("Số đơn hàng")) {
+                    sqlTopKH = "SELECT TOP 10 c.ID, c.CustomerName, COUNT(o.ID) as SoDonHang, " +
+                              "SUM(o.TotalMoneyOrder) as TongTien " +
+                              "FROM Customer c " +
+                              "LEFT JOIN Orders o ON c.ID = o.CustomerID " +
+                              "WHERE CONVERT(date, o.Date) BETWEEN ? AND ? " +
+                              "GROUP BY c.ID, c.CustomerName " +
+                              "ORDER BY SoDonHang DESC";
+                } else {
+                    sqlTopKH = "SELECT TOP 10 c.ID, c.CustomerName, COUNT(o.ID) as SoDonHang, " +
+                              "SUM(o.TotalMoneyOrder) as TongTien " +
+                              "FROM Customer c " +
+                              "LEFT JOIN Orders o ON c.ID = o.CustomerID " +
+                              "WHERE CONVERT(date, o.Date) BETWEEN ? AND ? " +
+                              "GROUP BY c.ID, c.CustomerName " +
+                              "ORDER BY TongTien DESC";
+                }
+                
+                pst = conn.prepareStatement(sqlTopKH);
+                pst.setDate(1, new java.sql.Date(startDate.getDate().getTime()));
+                pst.setDate(2, new java.sql.Date(endDate.getDate().getTime()));
+                rs = pst.executeQuery();
+                while(rs != null && rs.next()) {
+                    modelTopKH.addRow(new Object[]{
+                        rs.getString("ID"),
+                        rs.getString("CustomerName"),
+                        rs.getInt("SoDonHang"),
+                        String.format("%,.0f VNĐ", rs.getDouble("TongTien"))
+                    });
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadBieuDoTheoNgay() {
+        try {
+            if (conn == null) return;
+            
+            DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+            String sqlDoanhThu = "";
+            
+            if (rbDefault.isSelected()) {
+                // Hiển thị doanh thu theo ngày trong tháng hiện tại
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(new Date());
+                int year = cal.get(Calendar.YEAR);
+                int month = cal.get(Calendar.MONTH) + 1;
+                int daysInMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+                
+                // Khởi tạo giá trị 0 cho tất cả các ngày trong tháng
+                for (int i = 1; i <= daysInMonth; i++) {
+                    dataset.addValue(0, "Doanh thu", String.valueOf(i));
+                }
+                
+                sqlDoanhThu = "SELECT DAY(RegistDate) as Ngay, SUM(IntoMoney) as DoanhThu " +
+                             "FROM Bill WHERE YEAR(RegistDate) = ? AND MONTH(RegistDate) = ? " +
+                             "GROUP BY DAY(RegistDate) " +
+                             "ORDER BY Ngay";
+                             
+                pst = conn.prepareStatement(sqlDoanhThu);
+                pst.setInt(1, year);
+                pst.setInt(2, month);
+                
+                rs = pst.executeQuery();
+                while(rs != null && rs.next()) {
+                    dataset.setValue(rs.getDouble("DoanhThu"), "Doanh thu", String.valueOf(rs.getInt("Ngay")));
+                }
+                
+            } else if (rbMonth.isSelected()) {
+                // Hiển thị doanh thu theo 12 tháng
+                for (int i = 1; i <= 12; i++) {
+                    dataset.addValue(0, "Doanh thu", "Tháng " + String.valueOf(i));
+                }
+                
+                sqlDoanhThu = "SELECT MONTH(RegistDate) as Thang, SUM(IntoMoney) as DoanhThu " +
+                             "FROM Bill WHERE YEAR(RegistDate) = YEAR(GETDATE()) " +
+                             "GROUP BY MONTH(RegistDate) " +
+                             "ORDER BY Thang";
+                             
+                pst = conn.prepareStatement(sqlDoanhThu);
+                rs = pst.executeQuery();
+                while(rs != null && rs.next()) {
+                    dataset.setValue(rs.getDouble("DoanhThu"), "Doanh thu", "Tháng " + String.valueOf(rs.getInt("Thang")));
+                }
+                
+            } else if (rbYear.isSelected()) {
+                // Hiển thị doanh thu theo năm
+                sqlDoanhThu = "SELECT YEAR(RegistDate) as Nam, SUM(IntoMoney) as DoanhThu " +
+                             "FROM Bill " +
+                             "GROUP BY YEAR(RegistDate) " +
+                             "ORDER BY Nam";
+                             
+                pst = conn.prepareStatement(sqlDoanhThu);
+                rs = pst.executeQuery();
+                while(rs != null && rs.next()) {
+                    dataset.setValue(rs.getDouble("DoanhThu"), "Doanh thu", "Năm " + String.valueOf(rs.getInt("Nam")));
+                }
+            }
+
+            String title = "";
+            String categoryLabel = "";
+            if (rbDefault.isSelected()) {
+                title = "Biểu đồ doanh thu theo ngày trong tháng " + (Calendar.getInstance().get(Calendar.MONTH) + 1);
+                categoryLabel = "Ngày";
+            } else if (rbMonth.isSelected()) {
+                title = "Biểu đồ doanh thu theo tháng trong năm " + Calendar.getInstance().get(Calendar.YEAR);
+                categoryLabel = "Tháng";
+            } else if (rbYear.isSelected()) {
+                title = "Biểu đồ doanh thu theo năm";
+                categoryLabel = "Năm";
+            }
+
+            JFreeChart chart = ChartFactory.createBarChart(
+                title,
+                categoryLabel, 
+                "Doanh thu (VNĐ)",
+                dataset,
+                PlotOrientation.VERTICAL,
+                true, true, false
+            );
+
+            // Tùy chỉnh giao diện biểu đồ
+            CategoryPlot plot = chart.getCategoryPlot();
+            plot.setBackgroundPaint(Color.WHITE);
+            plot.setRangeGridlinePaint(Color.BLACK);
+            plot.setOutlinePaint(null);
+            
+            // Thêm biểu đồ vào panel
+            ChartPanel chartPanel = new ChartPanel(chart);
+            chartPanel.setPreferredSize(new java.awt.Dimension(745, 277));
+            panelChart1.setLayout(new BorderLayout());
+            panelChart1.removeAll();
+            panelChart1.add(chartPanel, BorderLayout.CENTER);
+            panelChart1.revalidate();
+            panelChart1.repaint();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        buttonGroup1 = new javax.swing.ButtonGroup();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
@@ -434,7 +710,15 @@ public class ThongKe extends javax.swing.JFrame {
         improveMonth = new javax.swing.JLabel();
         improveYear = new javax.swing.JLabel();
         panelChart1 = new javax.swing.JPanel();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        lbEndDate = new javax.swing.JLabel();
+        lbStartDate = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel12 = new javax.swing.JLabel();
+        lbResult = new javax.swing.JLabel();
+        rbDefault = new javax.swing.JRadioButton();
+        rbMonth = new javax.swing.JRadioButton();
+        rbYear = new javax.swing.JRadioButton();
         jPanel2 = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
@@ -456,8 +740,8 @@ public class ThongKe extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
         startDate = new com.toedter.calendar.JDateChooser();
         jLabel8 = new javax.swing.JLabel();
-        startDate1 = new com.toedter.calendar.JDateChooser();
-        jButton1 = new javax.swing.JButton();
+        endDate = new com.toedter.calendar.JDateChooser();
+        btnSearch = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Thống Kê");
@@ -541,14 +825,49 @@ public class ThongKe extends javax.swing.JFrame {
         panelChart1.setLayout(panelChart1Layout);
         panelChart1Layout.setHorizontalGroup(
             panelChart1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1012, Short.MAX_VALUE)
+            .addGap(0, 1072, Short.MAX_VALUE)
         );
         panelChart1Layout.setVerticalGroup(
             panelChart1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 388, Short.MAX_VALUE)
+            .addGap(0, 379, Short.MAX_VALUE)
         );
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Ngày" }));
+        lbEndDate.setPreferredSize(new java.awt.Dimension(100, 14));
+
+        lbStartDate.setPreferredSize(new java.awt.Dimension(100, 14));
+
+        jLabel10.setText("-");
+
+        jLabel9.setText("Tổng doanh thu từ");
+
+        jLabel12.setText(":");
+
+        lbResult.setPreferredSize(new java.awt.Dimension(100, 14));
+
+        buttonGroup1.add(rbDefault);
+        rbDefault.setSelected(true);
+        rbDefault.setText("Mặc định");
+        rbDefault.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                loadBieuDoTheoNgay();
+            }
+        });
+
+        buttonGroup1.add(rbMonth);
+        rbMonth.setText("Tháng");
+        rbMonth.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                loadBieuDoTheoNgay();
+            }
+        });
+
+        buttonGroup1.add(rbYear);
+        rbYear.setText("Năm");
+        rbYear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                loadBieuDoTheoNgay();
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -560,18 +879,47 @@ public class ThongKe extends javax.swing.JFrame {
                     .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(panelChart1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(rbDefault)
+                                .addGap(18, 18, 18)
+                                .addComponent(rbMonth)
+                                .addGap(18, 18, 18)
+                                .addComponent(rbYear))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel9)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(lbStartDate, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel10)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(lbEndDate, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel12)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(lbResult, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lbEndDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel9)
+                        .addComponent(lbStartDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel10)
+                    .addComponent(jLabel12)
+                    .addComponent(lbResult, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(4, 4, 4)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(rbDefault)
+                    .addComponent(rbMonth)
+                    .addComponent(rbYear))
+                .addGap(5, 5, 5)
                 .addComponent(panelChart1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
@@ -643,7 +991,7 @@ public class ThongKe extends javax.swing.JFrame {
         jPanel7.setLayout(jPanel7Layout);
         jPanel7Layout.setHorizontalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1012, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1072, Short.MAX_VALUE)
         );
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -711,7 +1059,7 @@ public class ThongKe extends javax.swing.JFrame {
         jPanel8.setLayout(jPanel8Layout);
         jPanel8Layout.setHorizontalGroup(
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 1012, Short.MAX_VALUE)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 1072, Short.MAX_VALUE)
         );
         jPanel8Layout.setVerticalGroup(
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -724,7 +1072,7 @@ public class ThongKe extends javax.swing.JFrame {
         panelChart2.setLayout(panelChart2Layout);
         panelChart2Layout.setHorizontalGroup(
             panelChart2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1012, Short.MAX_VALUE)
+            .addGap(0, 1072, Short.MAX_VALUE)
         );
         panelChart2Layout.setVerticalGroup(
             panelChart2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -792,21 +1140,26 @@ public class ThongKe extends javax.swing.JFrame {
         jLabel8.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel8.setText("-");
 
-        startDate1.setDateFormatString("dd/mm/yyyy");
+        endDate.setDateFormatString("dd/mm/yyyy");
 
-        jButton1.setText("Tìm");
+        btnSearch.setText("Tìm");
+        btnSearch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSearchActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(0, 64, Short.MAX_VALUE)
+                .addGap(0, 0, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(btnBackHome)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel11, javax.swing.GroupLayout.DEFAULT_SIZE, 794, Short.MAX_VALUE)
+                        .addComponent(jLabel11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(171, 171, 171))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -817,9 +1170,9 @@ public class ThongKe extends javax.swing.JFrame {
                                 .addGap(18, 18, 18)
                                 .addComponent(jLabel8)
                                 .addGap(18, 18, 18)
-                                .addComponent(startDate1, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(28, 28, 28)
-                                .addComponent(jButton1))
+                                .addComponent(endDate, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
@@ -834,9 +1187,9 @@ public class ThongKe extends javax.swing.JFrame {
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addComponent(jLabel7)
                         .addComponent(startDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(startDate1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(endDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.TRAILING))
-                    .addComponent(jButton1))
+                    .addComponent(btnSearch))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 672, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -859,6 +1212,40 @@ public class ThongKe extends javax.swing.JFrame {
     private void filterProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_filterProductActionPerformed
         loadDoanhThu();
     }//GEN-LAST:event_filterProductActionPerformed
+
+    private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
+        try {
+            if (startDate.getDate() == null || endDate.getDate() == null) {
+                JOptionPane.showMessageDialog(this, "Vui lòng chọn ngày bắt đầu và kết thúc!");
+                return;
+            }
+
+            // Set giá trị cho lbStartDate và lbEndDate
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+            lbStartDate.setText(sdf.format(startDate.getDate()));
+            lbEndDate.setText(sdf.format(endDate.getDate()));
+
+            // Tính tổng doanh thu trong khoảng thời gian
+            String sqlTongDoanhThu = "SELECT SUM(IntoMoney) FROM Bill WHERE CONVERT(date, RegistDate) BETWEEN ? AND ?";
+            pst = conn.prepareStatement(sqlTongDoanhThu);
+            pst.setDate(1, new java.sql.Date(startDate.getDate().getTime()));
+            pst.setDate(2, new java.sql.Date(endDate.getDate().getTime()));
+            rs = pst.executeQuery();
+            if (rs != null && rs.next()) {
+                double tongDoanhThu = rs.getDouble(1);
+                lbResult.setText(String.format("%,.0f VNĐ", tongDoanhThu));
+            }
+
+            // Cập nhật dữ liệu cho các tab theo khoảng thời gian
+            loadDoanhThuTheoNgay();
+            loadKhachHangTheoNgay();
+            loadBieuDoTheoNgay();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Có lỗi xảy ra khi tìm kiếm!");
+        }
+    }//GEN-LAST:event_btnSearchActionPerformed
 
        private void backHome() {
         Home home = new Home(detail);
@@ -893,16 +1280,19 @@ public class ThongKe extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnBackHome;
+    private javax.swing.JButton btnSearch;
+    private javax.swing.ButtonGroup buttonGroup1;
+    private com.toedter.calendar.JDateChooser endDate;
     private javax.swing.JComboBox<String> filterBy;
     private javax.swing.JComboBox<String> filterProduct;
     private javax.swing.JLabel improveDay;
     private javax.swing.JLabel improveMonth;
     private javax.swing.JLabel improveWeek;
     private javax.swing.JLabel improveYear;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -910,6 +1300,7 @@ public class ThongKe extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -920,6 +1311,9 @@ public class ThongKe extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JLabel lbEndDate;
+    private javax.swing.JLabel lbResult;
+    private javax.swing.JLabel lbStartDate;
     private javax.swing.JLabel lblDoanhThuNam;
     private javax.swing.JLabel lblDoanhThuNgay;
     private javax.swing.JLabel lblDoanhThuThang;
@@ -928,8 +1322,10 @@ public class ThongKe extends javax.swing.JFrame {
     private javax.swing.JLabel lblKhachHangQuayLai;
     private javax.swing.JPanel panelChart1;
     private javax.swing.JPanel panelChart2;
+    private javax.swing.JRadioButton rbDefault;
+    private javax.swing.JRadioButton rbMonth;
+    private javax.swing.JRadioButton rbYear;
     private com.toedter.calendar.JDateChooser startDate;
-    private com.toedter.calendar.JDateChooser startDate1;
     private javax.swing.JTable tblKhachHang;
     private javax.swing.JTable tblSanPham;
     // End of variables declaration//GEN-END:variables

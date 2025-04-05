@@ -501,20 +501,25 @@ public class PayDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_txbKhachTraKeyReleased
 
     private void btnSave1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSave1ActionPerformed
-
         String checkNull = checkNull();
         if (StringUtils.isEmpty(checkNull) == false) {
             JOptionPane.showMessageDialog(null, checkNull, "Thông báo", JOptionPane.WARNING_MESSAGE);
         } else {
             String sqlChange = "UPDATE Orders SET TotalMoneyBill=?, OldDebt =?, TotalMoneyOrder =?,PayMoney=?, DebtBack =?, isPayed =?, CustomerID = ?, Customer = ?, Address =?, Phone = ?, ShippingFee = ? WHERE ID='" + maHd + "'";
-            String sqlUpdateDebt = "UPDATE Customer SET Debt=? WHERE ID='" + maKH + "'";
+            String sqlUpdateDebt = "UPDATE Customer SET Debt=?, OldDebt=? WHERE ID='" + maKH + "'";
             try {
+                // Tính toán số tiền thanh toán thực tế
+                BigDecimal tongTienHoaDon = convertToMoney(txbTongThanhToan.getText());
+                BigDecimal soTienThanhToan = convertToMoney(txbKhachTra.getText());
+                BigDecimal soTienConLai = convertToMoney(txbConLai.getText());
+                
+                // Cập nhật thông tin hóa đơn
                 pst = conn.prepareStatement(sqlChange);
                 pst.setBigDecimal(1, convertToMoney(txbTongTien.getText()));
                 pst.setBigDecimal(2, convertToMoney(txbNoCu.getText()));
-                pst.setBigDecimal(3, convertToMoney(txbTongThanhToan.getText()));
-                pst.setBigDecimal(4, convertToMoney(txbKhachTra.getText()));
-                pst.setBigDecimal(5, convertToMoney(txbConLai.getText()));
+                pst.setBigDecimal(3, tongTienHoaDon);
+                pst.setBigDecimal(4, soTienThanhToan);
+                pst.setBigDecimal(5, soTienConLai);
                 pst.setBoolean(6, true);
                 if (StringUtils.isEmpty(maKH) == false) {
                     pst.setString(7, maKH);
@@ -525,28 +530,47 @@ public class PayDialog extends javax.swing.JDialog {
                 pst.setString(9, diaChi);
                 pst.setString(10, sdt);
                 pst.setBigDecimal(11, convertToMoney(txbShippingFee.getText()));
-
                 pst.executeUpdate();
 
                 if (StringUtils.isEmpty(maKH) == false) {
                     if (txbNoCu.getText().equals(noCu) == false) {
                         JOptionPane.showMessageDialog(null, "Nợ cũ không khớp với dữ liệu, hãy ấn nút Cập Nhật để cập nhật lại nợ cho khách hàng!", "Thông báo", JOptionPane.WARNING_MESSAGE);
                     } else {
+                        // Xử lý cập nhật nợ và lịch sử thanh toán
+                        BigDecimal soTienNoCu = convertToMoney(txbNoCu.getText());
+                        BigDecimal soTienNoMoi = soTienConLai;
+                        
+                        // Cập nhật nợ trong bảng Customer
                         pst = conn.prepareStatement(sqlUpdateDebt);
-                        pst.setBigDecimal(1, convertToMoney(txbConLai.getText()));
+                        pst.setBigDecimal(1, soTienNoMoi);
+                        pst.setBigDecimal(2, soTienNoCu);
                         pst.executeUpdate();
+
+                        // Thêm lịch sử thanh toán
+                        if (soTienThanhToan.compareTo(BigDecimal.ZERO) > 0) {
+                            String sqlInsertHistory = "INSERT INTO PaymentHistory (CustomerID, Amount, PaymentDate, RemainingDebt, OldDebt, Deleted) VALUES (?, ?, GETDATE(), ?, ?, ?)";
+                            pst = conn.prepareStatement(sqlInsertHistory);
+                            pst.setString(1, maKH);
+                            pst.setBigDecimal(2, soTienThanhToan);
+                            pst.setBigDecimal(3, soTienNoMoi);
+                            pst.setBigDecimal(4, soTienNoCu);
+                            // Nếu nợ = 0 thì đánh dấu là đã xóa
+                            pst.setInt(5, soTienNoMoi.compareTo(BigDecimal.ZERO) == 0 ? 1 : 0);
+                            pst.executeUpdate();
+                        }
+
                         isPayed = true;
                         this.dispose();
                         JOptionPane.showMessageDialog(null, "Lưu thay đổi thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
                     }
-                }
-                else{
+                } else {
                     pst = conn.prepareStatement(sqlUpdateDebt);
-                        pst.setBigDecimal(1, convertToMoney(txbConLai.getText()));
-                        pst.executeUpdate();
-                        isPayed = true;
-                        this.dispose();
-                        JOptionPane.showMessageDialog(null, "Lưu thay đổi thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                    pst.setBigDecimal(1, soTienConLai);
+                    pst.setBigDecimal(2, convertToMoney(txbNoCu.getText()));
+                    pst.executeUpdate();
+                    isPayed = true;
+                    this.dispose();
+                    JOptionPane.showMessageDialog(null, "Lưu thay đổi thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
                 }
 
             } catch (Exception ex) {
@@ -607,21 +631,26 @@ public class PayDialog extends javax.swing.JDialog {
         if (StringUtils.isEmpty(maKH) == false) {
             boolean checkLogin = showPasswordDialog();
             if (checkLogin) {
-                int Click = JOptionPane.showConfirmDialog(null, "Bạn có muốn cập nhật nợ cũ cho khách hàng này không?", "Thông Báo", 2);
-                if (Click == JOptionPane.YES_OPTION) {
-                    String sqlChange = "UPDATE Customer SET Debt=?, OldDebt=? WHERE ID='" + maKH + "'";
-                    try {
-                        pst = conn.prepareStatement(sqlChange);
-                        pst.setBigDecimal(1, convertToMoney(txbNoCu.getText()));
-                        pst.setBigDecimal(2, convertToMoney(txbNoCu.getText()));
+                // Mở giao diện ThanhToanNo như một dialog con
+                ThanhToanNo thanhToanNo = new ThanhToanNo(this, true, maKH, detail);
+                thanhToanNo.setLocationRelativeTo(this);
+                thanhToanNo.setVisible(true);
 
-                        pst.executeUpdate();
-                        countMoney();
+                // Cập nhật lại số tiền nợ cũ sau khi đóng giao diện ThanhToanNo
+                String sqlGetDebt = "SELECT Debt FROM Customer WHERE ID = ?";
+                try {
+                    pst = conn.prepareStatement(sqlGetDebt);
+                    pst.setString(1, maKH);
+                    ResultSet rs = pst.executeQuery();
+                    if (rs.next()) {
+                        DecimalFormat formatter = new DecimalFormat("###,###,###");
+                        double debt = rs.getDouble("Debt");
+                        txbNoCu.setText(formatter.format(debt));
                         noCu = txbNoCu.getText();
-                        JOptionPane.showMessageDialog(null, "Cập nhật nợ cũ thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
+                        countMoney();
                     }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
             }
         } else {
