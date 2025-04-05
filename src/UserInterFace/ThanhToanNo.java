@@ -23,6 +23,7 @@ import net.sf.jasperreports.view.JasperViewer;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.math.BigDecimal;
 
 /**
  *
@@ -34,8 +35,8 @@ public class ThanhToanNo extends javax.swing.JDialog {
     private Connection conn = null;
     private PreparedStatement pst = null;
     private ResultSet rs = null;
-    private double soTienNo = 0;
-    private DecimalFormat formatter = new DecimalFormat("#,###");
+    private BigDecimal soTienNo = BigDecimal.ZERO;
+    private DecimalFormat formatter = new DecimalFormat("###,###,###");
     
     /**
      * Creates new form ThanhToanNo
@@ -71,11 +72,9 @@ public class ThanhToanNo extends javax.swing.JDialog {
         try {
             if (conn == null) return;
             
-            // In ra ID và kiểm tra kết nối
             System.out.println("ID khách hàng: " + customerID);
             System.out.println("Trạng thái kết nối: " + (conn != null ? "Đã kết nối" : "Chưa kết nối"));
             
-            // Lấy thông tin khách hàng
             String sql = "SELECT * FROM Customer WHERE ID = ?";
             pst = conn.prepareStatement(sql);
             pst.setInt(1, Integer.parseInt(customerID));
@@ -84,16 +83,14 @@ public class ThanhToanNo extends javax.swing.JDialog {
             System.out.println("Đã thực hiện truy vấn");
             
             if (rs.next()) {
-                // In ra các giá trị từ ResultSet để debug
                 System.out.println("Tên KH: " + rs.getString("CustomerName"));
-                System.out.println("SĐT: " + rs.getString("PhoneNumber"));
-                System.out.println("Nợ: " + rs.getDouble("Debt"));
+                System.out.println("SĐT: " + rs.getString("PhoneNumber")); 
+                System.out.println("Nợ: " + rs.getBigDecimal("Debt"));
                 
-                // Đảm bảo các biến không null trước khi sử dụng
                 if (txtTenKH != null) txtTenKH.setText(rs.getString("CustomerName"));
                 if (txtSDT != null) txtSDT.setText(rs.getString("PhoneNumber"));
                 
-                soTienNo = rs.getDouble("Debt");
+                soTienNo = rs.getBigDecimal("Debt");
                 
                 if (txtSoTienNo != null) txtSoTienNo.setText(formatter.format(soTienNo) + " VNĐ");
                 if (txtSoTienConLai != null) txtSoTienConLai.setText(formatter.format(soTienNo) + " VNĐ");
@@ -108,27 +105,24 @@ public class ThanhToanNo extends javax.swing.JDialog {
 
     private void tinhSoTienConLai() {
         try {
-            // Đảm bảo xử lý đúng định dạng số tiền
             String soTienThanhToanText = txtSoTienThanhToan.getText().replaceAll("[,\\s]", "").replace("VNĐ", "");
             if (soTienThanhToanText.isEmpty()) {
                 txtSoTienConLai.setText(formatter.format(soTienNo) + " VNĐ");
                 return;
             }
             
-            double soTienThanhToan = Double.parseDouble(soTienThanhToanText);
-            if (soTienThanhToan > soTienNo) {
+            BigDecimal soTienThanhToan = new BigDecimal(soTienThanhToanText);
+            if (soTienThanhToan.compareTo(soTienNo) > 0) {
                 JOptionPane.showMessageDialog(this, "Số tiền thanh toán không được lớn hơn số tiền nợ!");
                 txtSoTienThanhToan.setText("");
                 txtSoTienConLai.setText(formatter.format(soTienNo) + " VNĐ");
                 return;
             }
-            double soTienConLai = soTienNo - soTienThanhToan;
+            BigDecimal soTienConLai = soTienNo.subtract(soTienThanhToan);
             txtSoTienConLai.setText(formatter.format(soTienConLai) + " VNĐ");
             
-            // Format lại số tiền thanh toán để dễ đọc
-            txtSoTienThanhToan.setText(formatter.format(soTienThanhToan));
+            txtSoTienThanhToan.setText(formatter.format(soTienThanhToan) + " VNĐ");
         } catch (NumberFormatException e) {
-            // Nếu không phải số, giữ nguyên giá trị cũ
             if (!txtSoTienThanhToan.getText().isEmpty()) {
                 txtSoTienConLai.setText(formatter.format(soTienNo) + " VNĐ");
             }
@@ -139,41 +133,36 @@ public class ThanhToanNo extends javax.swing.JDialog {
         try {
             if (conn == null) return;
             
-            // Lấy giá trị số tiền thanh toán từ trường nhập liệu
             String soTienThanhToanText = txtSoTienThanhToan.getText().replaceAll("[,\\s]", "").replace("VNĐ", "");
             if (soTienThanhToanText.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Vui lòng nhập số tiền thanh toán");
                 return;
             }
             
-            double soTienThanhToan = Double.parseDouble(soTienThanhToanText);
-            double soTienConLai = soTienNo - soTienThanhToan;
+            BigDecimal soTienThanhToan = new BigDecimal(soTienThanhToanText);
+            BigDecimal soTienConLai = soTienNo.subtract(soTienThanhToan);
             
-            if(soTienConLai <= 0){
-                soTienConLai = 0;
+            if(soTienConLai.compareTo(BigDecimal.ZERO) <= 0){
+                soTienConLai = BigDecimal.ZERO;
             }
             
-            // Cập nhật số tiền nợ trong bảng Customer
             String sqlUpdateDebt = "UPDATE Customer SET Debt = ?, OldDebt = ? WHERE ID = ?";
             pst = conn.prepareStatement(sqlUpdateDebt);
-            pst.setDouble(1, soTienConLai);
-            pst.setDouble(2, soTienNo); // Lưu nợ cũ là số tiền nợ trước khi thanh toán
+            pst.setBigDecimal(1, soTienConLai);
+            pst.setBigDecimal(2, soTienNo);
             pst.setString(3, customerID);
             pst.executeUpdate();
             
-            // Thêm lịch sử thanh toán với số tiền còn nợ
             String sqlInsertHistory = "INSERT INTO PaymentHistory (CustomerID, Amount, PaymentDate, RemainingDebt, OldDebt, Deleted) VALUES (?, ?, GETDATE(), ?, ?, ?)";
             pst = conn.prepareStatement(sqlInsertHistory);
             pst.setString(1, customerID);
-            pst.setDouble(2, soTienThanhToan);
-            pst.setDouble(3, soTienConLai);
-            pst.setDouble(4, soTienNo);
-            // Nếu nợ = 0 thì đánh dấu là đã xóa
-            pst.setInt(5, soTienConLai == 0 ? 1 : 0);
+            pst.setBigDecimal(2, soTienThanhToan);
+            pst.setBigDecimal(3, soTienConLai);
+            pst.setBigDecimal(4, soTienNo);
+            pst.setInt(5, soTienConLai.compareTo(BigDecimal.ZERO) == 0 ? 1 : 0);
             pst.executeUpdate();
             
-            // Nếu nợ = 0, cập nhật tất cả bản ghi PaymentHistory của khách hàng thành Deleted = 1
-            if (soTienConLai == 0) {
+            if (soTienConLai.compareTo(BigDecimal.ZERO) == 0) {
                 String sqlUpdateAllHistory = "UPDATE PaymentHistory SET Deleted = 1 WHERE CustomerID = ?";
                 pst = conn.prepareStatement(sqlUpdateAllHistory);
                 pst.setString(1, customerID);
@@ -182,10 +171,8 @@ public class ThanhToanNo extends javax.swing.JDialog {
             
             JOptionPane.showMessageDialog(this, "Lưu thanh toán thành công!");
             
-            // Đóng form hiện tại
             this.dispose();
             
-            // Load lại dữ liệu ở màn hình Customers
             Customers customersScreen = Customers.getInstance();
             if (customersScreen != null) {
                 customersScreen.loadData();
@@ -203,7 +190,6 @@ public class ThanhToanNo extends javax.swing.JDialog {
                 return;
             }
             
-            // Kiểm tra xem có bản ghi nào của customerID có deleted = 0 không
             String checkSql = "SELECT COUNT(*) FROM PaymentHistory WHERE CustomerID = ? AND Deleted = 0";
             pst = conn.prepareStatement(checkSql);
             pst.setString(1, customerID);
@@ -214,29 +200,23 @@ public class ThanhToanNo extends javax.swing.JDialog {
                 return;
             }
             
-            // Lấy giá trị số tiền thanh toán từ trường nhập liệu
             String soTienThanhToanText = txtSoTienThanhToan.getText().replaceAll("[,\\s]", "").replace("VNĐ", "");
-            double soTienThanhToan = 0;
+            BigDecimal soTienThanhToan = BigDecimal.ZERO;
             if (!soTienThanhToanText.isEmpty()) {
-                soTienThanhToan = Double.parseDouble(soTienThanhToanText);
+                soTienThanhToan = new BigDecimal(soTienThanhToanText);
             }
             
-            // Biên dịch mẫu báo cáo JasperReports
             String reportPath = "src/UserInterFace/ThanhToanNoReport.jrxml";
             JasperReport report = JasperCompileManager.compileReport(reportPath);
             
-            // Thay thế các tham số theo yêu cầu
             Map<String, Object> parameters = new HashMap<>();
             parameters.put("CustomerID", customerID);
             parameters.put("PaymentAmount", soTienThanhToan);
             
-            // Điền dữ liệu vào báo cáo
             JasperPrint print = JasperFillManager.fillReport(report, parameters, conn);
             
-            // Hiển thị báo cáo trong JasperViewer
             JasperViewer.viewReport(print, false);
             
-            // Tạo và lưu file PDF
             String directoryPath = "D:/HoaDon";
             File directory = new File(directoryPath);
             if (!directory.exists()) {

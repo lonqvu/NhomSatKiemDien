@@ -30,6 +30,10 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.Locale;
 import java.util.Calendar;
+import org.jfree.chart.axis.NumberAxis;
+import java.text.NumberFormat;
+import java.text.FieldPosition;
+import java.text.ParsePosition;
 
 public class ThongKe extends javax.swing.JFrame {
 
@@ -364,6 +368,45 @@ public class ThongKe extends javax.swing.JFrame {
             plot.setRangeGridlinePaint(Color.BLACK);
             plot.setOutlinePaint(null);
             
+            // Định dạng số tiền trên trục y
+            NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
+            rangeAxis.setNumberFormatOverride(new NumberFormat() {
+                private final DecimalFormat df = new DecimalFormat("###,###,###");
+                
+                @Override
+                public StringBuffer format(double number, StringBuffer toAppendTo, FieldPosition pos) {
+                    if (number >= 1_000_000_000) {
+                        double billions = number / 1_000_000_000;
+                        // Kiểm tra nếu phần thập phân là .00 thì chỉ hiển thị phần nguyên
+                        if (billions == (long) billions) {
+                            return new StringBuffer(String.format("%.0fB", billions));
+                        } else {
+                            return new StringBuffer(String.format("%.2fB", billions));
+                        }
+                    } else if (number >= 1_000_000) {
+                        double millions = number / 1_000_000;
+                        // Kiểm tra nếu phần thập phân là .00 thì chỉ hiển thị phần nguyên
+                        if (millions == (long) millions) {
+                            return new StringBuffer(String.format("%.0fM", millions));
+                        } else {
+                            return new StringBuffer(String.format("%.2fM", millions));
+                        }
+                    } else {
+                        return new StringBuffer(df.format(number));
+                    }
+                }
+
+                @Override
+                public StringBuffer format(long number, StringBuffer toAppendTo, FieldPosition pos) {
+                    return format((double) number, toAppendTo, pos);
+                }
+
+                @Override
+                public Number parse(String source, ParsePosition parsePosition) {
+                    return null;
+                }
+            });
+            
             // Thêm biểu đồ vào panel
             ChartPanel chartPanel = new ChartPanel(chart);
             chartPanel.setPreferredSize(new java.awt.Dimension(745, 277));
@@ -663,7 +706,7 @@ public class ThongKe extends javax.swing.JFrame {
             JFreeChart chart = ChartFactory.createBarChart(
                 title,
                 categoryLabel, 
-                "Doanh thu (VNĐ)",
+                "Doanh thu",
                 dataset,
                 PlotOrientation.VERTICAL,
                 true, true, false
@@ -674,6 +717,45 @@ public class ThongKe extends javax.swing.JFrame {
             plot.setBackgroundPaint(Color.WHITE);
             plot.setRangeGridlinePaint(Color.BLACK);
             plot.setOutlinePaint(null);
+            
+            // Định dạng số tiền trên trục y
+            NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
+            rangeAxis.setNumberFormatOverride(new NumberFormat() {
+                private final DecimalFormat df = new DecimalFormat("###,###,###");
+                
+                @Override
+                public StringBuffer format(double number, StringBuffer toAppendTo, FieldPosition pos) {
+                    if (number >= 1_000_000_000) {
+                        double billions = number / 1_000_000_000;
+                        // Kiểm tra nếu phần thập phân là .00 thì chỉ hiển thị phần nguyên
+                        if (billions == (long) billions) {
+                            return new StringBuffer(String.format("%.0fB", billions));
+                        } else {
+                            return new StringBuffer(String.format("%.2fB", billions));
+                        }
+                    } else if (number >= 1_000_000) {
+                        double millions = number / 1_000_000;
+                        // Kiểm tra nếu phần thập phân là .00 thì chỉ hiển thị phần nguyên
+                        if (millions == (long) millions) {
+                            return new StringBuffer(String.format("%.0fM", millions));
+                        } else {
+                            return new StringBuffer(String.format("%.2fM", millions));
+                        }
+                    } else {
+                        return new StringBuffer(df.format(number));
+                    }
+                }
+
+                @Override
+                public StringBuffer format(long number, StringBuffer toAppendTo, FieldPosition pos) {
+                    return format((double) number, toAppendTo, pos);
+                }
+
+                @Override
+                public Number parse(String source, ParsePosition parsePosition) {
+                    return null;
+                }
+            });
             
             // Thêm biểu đồ vào panel
             ChartPanel chartPanel = new ChartPanel(chart);
@@ -686,6 +768,18 @@ public class ThongKe extends javax.swing.JFrame {
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    // Thêm hàm formatMoney
+    private String formatMoney(double amount) {
+        if (amount >= 1_000_000_000) {
+            return String.format("%.2fB", amount / 1_000_000_000);
+        } else if (amount >= 1_000_000) {
+            return String.format("%.2fM", amount / 1_000_000);
+        } else {
+            DecimalFormat formatter = new DecimalFormat("###,###,###");
+            return formatter.format(amount);
         }
     }
 
