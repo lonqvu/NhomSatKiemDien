@@ -206,14 +206,8 @@ public class ThanhToanNo extends javax.swing.JDialog {
                 soTienThanhToan = new BigDecimal(soTienThanhToanText);
             }
             
-            // Đọc file report template từ resources
-            String reportPath = "/UserInterFace/ThanhToanNoReport.jrxml";
-            java.io.InputStream reportStream = getClass().getResourceAsStream(reportPath);
-            if (reportStream == null) {
-                JOptionPane.showMessageDialog(this, "Không tìm thấy file báo cáo!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            JasperReport report = JasperCompileManager.compileReport(reportStream);
+            String reportPath = "src/UserInterFace/ThanhToanNoReport.jrxml";
+            JasperReport report = JasperCompileManager.compileReport(reportPath);
             
             Map<String, Object> parameters = new HashMap<>();
             parameters.put("CustomerID", customerID);
@@ -223,7 +217,7 @@ public class ThanhToanNo extends javax.swing.JDialog {
             
             JasperViewer.viewReport(print, false);
             
-            String directoryPath = "D:/HoaDon/ThanhToanNo";
+            String directoryPath = "D:/HoaDon";
             File directory = new File(directoryPath);
             if (!directory.exists()) {
                 directory.mkdirs();
@@ -268,7 +262,6 @@ public class ThanhToanNo extends javax.swing.JDialog {
         btnLamMoi = new javax.swing.JButton();
         btnXuat = new javax.swing.JButton();
         btnDong = new javax.swing.JButton();
-        btnZalo = new javax.swing.JButton();
 
         setTitle("Thanh Toán Nợ");
 
@@ -283,18 +276,12 @@ public class ThanhToanNo extends javax.swing.JDialog {
         jLabel5.setText("Số tiền còn lại:");
 
         txtTenKH.setEnabled(false);
-        txtTenKH.setPreferredSize(new java.awt.Dimension(24, 20));
 
         txtSDT.setEnabled(false);
-        txtSDT.setPreferredSize(new java.awt.Dimension(24, 20));
 
         txtSoTienNo.setEnabled(false);
-        txtSoTienNo.setPreferredSize(new java.awt.Dimension(24, 20));
-
-        txtSoTienThanhToan.setPreferredSize(new java.awt.Dimension(24, 20));
 
         txtSoTienConLai.setEnabled(false);
-        txtSoTienConLai.setPreferredSize(new java.awt.Dimension(24, 20));
 
         btnLuu.setText("Lưu");
         btnLuu.addActionListener(new java.awt.event.ActionListener() {
@@ -324,11 +311,9 @@ public class ThanhToanNo extends javax.swing.JDialog {
             }
         });
 
-        btnZalo.setText("Gửi Zalo");
-        btnZalo.setPreferredSize(new java.awt.Dimension(55, 23));
-        btnZalo.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnZaloActionPerformed(evt);
+        txtSoTienThanhToan.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtSoTienThanhToanKeyReleased(evt);
             }
         });
 
@@ -337,8 +322,8 @@ public class ThanhToanNo extends javax.swing.JDialog {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGap(20, 20, 20)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel1)
@@ -349,22 +334,19 @@ public class ThanhToanNo extends javax.swing.JDialog {
                         .addGap(30, 30, 30)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(txtTenKH, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
-                            .addComponent(txtSDT, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(txtSoTienNo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(txtSoTienThanhToan, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(txtSoTienConLai, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(64, 64, 64))
+                            .addComponent(txtSDT)
+                            .addComponent(txtSoTienNo)
+                            .addComponent(txtSoTienThanhToan)
+                            .addComponent(txtSoTienConLai)))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(btnLuu, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGap(18, 18, 18)
                         .addComponent(btnLamMoi, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGap(18, 18, 18)
                         .addComponent(btnXuat, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnZalo, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnDong, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())))
+                        .addGap(18, 18, 18)
+                        .addComponent(btnDong, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(20, 20, 20))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -389,14 +371,13 @@ public class ThanhToanNo extends javax.swing.JDialog {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
                     .addComponent(txtSoTienConLai, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 29, Short.MAX_VALUE)
+                .addGap(30, 30, 30)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnLuu)
                     .addComponent(btnLamMoi)
                     .addComponent(btnXuat)
-                    .addComponent(btnDong)
-                    .addComponent(btnZalo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(21, 21, 21))
+                    .addComponent(btnDong))
+                .addGap(20, 20, 20))
         );
 
         pack();
@@ -430,29 +411,11 @@ public class ThanhToanNo extends javax.swing.JDialog {
         tinhSoTienConLai();
     }//GEN-LAST:event_txtSoTienThanhToanKeyReleased
 
-    private void btnZaloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnZaloActionPerformed
-
-//        // Giả sử đường dẫn Zalo được cài đặt sẵn trong hệ thống
-//        String zaloPath = "C:\\Users\\LongVX\\AppData\\Local\\Programs\\Zalo\\Zalo.exe";  // Đường dẫn tới ứng dụng Zalo
-//        String filePath = "‪‪D:\\HoaDon\\" + lblMaHoaDon.getText() +".pdf"; // Đường dẫn file muốn gửi
-//        String cleanedPath = filePath.replaceAll("[^\\x00-\\x7F]", "");  // Loại bỏ các ký tự ngoài phạm vi ASCII chuẩn
-//
-//        try {
-//
-//            String command = "\"" + zaloPath + "\" " + "\"" + cleanedPath + "\"";
-//            // Chạy lệnh
-//            Process process = Runtime.getRuntime().exec(command);
-//        } catch (Exception e) {
-//            System.err.println("Lỗi: " + e.getMessage());
-//        }
-    }//GEN-LAST:event_btnZaloActionPerformed
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnDong;
     private javax.swing.JButton btnLamMoi;
     private javax.swing.JButton btnLuu;
     private javax.swing.JButton btnXuat;
-    private javax.swing.JButton btnZalo;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
