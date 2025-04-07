@@ -37,7 +37,7 @@ public class ThanhToanNo extends javax.swing.JDialog {
     private ResultSet rs = null;
     private BigDecimal soTienNo = BigDecimal.ZERO;
     private DecimalFormat formatter = new DecimalFormat("###,###,###");
-    
+    private String fileNameEx = null;
     /**
      * Creates new form ThanhToanNo
      */
@@ -48,6 +48,7 @@ public class ThanhToanNo extends javax.swing.JDialog {
         connection();
         loadCustomerData();
         setLocationRelativeTo(null);
+        btnZalo.setEnabled(false);
     }
 
     public ThanhToanNo(javax.swing.JDialog parent, boolean modal, String customerID, Detail detail) {
@@ -58,6 +59,7 @@ public class ThanhToanNo extends javax.swing.JDialog {
         connection();
         loadCustomerData();
         setLocationRelativeTo(parent);
+        btnZalo.setEnabled(false);
     }
 
     private void connection() {
@@ -121,7 +123,7 @@ public class ThanhToanNo extends javax.swing.JDialog {
             BigDecimal soTienConLai = soTienNo.subtract(soTienThanhToan);
             txtSoTienConLai.setText(formatter.format(soTienConLai) + " VNĐ");
             
-            txtSoTienThanhToan.setText(formatter.format(soTienThanhToan) + " VNĐ");
+            txtSoTienThanhToan.setText(formatter.format(soTienThanhToan));
         } catch (NumberFormatException e) {
             if (!txtSoTienThanhToan.getText().isEmpty()) {
                 txtSoTienConLai.setText(formatter.format(soTienNo) + " VNĐ");
@@ -206,8 +208,14 @@ public class ThanhToanNo extends javax.swing.JDialog {
                 soTienThanhToan = new BigDecimal(soTienThanhToanText);
             }
             
-            String reportPath = "src/UserInterFace/ThanhToanNoReport.jrxml";
-            JasperReport report = JasperCompileManager.compileReport(reportPath);
+            // Đọc file report template từ resources
+            String reportPath = "/UserInterFace/ThanhToanNoReport.jrxml";
+            java.io.InputStream reportStream = getClass().getResourceAsStream(reportPath);
+            if (reportStream == null) {
+                JOptionPane.showMessageDialog(this, "Không tìm thấy file báo cáo!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            JasperReport report = JasperCompileManager.compileReport(reportStream);
             
             Map<String, Object> parameters = new HashMap<>();
             parameters.put("CustomerID", customerID);
@@ -224,10 +232,11 @@ public class ThanhToanNo extends javax.swing.JDialog {
             }
             
             String fileName = "ThanhToanNo_" + customerID + "_" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + ".pdf";
+            fileNameEx = fileName;
             String filePath = directoryPath + File.separator + fileName;
             
             JasperExportManager.exportReportToPdfFile(print, filePath);
-            
+            btnZalo.setEnabled(true);
             JOptionPane.showMessageDialog(this, "Đã xuất hóa đơn thành công!\nĐã lưu tại: " + filePath, "Thông báo", JOptionPane.INFORMATION_MESSAGE);
             
         } catch (JRException e) {
@@ -262,6 +271,7 @@ public class ThanhToanNo extends javax.swing.JDialog {
         btnLamMoi = new javax.swing.JButton();
         btnXuat = new javax.swing.JButton();
         btnDong = new javax.swing.JButton();
+        btnZalo = new javax.swing.JButton();
 
         setTitle("Thanh Toán Nợ");
 
@@ -311,6 +321,14 @@ public class ThanhToanNo extends javax.swing.JDialog {
             }
         });
 
+        btnZalo.setText("Xuất Zalo");
+        btnZalo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnZaloActionPerformed(evt);
+            }
+        });
+        
+        // Thêm sự kiện KeyReleased cho ô nhập số tiền thanh toán
         txtSoTienThanhToan.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 txtSoTienThanhToanKeyReleased(evt);
@@ -345,8 +363,10 @@ public class ThanhToanNo extends javax.swing.JDialog {
                         .addGap(18, 18, 18)
                         .addComponent(btnXuat, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
+                        .addComponent(btnZalo, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
                         .addComponent(btnDong, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(20, 20, 20))
+                .addContainerGap(17, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -376,7 +396,8 @@ public class ThanhToanNo extends javax.swing.JDialog {
                     .addComponent(btnLuu)
                     .addComponent(btnLamMoi)
                     .addComponent(btnXuat)
-                    .addComponent(btnDong))
+                    .addComponent(btnDong)
+                    .addComponent(btnZalo))
                 .addGap(20, 20, 20))
         );
 
@@ -411,11 +432,44 @@ public class ThanhToanNo extends javax.swing.JDialog {
         tinhSoTienConLai();
     }//GEN-LAST:event_txtSoTienThanhToanKeyReleased
 
+    private void btnZaloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnZaloActionPerformed
+        if (fileNameEx == null) {
+            JOptionPane.showMessageDialog(this, "Vui lòng xuất hóa đơn trước khi gửi qua Zalo!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        try {
+            // Đường dẫn tới ứng dụng Zalo
+            String zaloPath = "C:\\Users\\Admin\\AppData\\Local\\Programs\\Zalo\\Zalo.exe";
+            
+            // Đường dẫn file PDF
+            String filePath = "D:\\HoaDon\\" + fileNameEx;
+            File file = new File(filePath);
+            
+            if (!file.exists()) {
+                JOptionPane.showMessageDialog(this, "Không tìm thấy file hóa đơn: " + filePath, "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            // Tạo lệnh để mở Zalo với file đính kèm
+            String command = "\"" + zaloPath + "\" \"" + filePath + "\"";
+            
+            // Chạy lệnh
+            Process process = Runtime.getRuntime().exec(command);
+            
+            JOptionPane.showMessageDialog(this, "Đã mở Zalo với file hóa đơn!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Lỗi khi mở Zalo: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_btnZaloActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnDong;
     private javax.swing.JButton btnLamMoi;
     private javax.swing.JButton btnLuu;
     private javax.swing.JButton btnXuat;
+    private javax.swing.JButton btnZalo;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
