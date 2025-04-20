@@ -512,7 +512,7 @@ public class PayDialog extends javax.swing.JDialog {
                 BigDecimal tongTienHoaDon = convertToMoney(txbTongThanhToan.getText());
                 BigDecimal soTienThanhToan = convertToMoney(txbKhachTra.getText());
                 BigDecimal soTienConLai = convertToMoney(txbConLai.getText());
-                
+
                 // Cập nhật thông tin hóa đơn
                 pst = conn.prepareStatement(sqlChange);
                 pst.setBigDecimal(1, convertToMoney(txbTongTien.getText()));
@@ -539,7 +539,7 @@ public class PayDialog extends javax.swing.JDialog {
                         // Xử lý cập nhật nợ và lịch sử thanh toán
                         BigDecimal soTienNoCu = convertToMoney(txbNoCu.getText());
                         BigDecimal soTienNoMoi = soTienConLai;
-                        
+
                         // Cập nhật nợ trong bảng Customer
                         pst = conn.prepareStatement(sqlUpdateDebt);
                         pst.setBigDecimal(1, soTienNoMoi);
@@ -629,26 +629,38 @@ public class PayDialog extends javax.swing.JDialog {
 
     private void btnUpdateDebtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateDebtActionPerformed
         if (StringUtils.isEmpty(maKH) == false) {
-            boolean checkLogin = showPasswordDialog();
-            if (checkLogin) {
-                // Mở giao diện ThanhToanNo như một dialog con
-                ThanhToanNo thanhToanNo = new ThanhToanNo(this, true, maKH, detail);
-                thanhToanNo.setLocationRelativeTo(this);
-                thanhToanNo.setVisible(true);
-
-                // Cập nhật lại số tiền nợ cũ sau khi đóng giao diện ThanhToanNo
-                String sqlGetDebt = "SELECT Debt FROM Customer WHERE ID = ?";
+//            // Mở giao diện ThanhToanNo như một dialog con
+//            ThanhToanNo thanhToanNo = new ThanhToanNo(this, true, maKH, detail);
+//            thanhToanNo.setLocationRelativeTo(this);
+//            thanhToanNo.setVisible(true);
+//
+//            // Cập nhật lại số tiền nợ cũ sau khi đóng giao diện ThanhToanNo
+//            String sqlGetDebt = "SELECT Debt FROM Customer WHERE ID = ?";
+//            try {
+//                pst = conn.prepareStatement(sqlGetDebt);
+//                pst.setString(1, maKH);
+//                ResultSet rs = pst.executeQuery();
+//                if (rs.next()) {
+//                    DecimalFormat formatter = new DecimalFormat("###,###,###");
+//                    double debt = rs.getDouble("Debt");
+//                    txbNoCu.setText(formatter.format(debt));
+//                    noCu = txbNoCu.getText();
+//                    countMoney();
+//                }
+//            } catch (Exception ex) {
+//                ex.printStackTrace();
+//            }
+            int Click = JOptionPane.showConfirmDialog(null, "Bạn có muốn cập nhật nợ cũ cho khách hàng này không?", "Thông Báo", 2);
+            if (Click == JOptionPane.YES_OPTION) {
+                String sqlChange = "UPDATE Customer SET Debt=?, OldDebt=? WHERE ID='" + maKH + "'";
                 try {
-                    pst = conn.prepareStatement(sqlGetDebt);
-                    pst.setString(1, maKH);
-                    ResultSet rs = pst.executeQuery();
-                    if (rs.next()) {
-                        DecimalFormat formatter = new DecimalFormat("###,###,###");
-                        double debt = rs.getDouble("Debt");
-                        txbNoCu.setText(formatter.format(debt));
-                        noCu = txbNoCu.getText();
-                        countMoney();
-                    }
+                    pst = conn.prepareStatement(sqlChange);
+                    pst.setBigDecimal(1, convertToMoney(txbNoCu.getText()));
+                    pst.setBigDecimal(2, convertToMoney(txbNoCu.getText()));
+
+                    pst.executeUpdate();
+                    countMoney();
+                    JOptionPane.showMessageDialog(null, "Cập nhật nợ cũ thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
