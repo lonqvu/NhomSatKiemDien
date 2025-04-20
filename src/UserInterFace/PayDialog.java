@@ -533,34 +533,36 @@ public class PayDialog extends javax.swing.JDialog {
                 pst.executeUpdate();
 
                 if (StringUtils.isEmpty(maKH) == false) {
+                    if (txbNoCu.getText().equals(noCu) == false) {
+                        JOptionPane.showMessageDialog(null, "Nợ cũ không khớp với dữ liệu, hãy ấn nút Cập Nhật để cập nhật lại nợ cho khách hàng!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+                    } else {
+                        // Xử lý cập nhật nợ và lịch sử thanh toán
+                        BigDecimal soTienNoCu = convertToMoney(txbNoCu.getText());
+                        BigDecimal soTienNoMoi = soTienConLai;
 
-                    // Xử lý cập nhật nợ và lịch sử thanh toán
-                    BigDecimal soTienNoCu = convertToMoney(txbNoCu.getText());
-                    BigDecimal soTienNoMoi = soTienConLai;
-
-                    // Cập nhật nợ trong bảng Customer
-                    pst = conn.prepareStatement(sqlUpdateDebt);
-                    pst.setBigDecimal(1, soTienNoMoi);
-                    pst.setBigDecimal(2, soTienNoCu);
-                    pst.executeUpdate();
-
-                    // Thêm lịch sử thanh toán
-                    if (soTienThanhToan.compareTo(BigDecimal.ZERO) > 0) {
-                        String sqlInsertHistory = "INSERT INTO PaymentHistory (CustomerID, Amount, PaymentDate, RemainingDebt, OldDebt, Deleted) VALUES (?, ?, GETDATE(), ?, ?, ?)";
-                        pst = conn.prepareStatement(sqlInsertHistory);
-                        pst.setString(1, maKH);
-                        pst.setBigDecimal(2, soTienThanhToan);
-                        pst.setBigDecimal(3, soTienNoMoi);
-                        pst.setBigDecimal(4, soTienNoCu);
-                        // Nếu nợ = 0 thì đánh dấu là đã xóa
-                        pst.setInt(5, soTienNoMoi.compareTo(BigDecimal.ZERO) == 0 ? 1 : 0);
+                        // Cập nhật nợ trong bảng Customer
+                        pst = conn.prepareStatement(sqlUpdateDebt);
+                        pst.setBigDecimal(1, soTienNoMoi);
+                        pst.setBigDecimal(2, soTienNoCu);
                         pst.executeUpdate();
+
+                        // Thêm lịch sử thanh toán
+                        if (soTienThanhToan.compareTo(BigDecimal.ZERO) > 0) {
+                            String sqlInsertHistory = "INSERT INTO PaymentHistory (CustomerID, Amount, PaymentDate, RemainingDebt, OldDebt, Deleted) VALUES (?, ?, GETDATE(), ?, ?, ?)";
+                            pst = conn.prepareStatement(sqlInsertHistory);
+                            pst.setString(1, maKH);
+                            pst.setBigDecimal(2, soTienThanhToan);
+                            pst.setBigDecimal(3, soTienNoMoi);
+                            pst.setBigDecimal(4, soTienNoCu);
+                            // Nếu nợ = 0 thì đánh dấu là đã xóa
+                            pst.setInt(5, soTienNoMoi.compareTo(BigDecimal.ZERO) == 0 ? 1 : 0);
+                            pst.executeUpdate();
+                        }
+
+                        isPayed = true;
+                        this.dispose();
+                        JOptionPane.showMessageDialog(null, "Lưu thay đổi thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
                     }
-
-                    isPayed = true;
-                    this.dispose();
-                    JOptionPane.showMessageDialog(null, "Lưu thay đổi thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-
                 } else {
                     pst = conn.prepareStatement(sqlUpdateDebt);
                     pst.setBigDecimal(1, soTienConLai);
@@ -658,6 +660,7 @@ public class PayDialog extends javax.swing.JDialog {
 
                     pst.executeUpdate();
                     countMoney();
+                    noCu = txbNoCu.getText();
                     JOptionPane.showMessageDialog(null, "Cập nhật nợ cũ thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
                 } catch (Exception ex) {
                     ex.printStackTrace();
