@@ -660,6 +660,7 @@ public class PayDialog extends javax.swing.JDialog {
 
                     pst.executeUpdate();
                     countMoney();
+                    noCu = txbNoCu.getText();
                     JOptionPane.showMessageDialog(null, "Cập nhật nợ cũ thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
                 } catch (Exception ex) {
                     ex.printStackTrace();
