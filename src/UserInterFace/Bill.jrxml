@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Bill" pageWidth="595" pageHeight="1000" columnWidth="565" leftMargin="15" rightMargin="15" topMargin="15" bottomMargin="15" uuid="f23f60d8-eb9c-46cb-987d-8131c93e1d83">
 	<property name="ireport.zoom" value="1.3310000000000055"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
+	<property name="ireport.y" value="312"/>
 	<parameter name="ORDER_ID" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[SELECT ROW_NUMBER() OVER (ORDER BY Bill."ID") AS STT,
@@ -547,6 +547,22 @@ new java.math.BigDecimal($F{Bill_HeSo}.toString()).setScale(3, java.math.Roundin
 				<reportElement x="2" y="25" width="331" height="108" uuid="09b3323c-c763-4338-a67d-ab8c07d0452e"/>
 				<textFieldExpression><![CDATA[$F{Note}]]></textFieldExpression>
 			</textField>
+			<image>
+				<reportElement x="2" y="211" width="138" height="89" uuid="deeb7e3f-3114-454f-ad8b-6ca9dba92d10"/>
+				<imageExpression><![CDATA["D:\\NhomSatKiemDien\\src\\Image\\1.jpg"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="98" y="212" width="143" height="20" uuid="a7c33162-362c-4c32-8729-dd17b54c28fa"/>
+				<text><![CDATA[Ngân hàng: AGRIBANK]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="98" y="232" width="235" height="20" uuid="7f22701c-e624-4bd2-af53-3d82580ed730"/>
+				<text><![CDATA[Tên tài khoản: Cty TNHH MTV SX Và TM Kiểm Diên]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="98" y="252" width="179" height="20" uuid="ed4d68ff-acfc-4146-9c7e-caa0e64be993"/>
+				<text><![CDATA[Số tài khoản: 3307333389999]]></text>
+			</staticText>
 		</band>
 	</summary>
 </jasperReport>
