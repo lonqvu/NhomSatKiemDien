@@ -532,6 +532,8 @@ class Sale extends javax.swing.JFrame implements Runnable {
         jLabel20 = new javax.swing.JLabel();
         btnNew = new javax.swing.JButton();
         btnDeleteOrder = new javax.swing.JButton();
+        notes = new javax.swing.JLabel();
+        txtNotes = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -633,22 +635,20 @@ class Sale extends javax.swing.JFrame implements Runnable {
                 .addComponent(btnSavePdf, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(61, 61, 61)
                 .addComponent(btnZalo, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(226, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnPay, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnPrint, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnSavePdf, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(btnZalo, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(btnZalo, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnPay, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnPrint, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnSavePdf, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
 
@@ -932,6 +932,9 @@ class Sale extends javax.swing.JFrame implements Runnable {
                 .addGap(4, 4, 4))
         );
 
+        notes.setFont(new java.awt.Font("Tahoma", 0, 16)); // NOI18N
+        notes.setText("Ghi chú:");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -954,7 +957,12 @@ class Sale extends javax.swing.JFrame implements Runnable {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(notes)
+                        .addGap(18, 18, 18)
+                        .addComponent(txtNotes)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -971,9 +979,16 @@ class Sale extends javax.swing.JFrame implements Runnable {
                     .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 274, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(24, 24, 24))
+                .addGap(11, 11, 11)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 264, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(13, 13, 13)
+                        .addComponent(notes, javax.swing.GroupLayout.DEFAULT_SIZE, 22, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(11, 11, 11)
+                        .addComponent(txtNotes)))
+                .addContainerGap())
         );
 
         pack();
@@ -1198,7 +1213,7 @@ class Sale extends javax.swing.JFrame implements Runnable {
             if (txbKhachHang.getText().isBlank() || txbKhachHang.getText().isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Vui Lòng chọn khách hàng", "Thông báo", JOptionPane.WARNING_MESSAGE);
             } else {
-                PayDialog dialog = new PayDialog(this, true, lbltotalMoney.getText(), txbDebt.getText(), lblTong.getText(), customerId, txbKhachHang.getText(), MaHD, txbDiaChi.getText(), txbSoDienThoai.getText(), detail.getUser());
+                PayDialog dialog = new PayDialog(this, true, lbltotalMoney.getText(), txbDebt.getText(), lblTong.getText(), customerId, txbKhachHang.getText(), MaHD, txbDiaChi.getText(), txbSoDienThoai.getText(), detail.getUser(),txtNotes.getText());
                 dialog.setVisible(true);
                 btnDeleteOrder.setEnabled(false);
 
@@ -1410,7 +1425,7 @@ class Sale extends javax.swing.JFrame implements Runnable {
     }
 
     private void btnSavePdfActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSavePdfActionPerformed
-        try {
+       try {
             // Biên dịch mẫu báo cáo JasperReports
             JasperReport report = JasperCompileManager.compileReport("D:\\NhomSatKiemDien\\src\\UserInterFace\\Bill.jrxml");
 
@@ -1462,7 +1477,7 @@ class Sale extends javax.swing.JFrame implements Runnable {
     private void btnZaloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnZaloActionPerformed
 
         // Giả sử đường dẫn Zalo được cài đặt sẵn trong hệ thống
-        String zaloPath = "C:\\Users\\LongVX\\AppData\\Local\\Programs\\Zalo\\Zalo.exe";  // Đường dẫn tới ứng dụng Zalo
+        String zaloPath = "C:\\Users\\admin\\AppData\\Local\\Programs\\Zalo\\Zalo.exe";  // Đường dẫn tới ứng dụng Zalo
         String filePath = "‪‪D:\\HoaDon\\" + lblMaHoaDon.getText() +".pdf"; // Đường dẫn file muốn gửi
         String cleanedPath = filePath.replaceAll("[^\\x00-\\x7F]", "");  // Loại bỏ các ký tự ngoài phạm vi ASCII chuẩn
 
@@ -1578,11 +1593,13 @@ class Sale extends javax.swing.JFrame implements Runnable {
     private javax.swing.JLabel lblNoCu;
     private javax.swing.JLabel lblTong;
     private javax.swing.JLabel lbltotalMoney;
+    private javax.swing.JLabel notes;
     private javax.swing.JTable tableBill;
     private javax.swing.JLabel txbDebt;
     private javax.swing.JLabel txbDiaChi;
     private javax.swing.JLabel txbKhachHang;
     private javax.swing.JLabel txbSoDienThoai;
+    private javax.swing.JTextField txtNotes;
     // End of variables declaration//GEN-END:variables
 
     // Lớp ComboBoxFilter để lọc dữ liệu trong comboBox
