@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Bill" pageWidth="595" pageHeight="1000" columnWidth="565" leftMargin="15" rightMargin="15" topMargin="15" bottomMargin="15" uuid="f23f60d8-eb9c-46cb-987d-8131c93e1d83">
-	<property name="ireport.zoom" value="1.3310000000000055"/>
+	<property name="ireport.zoom" value="2.1435888100000136"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
+	<property name="ireport.y" value="357"/>
 	<parameter name="ORDER_ID" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[/* =========================================================
@@ -230,7 +230,7 @@ ORDER BY b.Products_Name DESC, b.Bill_HeSo, b.Bill_SoTam, b.Bill_ID]]>
 						<printWhenExpression><![CDATA[$F{Bill_SoTam} != 0]]></printWhenExpression>
 					</reportElement>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
-						<font fontName="DejaVu Sans" size="10"/>
+						<font fontName="DejaVu Sans" size="8"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$V{DisplaySoTam} + " tấm x " + new java.math.BigDecimal($F{Bill_HeSo}.toString()).setScale(3, java.math.RoundingMode.HALF_UP).stripTrailingZeros().toString()]]></textFieldExpression>
 				</textField>
@@ -241,9 +241,9 @@ ORDER BY b.Products_Name DESC, b.Bill_HeSo, b.Bill_SoTam, b.Bill_ID]]>
 					<reportElement x="0" y="-1" width="1" height="22" uuid="609cd0ff-26c9-4fe0-b147-7323b8e05c6d"/>
 				</line>
 				<textField isBlankWhenNull="true">
-					<reportElement isPrintRepeatedValues="false" x="37" y="0" width="244" height="21" uuid="f0b4dee7-a918-4bbc-b151-2d5db1b9d57a"/>
+					<reportElement isPrintRepeatedValues="false" x="37" y="0" width="220" height="21" uuid="f0b4dee7-a918-4bbc-b151-2d5db1b9d57a"/>
 					<textElement verticalAlignment="Middle">
-						<font fontName="DejaVu Sans" size="10"/>
+						<font fontName="DejaVu Sans" size="10" isBold="true"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{Products_Name}]]></textFieldExpression>
 				</textField>
@@ -505,39 +505,32 @@ ORDER BY b.Products_Name DESC, b.Bill_HeSo, b.Bill_SoTam, b.Bill_ID]]>
 		<band height="21" splitType="Stretch">
 			<printWhenExpression><![CDATA[$F{Bill_SoTam} != 0]]></printWhenExpression>
 			<line>
-				<reportElement x="35" y="-1" width="1" height="21" uuid="9f1183a0-fbab-4155-ab67-f61a7279d8d2"/>
+				<reportElement x="35" y="-1" width="1" height="22" uuid="9f1183a0-fbab-4155-ab67-f61a7279d8d2"/>
 			</line>
 			<line>
-				<reportElement x="282" y="0" width="1" height="21" uuid="d7f7c80f-5922-4fe4-8f7e-7bf58a2bbb29"/>
+				<reportElement x="282" y="-1" width="1" height="22" uuid="d7f7c80f-5922-4fe4-8f7e-7bf58a2bbb29"/>
 			</line>
 			<line>
-				<reportElement x="373" y="0" width="1" height="21" uuid="aea4ed6c-08a0-42d7-952e-e21ba14d761b"/>
+				<reportElement x="373" y="-1" width="1" height="22" uuid="aea4ed6c-08a0-42d7-952e-e21ba14d761b"/>
 			</line>
 			<line>
-				<reportElement x="565" y="0" width="1" height="21" uuid="da2a8091-7c9f-4340-83ff-c55a786cdfc6"/>
+				<reportElement x="565" y="-1" width="1" height="22" uuid="da2a8091-7c9f-4340-83ff-c55a786cdfc6"/>
 			</line>
 			<line>
-				<reportElement x="467" y="0" width="1" height="21" uuid="e7f4ffec-6bfa-4556-8ea3-7bb0cdd522aa"/>
+				<reportElement x="467" y="-1" width="1" height="22" uuid="e7f4ffec-6bfa-4556-8ea3-7bb0cdd522aa"/>
 			</line>
 			<line>
-				<reportElement x="0" y="-1" width="1" height="21" uuid="652ce2cf-38e8-42d8-9ba6-a16cb833deea"/>
+				<reportElement x="0" y="-1" width="1" height="22" uuid="652ce2cf-38e8-42d8-9ba6-a16cb833deea"/>
 			</line>
 			<textField isStretchWithOverflow="true">
-				<reportElement x="37" y="0" width="178" height="20" uuid="ebd60645-4546-4055-88b1-03133fd380af"/>
+				<reportElement x="37" y="0" width="244" height="20" uuid="ebd60645-4546-4055-88b1-03133fd380af"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="DejaVu Sans" size="10"/>
+					<font fontName="DejaVu Sans" size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[($F{Line_Count} != null && $F{Line_Count} > 1
     ? "(" + $F{Amount_List} + ")"
     : $F{Amount_List})
 + " x " + $F{Bill_SoTam} + " tấm"]]></textFieldExpression>
-			</textField>
-			<textField pattern="#.###">
-				<reportElement x="194" y="0" width="81" height="20" uuid="a2a1eabd-916b-47da-9631-b6e58c1998e8"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle" rotation="None">
-					<font fontName="DejaVu Sans" size="10"/>
-				</textElement>
-				<textFieldExpression><![CDATA[new java.math.BigDecimal($F{Bill_TongSoLuong}.toString()).setScale(3, java.math.RoundingMode.HALF_UP).stripTrailingZeros().toString()  + ""]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
