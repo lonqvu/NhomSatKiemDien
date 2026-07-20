@@ -351,7 +351,7 @@ public class OrderDetailDialog extends javax.swing.JDialog {
 
     private void btnZaloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnZaloActionPerformed
         // Giả sử đường dẫn Zalo được cài đặt sẵn trong hệ thống
-        String zaloPath = "C:\\Users\\LongVX\\AppData\\Local\\Programs\\Zalo\\Zalo.exe";  // Đường dẫn tới ứng dụng Zalo
+        String zaloPath = "C:\\Users\\admin\\AppData\\Local\\Programs\\Zalo\\Zalo.exe";  // Đường dẫn tới ứng dụng Zalo
         String filePath = "‪‪D:\\HoaDon\\" + orderId +".pdf"; // Đường dẫn file muốn gửi
         String cleanedPath = filePath.replaceAll("[^\\x00-\\x7F]", "");  // Loại bỏ các ký tự ngoài phạm vi ASCII chuẩn
 

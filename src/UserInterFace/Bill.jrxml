@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Bill" pageWidth="595" pageHeight="1000" columnWidth="565" leftMargin="15" rightMargin="15" topMargin="15" bottomMargin="15" uuid="f23f60d8-eb9c-46cb-987d-8131c93e1d83">
-	<property name="ireport.zoom" value="2.3579476910000037"/>
-	<property name="ireport.x" value="145"/>
-	<property name="ireport.y" value="526"/>
+	<property name="ireport.zoom" value="1.3310000000000055"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="312"/>
 	<parameter name="ORDER_ID" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[SELECT ROW_NUMBER() OVER (ORDER BY Bill."ID") AS STT,
@@ -32,7 +32,8 @@
 	Orders."PayMoney" AS "Pay_Money",  
 	Orders."DebtBack" AS "Debt_Back",
 	Orders."ShippingFee" AS "Shipping_Fee",
-	Orders."StaffName" AS "Staff"
+	Orders."StaffName" AS "Staff",
+	Orders."Note" AS "Note"
 
 FROM
     "dbo"."Bill" Bill
@@ -74,6 +75,7 @@ Order by Products_Name DESC]]>
 	<field name="Debt_Back" class="java.math.BigDecimal"/>
 	<field name="Shipping_Fee" class="java.math.BigDecimal"/>
 	<field name="Staff" class="java.lang.String"/>
+	<field name="Note" class="java.lang.String"/>
 	<variable name="HeSo" class="java.lang.String" resetType="Group" resetGroup="ProductGroup" incrementType="Group" incrementGroup="ProductGroup">
 		<variableExpression><![CDATA[new java.math.BigDecimal($F{Bill_Amount}.toString()).multiply(new java.math.BigDecimal($F{Bill_SoTam}.toString())).multiply(new java.math.BigDecimal($F{Bill_HeSo}.toString()))]]></variableExpression>
 	</variable>
@@ -187,56 +189,46 @@ Order by Products_Name DESC]]>
 		<band splitType="Stretch"/>
 	</background>
 	<title>
-		<band height="163" splitType="Stretch">
+		<band height="130" splitType="Stretch">
 			<staticText>
-				<reportElement x="1" y="0" width="564" height="26" uuid="991e1679-4562-4997-afee-6b05eae9d5af"/>
-				<textElement textAlignment="Center">
+				<reportElement x="111" y="2" width="436" height="26" uuid="991e1679-4562-4997-afee-6b05eae9d5af"/>
+				<textElement textAlignment="Left">
 					<font fontName="DejaVu Sans" size="20" isBold="false" isItalic="false" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
 				</textElement>
-				<text><![CDATA[NHÀ MÁY CÁN TÔN KIỂM DIÊN]]></text>
+				<text><![CDATA[CÔNG TY TNHH SX VÀ TM KIỂM DIÊN]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="1" y="26" width="564" height="20" uuid="c65a086e-0f93-4595-adff-cdd893c91d4e"/>
-				<textElement textAlignment="Center">
+				<reportElement x="111" y="32" width="436" height="20" uuid="c65a086e-0f93-4595-adff-cdd893c91d4e"/>
+				<textElement textAlignment="Left">
 					<font fontName="DejaVu Sans" size="14" isBold="false"/>
 				</textElement>
 				<text><![CDATA[CHUYÊN CUNG CẤP CÁC LOẠI SẮT HÌNH, HỘP U,V,C ]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="81" width="565" height="20" uuid="445c3f5c-126a-4ba3-834c-7d82039a8473"/>
-				<textElement textAlignment="Center">
+				<reportElement x="110" y="71" width="437" height="20" uuid="445c3f5c-126a-4ba3-834c-7d82039a8473"/>
+				<textElement textAlignment="Left">
 					<font fontName="DejaVu Sans" size="14"/>
 				</textElement>
-				<text><![CDATA[Địa chỉ: Xóm 1 - Hồng Thắng - Yên Mạc - Yên Mô - Ninh Bình]]></text>
+				<text><![CDATA[Địa chỉ: Xóm 1 - Hồng Thắng - Yên Mạc - Ninh Bình]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="46" width="565" height="20" uuid="3ba04b1f-dca2-43d0-be82-23193a463bb5"/>
-				<textElement textAlignment="Center">
+				<reportElement x="110" y="52" width="437" height="20" uuid="3ba04b1f-dca2-43d0-be82-23193a463bb5"/>
+				<textElement textAlignment="Left">
 					<font fontName="DejaVu Sans" size="14" isBold="false"/>
 				</textElement>
 				<text><![CDATA[NHÔM, KẼM, TÔN LỢP, TRẦN NHỰA, CỬA XẾP, CỬA CUỐN]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="101" width="565" height="20" uuid="db0a19d5-e539-4afc-bed6-cb2281e6434a"/>
-				<textElement textAlignment="Center">
+				<reportElement x="110" y="91" width="437" height="20" uuid="db0a19d5-e539-4afc-bed6-cb2281e6434a"/>
+				<textElement textAlignment="Left">
 					<font fontName="DejaVu Sans" size="14"/>
 				</textElement>
 				<text><![CDATA[ĐT: 0356.717.693 - 039.221.3986]]></text>
 			</staticText>
-			<staticText>
-				<reportElement x="0" y="121" width="565" height="20" uuid="48680634-dff7-4960-848a-8cc57adbeda6"/>
-				<textElement textAlignment="Center">
-					<font fontName="DejaVu Sans" size="14"/>
-				</textElement>
-				<text><![CDATA[STK: Vũ Xuân Kiểm: 108878791212 NH Viettin Bank Ninh Bình]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="0" y="141" width="565" height="20" uuid="fc9e6385-dc86-479d-96f0-c0c580b03064"/>
-				<textElement textAlignment="Center">
-					<font fontName="DejaVu Sans" size="14"/>
-				</textElement>
-				<text><![CDATA[STK: Nguyễn Thị Diên: 3307205106828 NH Agribank ]]></text>
-			</staticText>
+			<image scaleImage="FillFrame" hAlign="Left">
+				<reportElement x="-4" y="-12" width="115" height="105" uuid="8ad0d1af-3441-46ed-9d6e-373d109c1e7d"/>
+				<imageExpression><![CDATA["D:\\NhomSatKiemDien\\src\\Image\\download-2-photoroom_agfGo5ka.jpg"]]></imageExpression>
+			</image>
 		</band>
 	</title>
 	<pageHeader>
@@ -528,11 +520,11 @@ new java.math.BigDecimal($F{Bill_HeSo}.toString()).setScale(3, java.math.Roundin
 				<textFieldExpression><![CDATA[$F{Shipping_Fee}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="35" y="5" width="135" height="20" uuid="03f65755-ad78-4a93-b187-33f2eb926460"/>
+				<reportElement x="2" y="5" width="135" height="20" uuid="03f65755-ad78-4a93-b187-33f2eb926460"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="DejaVu Sans" size="10" isBold="true" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
-				<text><![CDATA[Người nhận hàng]]></text>
+				<text><![CDATA[Ghi chú]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="0" y="133" width="135" height="20" uuid="9cd9a333-1940-4fe0-b960-7cf9928622d4"/>
@@ -550,6 +542,26 @@ new java.math.BigDecimal($F{Bill_HeSo}.toString()).setScale(3, java.math.Roundin
 - Kiểm tra đối chiếu khi giao nhận hàng.
 - Tôn đã cắt không được trả lại.
 - Mọi thắc mắc xin quý khách vui lòng liên hệ ngay, quá hai ngày sau khi nhận hàng chúng tôi không chịu trách nhiệm]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="2" y="25" width="331" height="108" uuid="09b3323c-c763-4338-a67d-ab8c07d0452e"/>
+				<textFieldExpression><![CDATA[$F{Note}]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="2" y="211" width="138" height="89" uuid="deeb7e3f-3114-454f-ad8b-6ca9dba92d10"/>
+				<imageExpression><![CDATA["D:\\NhomSatKiemDien\\src\\Image\\1.jpg"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="98" y="212" width="143" height="20" uuid="a7c33162-362c-4c32-8729-dd17b54c28fa"/>
+				<text><![CDATA[Ngân hàng: AGRIBANK]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="98" y="232" width="235" height="20" uuid="7f22701c-e624-4bd2-af53-3d82580ed730"/>
+				<text><![CDATA[Tên tài khoản: Cty TNHH MTV SX Và TM Kiểm Diên]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="98" y="252" width="179" height="20" uuid="ed4d68ff-acfc-4146-9c7e-caa0e64be993"/>
+				<text><![CDATA[Số tài khoản: 3307333389999]]></text>
 			</staticText>
 		</band>
 	</summary>

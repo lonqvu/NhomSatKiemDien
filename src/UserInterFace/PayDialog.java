@@ -49,13 +49,14 @@ public class PayDialog extends javax.swing.JDialog {
     String tenKh = "";
     String noCu = "";
     static String user = "";
+    String note = "";
     boolean isPayed = false;
     NumberFormat moneyFormatter = NumberFormat.getInstance(new Locale("vi", "VN"));
 
     /**
      * Creates new form ProductDialog
      */
-    public PayDialog(java.awt.Frame parent, boolean modal, String tongTienHd, String noCu, String tongThanhToan, String maKh, String tenKh, String maHD, String diaChi, String sdt, String user) {
+    public PayDialog(java.awt.Frame parent, boolean modal, String tongTienHd, String noCu, String tongThanhToan, String maKh, String tenKh, String maHD, String diaChi, String sdt, String user, String note) {
 
         super(parent, "Chỉnh sửa", modal);
         initComponents();
@@ -73,6 +74,7 @@ public class PayDialog extends javax.swing.JDialog {
         this.tenKh = tenKh;
         this.user = user;
         this.noCu = noCu;
+        this.note = note;
         countMoney();
         setLocationRelativeTo(null);
     }
@@ -505,7 +507,7 @@ public class PayDialog extends javax.swing.JDialog {
         if (StringUtils.isEmpty(checkNull) == false) {
             JOptionPane.showMessageDialog(null, checkNull, "Thông báo", JOptionPane.WARNING_MESSAGE);
         } else {
-            String sqlChange = "UPDATE Orders SET TotalMoneyBill=?, OldDebt =?, TotalMoneyOrder =?,PayMoney=?, DebtBack =?, isPayed =?, CustomerID = ?, Customer = ?, Address =?, Phone = ?, ShippingFee = ? WHERE ID='" + maHd + "'";
+            String sqlChange = "UPDATE Orders SET TotalMoneyBill=?, OldDebt =?, TotalMoneyOrder =?,PayMoney=?, DebtBack =?, isPayed =?, CustomerID = ?, Customer = ?, Address =?, Phone = ?, ShippingFee = ?, Note = ? WHERE ID='" + maHd + "'";
             String sqlUpdateDebt = "UPDATE Customer SET Debt=?, OldDebt=? WHERE ID='" + maKH + "'";
             try {
                 // Tính toán số tiền thanh toán thực tế
@@ -530,6 +532,11 @@ public class PayDialog extends javax.swing.JDialog {
                 pst.setString(9, diaChi);
                 pst.setString(10, sdt);
                 pst.setBigDecimal(11, convertToMoney(txbShippingFee.getText()));
+                if (StringUtils.isEmpty(note) == false) {
+                    pst.setString(12, note);
+                } else {
+                    pst.setString(12, null);
+                }
                 pst.executeUpdate();
 
                 if (StringUtils.isEmpty(maKH) == false) {
@@ -738,7 +745,7 @@ public class PayDialog extends javax.swing.JDialog {
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                PayDialog dialog = new PayDialog(new javax.swing.JFrame(), true, null, null, null, null, null, null, null, null, null);
+                PayDialog dialog = new PayDialog(new javax.swing.JFrame(), true, null, null, null, null, null, null, null, null, null, null);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {
